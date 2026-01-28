@@ -7,7 +7,9 @@ This project is structured as a **Hub-and-Spoke Multi-Agent System**.
 ### `master_orchestrator.py`
 The brain of the operation. It uses the `GunnercookeOrchestrator` class to manage state and sequential execution.
 - **State Management**: Keeps a `self.log` of all actions and `self.results` for the final JSON dump.
-- **Pipelines**: Defined as methods (`run_recruiting_pipeline`, `run_content_pipeline`).
+- **Pipelines**: Defined as async methods (`run_recruiting_pipeline`, `run_content_pipeline`).
+- **Concurrency**: Uses `asyncio.to_thread` to wrap synchronous agent logic, enabling parallel processing of multiple candidates.
+- **Gathering**: Uses `asyncio.gather()` to execute sub-agent chains (B→C→D) concurrently across a batch of candidates.
 - **Error Handling**: Each step (Agent run) checks for errors before proceeding to the next.
 
 ### `agent.py`
