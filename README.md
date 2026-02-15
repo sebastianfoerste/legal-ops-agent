@@ -1,18 +1,18 @@
 # Legal Agent - Gunnercooke Automation Suite
 
-A multi-agent system for legal recruiting, content generation, and business development automation.
+Legal Agent is a **Multi-Agent Intelligence Swarm** designed for legal recruiting and business development. It follows the [2026 StrategyOS Development Manifesto](file:///Users/sebastian/Developer/DEVELOPMENT_MANIFESTO_2026.md).
 
 ## 🚀 Features
 
-### Recruiting Pipeline (Agents A→B→C→D)
-- **Glass Ceiling Scout**: Identifies frustrated high-performers using LinkedIn signals
-- **Rainmaker Profiler**: Estimates portable revenue and generates business cases
-- **Outreach Architect**: Creates personalized recruitment messages
-- **Scheduling Concierge**: Automates calendar prep and briefing documents
+### Recruiting Swarm (Agents A→D)
+- **Glass Ceiling Scout**: Signals-based headhunting using autonomous browser agents.
+- **Rainmaker Profiler**: Semantic revenue estimation and business case drafting.
+- **Outreach Architect**: Hyper-personalized messaging using the StrategyOS Persona Engine.
+- **Scheduling Concierge**: Context-aware calendar orchestration.
 
-### Content Pipeline (Agents E→F)
-- **Signal Hunter**: Monitors regulatory changes, competitor moves, and market signals
-- **Thought Leader Ghostwriter**: Generates LinkedIn posts for partners
+### Content Swarm (Agents E→F)
+- **Signal Hunter**: Real-time regulatory and market monitoring.
+- **Thought Leader Ghostwriter**: High-status content generation for partners.
 
 ### Additional Agents
 - **Revenue Predictor** (Agent K): Risk assessment for partner retention

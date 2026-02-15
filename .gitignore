@@ -1,1 +1,38 @@
+# OS / editor
 .DS_Store
+.idea/
+.vscode/
+
+# Python envs
+.venv/
+venv/
+
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Test / coverage
+.coverage
+coverage.xml
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Runtime outputs
+LinkedIn_Posts/
+*.log
+
+# Local tooling
+.agent/
+.antigravity/
+.npm-local/
+
+# Env
+.env
+.env.local

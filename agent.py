@@ -1,38 +1,57 @@
 import os
-import requests
-import json
+import sys
 import time
-import random
 from datetime import datetime
+
+import google.generativeai as genai
+import requests
+import trafilatura
+from ddgs import DDGS
 from dotenv import load_dotenv
 
-# Third-party libraries
-import trafilatura
-from bs4 import BeautifulSoup
-from ddgs import DDGS
-import google.generativeai as genai
-
-# Load environment variables
 load_dotenv()
-
-# Configure Gemini API
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-if not GOOGLE_API_KEY:
-    raise ValueError("GOOGLE_API_KEY not found in .env file")
+if GOOGLE_API_KEY:
+    genai.configure(api_key=GOOGLE_API_KEY)
 
-genai.configure(api_key=GOOGLE_API_KEY)
+BRAVE_API_KEY = os.getenv("BRAVE_API_KEY")
+
+def brave_search_api(query: str):
+    """Call Brave Search API directly."""
+    if not BRAVE_API_KEY:
+        return {}
+    params = {"q": query}
+    headers = {"Accept": "application/json", "X-Subscription-Token": BRAVE_API_KEY}
+    try:
+        response = requests.get(
+            "https://api.search.brave.com/res/v1/web/search",
+            headers=headers,
+            params=params,
+            timeout=10
+        )
+        if response.status_code == 200:
+            return response.json()
+    except Exception as e:
+        print(f"Brave API error: {e}")
+    return {}
+
+# Shared Intelligence Core
+sys.path.append("/Users/sebastian/Developer/scripts")
+try:
+    from intelligence_core import BANNED_WORDS, apply_2026_standards
+except ImportError:
+    BANNED_WORDS = []
+    def apply_2026_standards(text: str) -> str:
+        return text
 
 def search_legal_news(country="USA", max_results=5):
     """
-    Search for latest legal news using DuckDuckGo (Steps 1 & 2) and Brave Search (Fallback).
+    Search for latest legal news using DuckDuckGo and Brave Search.
     """
     # Define queries
     if country.lower() in ["germany", "de"]:
-        # 1. DuckDuckGo Specific
         primary_query = "site:lto.de OR site:juve.de aktuelle jura nachrichten"
-        # 2. DuckDuckGo Broad
         secondary_query = "aktuelle jura nachrichten deutschland anwalt rechtsprechung"
-        # 3. Brave Fallback
         fallback_query = "aktuelle jura nachrichten deutschland anwalt"
         region = "de-de"
     else:
@@ -45,84 +64,50 @@ def search_legal_news(country="USA", max_results=5):
     results = []
     
     # --- 1. Primary: DuckDuckGo Specific ---
-    print(f"Attempting Primary Search (DDG Specific): {primary_query}")
     try:
         with DDGS() as ddgs:
+            # Narrow search to reliable domains for specific legal news
             ddg_results = ddgs.text(primary_query, region=region, max_results=max_results)
             if ddg_results:
                 for r in ddg_results:
-                    results.append({
-                        "title": r.get("title"),
-                        "href": r.get("href"),
-                        "body": r.get("body")
-                    })
+                    results.append({"title": r.get("title"), "href": r.get("href"), "body": r.get("body")})
                 print(f"  ✅ DDG Specific found {len(results)} results.")
                 return results
-            else:
-                print("  ⚠️ DDG Specific returned no results.")
     except Exception as e:
         print(f"  ❌ DDG Specific failed: {e}")
 
     # --- 2. Secondary: DuckDuckGo Broad ---
-    print(f"Attempting Secondary Search (DDG Broad): {secondary_query}")
     try:
-        # Short sleep to be nice
         time.sleep(2)
         with DDGS() as ddgs:
+            # Broad search for current legal headlines
             ddg_results = ddgs.text(secondary_query, region=region, max_results=max_results)
             if ddg_results:
                 for r in ddg_results:
-                    # Deduping logic could go here, but simple append is fine for now
-                     results.append({
-                        "title": r.get("title"),
-                        "href": r.get("href"),
-                        "body": r.get("body")
-                    })
+                    results.append({"title": r.get("title"), "href": r.get("href"), "body": r.get("body")})
                 print(f"  ✅ DDG Broad found {len(results)} results.")
                 return results
-            else:
-                print("  ⚠️ DDG Broad returned no results.")
     except Exception as e:
         print(f"  ❌ DDG Broad failed: {e}")
 
-    # --- 3. Fallback: Brave Search ---
-    print(f"Attempting Fallback Search (Brave): {fallback_query}")
+    # --- 3. Fallback: Brave Search API ---
+    print(f"Attempting Fallback Search (Brave API): {fallback_query}")
     try:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        }
-        brave_url = f"https://search.brave.com/search?q={requests.utils.quote(fallback_query)}&source=web"
-        
-        # Reduced timeout to avoid hanging
-        response = requests.get(brave_url, headers=headers, timeout=5)
-        
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, "html.parser")
-            snippets = soup.find_all("div", class_="snippet")
-            
-            count = 0
-            for snippet in snippets:
-                if count >= max_results: break
-                
-                title_tag = snippet.find("div", class_="title")
-                if title_tag:
-                    link_tag = snippet.find("a")
-                    if link_tag and link_tag.get("href"):
-                         href = link_tag.get("href")
-                         if href.startswith("http"):
-                             results.append({
-                                 "title": title_tag.get_text(strip=True),
-                                 "href": href,
-                                 "body": "" # Body will be scraped later
-                             })
-                             count += 1
+        data = brave_search_api(fallback_query)
+        if data and "web" in data and "results" in data["web"]:
+            for item in data["web"]["results"][:max_results]:
+                results.append({
+                    "title": item.get("title"),
+                    "href": item.get("url"),
+                    "body": item.get("description", "")
+                })
             
             if results:
                 print(f"  ✅ Brave Search found {len(results)} results.")
             else:
-                 print("  ⚠️ Brave Search scraping found no parseable results.")
+                 print("  ⚠️ Brave Search found no parseable results.")
         else:
-             print(f"  ⚠️ Brave Search returned HTTP {response.status_code}")
+             print(f"  ⚠️ Brave Search returned no valid data.")
              
     except Exception as e:
          print(f"  ❌ Brave Search failed: {e}")
@@ -150,13 +135,11 @@ def is_relevant(text):
     if not text or len(text) < 200:
         return False
         
-    prompt = f"""
-    Is this article about a significant legal development? 
-    Answer ONLY with YES or NO.
-    
-    TEXT:
-    {text[:500]}
-    """
+    # Multi-model logic for relevance checking (candidate models not used in current implementation)
+    prompt = (
+        f"Is this text about a significant legal update or news (not ads/generic)? "
+        f"Answer ONLY with YES or NO. TEXT: '{text[:300]}'"
+    )
     try:
         # Use a cheaper/faster model for this check
         model = genai.GenerativeModel('models/gemini-flash-latest')
@@ -166,66 +149,84 @@ def is_relevant(text):
     except Exception:
         return True # Fallback to include if check fails
 
+# --- 2026 MANIFESTO COMPLIANCE (INTEGRATED VIA intelligence_core.py) ---
+
+
 def generate_linkedin_posts(articles_text, country):
     """
-    Generate LinkedIn posts using Gemini.
+    Generate LinkedIn posts using Gemini with Manifesto Compliance.
     """
     print(f"Generating posts for {country}...")
     
     # Determine language based on country
     if country.lower() in ["germany", "de"]:
         lang_instr = "IMPORTANT: The output must be in **GERMAN**."
-        placeholder = "[Content in German]"
     else:
         lang_instr = "IMPORTANT: The output must be in **ENGLISH**."
-        placeholder = "[Content in English]"
     
     formatted_date = datetime.now().strftime("%Y-%m-%d")
 
+    # High-status post generation
+    # This prompt is for generating a single high-status post,
+    # but the function is designed to generate three.
+    # The original prompt structure is retained for multi-post generation.
+    # prompt = f"Write a world-class high-status LinkedIn post about this: {articles_text[:6000]}"
+
     prompt = f"""
-    You are an expert legal influencer known for being extremely well-written, witty, and entertaining.
+    You are Marcus Vane, an expert legal strategist known for being authoritative, cynical, and clarity-obsessed.
     Date: {formatted_date}
     
-    Based on the following news summaries/text relating to law in {country}, create THREE distinct, engaging LinkedIn posts.
+    Based on the following news relating to law in {country}, create THREE distinct, high-status LinkedIn posts.
     
     {lang_instr}
     
-    IMPORTANT FORMATTING RULES:
-    - Do NOT use Markdown (no **, no ##, no __).
-    - Use UNICODE text for bolding (e.g., 𝗕𝗼𝗹𝗱) and italics (e.g., 𝘐𝘵𝘢𝘭𝘪𝘤𝘴) where emphasis is needed.
-    - Use Emojis freely but professionally.
+    CORE PROTOCOLS:
+    1. THE ANTI-ROBOT FILTER (CRITICAL):
+       - BANNED: {", ".join(BANNED_WORDS)}
+       - If you use these, the post is invalid. Use simple, sharp words instead.
     
-    For each post, also generate a detailed **IMAGE PROMPT** that could be used to generate a header image.
+    2. THE VIRAL SYNTAX (BRO-ETRY):
+       - Formatting: EVERY SENTENCE must be its own paragraph.
+       - Spacing: Use DOUBLE line breaks between EVERY single sentence.
     
-    The posts should be:
-    1.  **Entertaining**: Use a hook, maybe a pun.
-    2.  **Informative**: Highlight the key legal development.
-    3.  **Structured**: Use bullet points (•) and relevant hashtags.
+    3. THE HOOK:
+       - Start with a "Pattern Interrupt" or a cold open under 10 words.
     
     SOURCE TEXT:
-    {articles_text[:30000]}  # Gemini has a large context window
+    {articles_text[:30000]}
     
     OUTPUT FORMAT:
     Post 1:
-    {placeholder}
-    IMAGE PROMPT: [Detailed description of image]
+    [Viral Content]
+    IMAGE PROMPT: [Minimalist/Cinematic description]
     
     Post 2:
-    {placeholder}
-    IMAGE PROMPT: [Detailed description of image]
+    [Viral Content]
+    IMAGE PROMPT: [Minimalist/Cinematic description]
     
     Post 3:
-    {placeholder}
-    IMAGE PROMPT: [Detailed description of image]
+    [Viral Content]
+    IMAGE PROMPT: [Minimalist/Cinematic description]
     """
 
-    try:
-        # Switching to Gemini 3 Flash Preview as currently active/working
-        model = genai.GenerativeModel('models/gemini-3-flash-preview')
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        return f"Error gathering generation: {e}"
+    # Multi-Model Fallback Chain
+    models = ['models/gemini-3-flash-preview', 'models/gemini-2.5-flash-lite']
+    
+    for model_name in models:
+        try:
+            print(f"  Attempting generation with {model_name}...")
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(prompt)
+            raw_text = response.text
+            
+            # Apply 2026 Compliance Layers
+            final = apply_2026_standards(raw_text)
+            return final
+        except Exception as e:
+            print(f"  ⚠️ {model_name} failed: {e}")
+            continue
+            
+    return "Error: All models in fallback chain failed."
 
 def main():
     countries = ["Germany", "USA"]
@@ -288,7 +289,6 @@ def main():
     filename = os.path.join(output_dir, f"linkedin_posts_{timestamp}.md")
     
     with open(filename, "w", encoding="utf-8") as f:
-        final_output_utf8 = final_output # This line was in the instruction, though it's redundant
         f.write(final_output)
     print(f"\nSaved all posts to '{filename}'.")
 
