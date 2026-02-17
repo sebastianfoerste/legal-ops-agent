@@ -5,12 +5,12 @@ Purpose: Validate the business case (revenue potential) of a candidate by estima
 
 import os
 import json
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=GOOGLE_API_KEY)
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 # Revenue thresholds
 MIN_PORTABLE_REVENUE = 200_000  # €200k threshold for "Go"
@@ -82,8 +82,10 @@ def analyze_book_of_business(deal_sheet: str, candidate_name: str = "Unknown") -
     """
     
     try:
-        model = genai.GenerativeModel('models/gemini-2.5-pro-preview-05-06')
-        response = model.generate_content(full_prompt)
+        response = client.models.generate_content(
+            model='gemini-3-pro',
+            contents=full_prompt
+        )
         
         text = response.text
         if "```json" in text:

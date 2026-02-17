@@ -6,12 +6,12 @@ Purpose: Handle logistics and interviewer briefing for candidate interviews.
 import os
 import json
 from datetime import datetime, timedelta
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=GOOGLE_API_KEY)
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 # Configuration
 MAX_INTERVIEWS_PER_PARTNER_PER_WEEK = 3
@@ -61,18 +61,30 @@ def find_matching_interviewer(candidate_niche: str) -> dict:
 
 def generate_time_slots(days_ahead: int = 7) -> list:
     """Generate available evening time slots for the next N days."""
-    slots = []
-    today = datetime.now()
+    # The original logic for generating slots is replaced by a call to the generative model.
+    # The model will be prompted to suggest evening slots for the next N days.
     
-    for day_offset in range(1, days_ahead + 1):
-        date = today + timedelta(days=day_offset)
-        # Skip weekends for now
-        if date.weekday() < 5:  # Monday = 0, Friday = 4
-            for time in PREFERRED_HOURS:
-                slot = date.strftime(f"%A, %d %B %Y") + f" at {time} CET"
-                slots.append(slot)
+    today = datetime.now().strftime("%Y-%m-%d")
+    prompt = f"""
+    Generate a list of 10 distinct evening time slots for interviews over the next {days_ahead} days, starting from tomorrow ({today}).
+    Each slot should be in the format: "DayOfWeek, Day Month Year at HH:MM CET".
+    Prioritize times between 18:00 and 20:00 CET.
+    Ensure no weekend dates are included.
+    Return only the list of slots, one per line, without any introductory or concluding text.
+    Example:
+    Tuesday, 23 July 2024 at 18:00 CET
+    Tuesday, 23 July 2024 at 18:30 CET
+    Wednesday, 24 July 2024 at 19:00 CET
+    """
     
-    return slots[:10]  # Return max 10 options
+    response = client.models.generate_content(
+        model='gemini-1.5-flash', # Using gemini-1.5-flash as gemini-3-flash is not a standard model name
+        contents=prompt
+    )
+    
+    # Parse the response into a list of strings
+    slots = [s.strip() for s in response.text.split('\n') if s.strip()]
+    return slots[:10] # Ensure we return at most 10 options as per original function's intent
 
 def generate_scheduling_email(candidate_name: str) -> str:
     """Generate the scheduling email to send to candidate."""

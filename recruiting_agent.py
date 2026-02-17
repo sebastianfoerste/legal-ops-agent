@@ -1,16 +1,12 @@
 import os
-import requests
-import json
 import time
-import random
 from datetime import datetime
-from dotenv import load_dotenv
 
-# Third-party libraries
+from dotenv import load_dotenv
+from ddgs import DDGS
+from google import genai
 import trafilatura
 from bs4 import BeautifulSoup
-from ddgs import DDGS
-import google.generativeai as genai
 
 # Load environment variables
 load_dotenv()
@@ -20,7 +16,7 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 if not GOOGLE_API_KEY:
     raise ValueError("GOOGLE_API_KEY not found in .env file")
 
-genai.configure(api_key=GOOGLE_API_KEY)
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 def search_legal_news(country="USA", max_results=5):
     """
@@ -117,10 +113,11 @@ def is_relevant(text):
     """
     try:
         # Use a cheaper/faster model for this check
-        model = genai.GenerativeModel('models/gemini-flash-latest')
-        response = model.generate_content(prompt)
-        answer = response.text.strip().upper()
-        return "YES" in answer
+        response = client.models.generate_content(
+            model='gemini-3-flash',
+            contents=prompt
+        )
+        return "YES" in (response.text or "").upper()
     except Exception:
         return True # Fallback to include if check fails
 
@@ -195,8 +192,10 @@ def generate_linkedin_posts(articles_text, country):
 
     try:
         # Switching to Gemini 3 Flash Preview as currently active/working
-        model = genai.GenerativeModel('models/gemini-3-flash-preview')
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-3-flash',
+            contents=prompt
+        )
         return response.text
     except Exception as e:
         return f"Error gathering generation: {e}"
@@ -266,7 +265,5 @@ def main():
         f.write(final_output)
     print(f"\nSaved all posts to '{filename}'.")
 
-if __name__ == "__main__":
-    main()
 if __name__ == "__main__":
     main()

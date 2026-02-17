@@ -9,12 +9,12 @@ import json
 import time
 from datetime import datetime
 from ddgs import DDGS
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=GOOGLE_API_KEY)
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 # Monitoring Configuration
 REGULATORY_KEYWORDS = [
@@ -147,8 +147,10 @@ def analyze_signal(signal: dict) -> dict:
     """
     
     try:
-        model = genai.GenerativeModel('models/gemini-2.5-pro-preview-05-06')
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-1.5-pro',
+            contents=prompt
+        )
         
         text = response.text
         if "```json" in text:

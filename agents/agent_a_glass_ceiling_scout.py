@@ -5,12 +5,12 @@ Purpose: Identify high-potential candidates blocked from partnership at Tier-1 f
 
 import os
 import json
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=GOOGLE_API_KEY)
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 # Tier-1 Firm List (German Market)
 TIER_1_FIRMS = [
@@ -77,8 +77,10 @@ def analyze_profiles(profiles_text: str) -> dict:
     """
     
     try:
-        model = genai.GenerativeModel('gemini-3-pro-preview')
-        response = model.generate_content(full_prompt)
+        response = client.models.generate_content(
+            model='gemini-3-pro',
+            contents=full_prompt
+        )
         
         # Extract JSON from response
         text = response.text

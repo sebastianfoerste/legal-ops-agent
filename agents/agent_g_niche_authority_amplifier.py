@@ -5,12 +5,12 @@ Purpose: Engage with potential clients on LinkedIn by drafting thoughtful commen
 
 import os
 import json
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=GOOGLE_API_KEY)
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 # Mock CRM data - Top 50 Target CEOs (in production, this would be Salesforce)
 TARGET_CEOS = [
@@ -82,8 +82,10 @@ def analyze_and_comment(post_text: str, ceo_name: str, ceo_company: str, ceo_ind
     """
     
     try:
-        model = genai.GenerativeModel('models/gemini-2.5-pro-preview-05-06')
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-3-pro',
+            contents=prompt
+        )
         
         text = response.text
         if "```json" in text:

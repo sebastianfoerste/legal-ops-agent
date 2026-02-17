@@ -5,12 +5,12 @@ Purpose: Perform legal grunt work - review NDAs/contracts against playbook.
 
 import os
 import json
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=GOOGLE_API_KEY)
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 SYSTEM_PROMPT = """
 You are a Senior Associate at a top-tier law firm. Review the attached document.
@@ -52,8 +52,10 @@ def review_contract(contract_text: str, contract_type: str = "NDA") -> dict:
     """
     
     try:
-        model = genai.GenerativeModel('models/gemini-2.5-pro-preview-05-06')
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-3-pro',
+            contents=prompt
+        )
         
         text = response.text
         if "```json" in text:

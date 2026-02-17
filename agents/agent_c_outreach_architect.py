@@ -5,12 +5,12 @@ Purpose: Write hyper-personalized outreach messages that convert.
 
 import os
 import json
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=GOOGLE_API_KEY)
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 SYSTEM_PROMPT = """
 You are the Ghostwriter for the Managing Partner of Gunnercooke Germany. You are writing a direct message to a senior lawyer at a competitor firm.
@@ -76,8 +76,10 @@ def generate_outreach(
     """
     
     try:
-        model = genai.GenerativeModel('models/gemini-2.5-pro-preview-05-06')
-        response = model.generate_content(full_prompt)
+        response = client.models.generate_content(
+            model='gemini-3-pro',
+            contents=full_prompt
+        )
         
         text = response.text
         if "```json" in text:

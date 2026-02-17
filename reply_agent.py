@@ -1,6 +1,6 @@
 import os
 import sys
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 # Load env
@@ -9,7 +9,7 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 if not GOOGLE_API_KEY:
     raise ValueError("GOOGLE_API_KEY is missing")
 
-genai.configure(api_key=GOOGLE_API_KEY)
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 def generate_replies(input_text):
     prompt = f"""
@@ -33,8 +33,10 @@ def generate_replies(input_text):
     """
     
     try:
-        model = genai.GenerativeModel('models/gemini-3-flash-preview')
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-3-flash',
+            contents=prompt
+        )
         return response.text
     except Exception as e:
         return f"Error: {e}"
