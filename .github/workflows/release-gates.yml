@@ -56,7 +56,7 @@ jobs:
           from pathlib import Path
 
           EVENT_PATH = Path(".telemetry/events.ndjson")
-          OUT_PATH = Path("reliability_snapshot.json")
+          OUT_PATH = Path("/tmp/reliability_snapshot.json")
           events = []
           if EVENT_PATH.exists():
               for line in EVENT_PATH.read_text(encoding="utf-8").splitlines():
@@ -94,7 +94,7 @@ jobs:
           from pathlib import Path
 
           threshold = float(os.getenv("ROLLBACK_CRASH_FREE_THRESHOLD_PERCENT", "99.0"))
-          reliability = json.loads(Path("reliability_snapshot.json").read_text(encoding="utf-8"))
+          reliability = json.loads(Path("/tmp/reliability_snapshot.json").read_text(encoding="utf-8"))
           affected = []
           for item in reliability:
               if float(item.get("crash_free_sessions_percent", 100.0)) < threshold:
@@ -110,7 +110,9 @@ jobs:
                   "quality_gate_failure_count": 0,
               },
           }
-          Path("rollback_decision.json").write_text(json.dumps(decision, indent=2) + "\n", encoding="utf-8")
+          Path("/tmp/rollback_decision.json").write_text(
+              json.dumps(decision, indent=2) + "\n", encoding="utf-8"
+          )
           print(json.dumps(decision, indent=2))
           if decision["rollback_required"]:
               raise SystemExit("Rollback required by gate decision")
@@ -121,7 +123,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: legal-agent-rollback-decision
-          path: rollback_decision.json
+          path: /tmp/rollback_decision.json
           if-no-files-found: ignore
 
       - name: Ensure repository is clean
