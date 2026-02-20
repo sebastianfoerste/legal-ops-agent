@@ -123,3 +123,9 @@ jobs:
           name: legal-agent-rollback-decision
           path: rollback_decision.json
           if-no-files-found: ignore
+
+      - name: Ensure repository is clean
+        run: |
+          git status --porcelain
+          test -z "$(git status --porcelain)"
+          git diff --exit-code

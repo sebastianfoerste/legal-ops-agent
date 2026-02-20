@@ -59,3 +59,10 @@ master_orchestrator.py # Async pipeline coordinator
 - ✅ **Async refactor**: Parallel candidate processing
 - ✅ **Type safety**: Pydantic schemas for all agent data
 - ✅ **Performance**: 3-5x faster on multi-candidate batches
+
+## Run and Checks
+<!-- CODEx_RUN_CHECKS -->
+```bash
+make install
+make check
+```
