@@ -120,7 +120,7 @@ jobs:
 
       - name: Upload rollback decision artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: legal-agent-rollback-decision
           path: /tmp/rollback_decision.json
