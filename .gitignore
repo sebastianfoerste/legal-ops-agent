@@ -36,3 +36,15 @@ LinkedIn_Posts/
 # Env
 .env
 .env.local
+
+# CODEx_HYGIENE_BLOCK
+.telemetry/
+runtime_agent/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.playwright-mcp/
+.eslintcache
+*.tsbuildinfo
+*.log
