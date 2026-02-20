@@ -1,19 +1,18 @@
+import argparse
 import os
 import sys
-import argparse
 import time
 from datetime import datetime
 
 import requests
 import trafilatura
-from duckduckgo_search import DDGS
 from dotenv import load_dotenv
+from duckduckgo_search import DDGS
 from google import genai
-
+from rich.box import ROUNDED
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
-from rich.box import ROUNDED
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -21,6 +20,7 @@ if GOOGLE_API_KEY:
     client = genai.Client(api_key=GOOGLE_API_KEY)
 
 BRAVE_API_KEY = os.getenv("BRAVE_API_KEY")
+
 
 def brave_search_api(query: str):
     """Call Brave Search API directly."""
@@ -33,7 +33,7 @@ def brave_search_api(query: str):
             "https://api.search.brave.com/res/v1/web/search",
             headers=headers,
             params=params,
-            timeout=10
+            timeout=10,
         )
         if response.status_code == 200:
             return response.json()
@@ -41,15 +41,16 @@ def brave_search_api(query: str):
         print(f"Brave API error: {e}")
     return {}
 
+
 # Shared Intelligence Core
 sys.path.append("/Users/sebastian/Developer/scripts")
 try:
     from intelligence_core import BANNED_WORDS, apply_2026_standards
 except ImportError:
     BANNED_WORDS = []
+
     def apply_2026_standards(text: str) -> str:
         return text
-
 
 
 def search_legal_news(country="USA", max_results=5, topic=None):
@@ -80,11 +81,9 @@ def search_legal_news(country="USA", max_results=5, topic=None):
             ddg_results = ddgs.text(primary_query, region=region, max_results=max_results)
             if ddg_results:
                 for r in ddg_results:
-                    results.append({
-                        "title": r.get("title"),
-                        "href": r.get("href"),
-                        "body": r.get("body")
-                    })
+                    results.append(
+                        {"title": r.get("title"), "href": r.get("href"), "body": r.get("body")}
+                    )
                 msg = (
                     f" Marcus Vane Intelligence: Analyzing {len(results)} "
                     f"news items for {country}..."
@@ -102,11 +101,9 @@ def search_legal_news(country="USA", max_results=5, topic=None):
             ddg_results = ddgs.text(secondary_query, region=region, max_results=max_results)
             if ddg_results:
                 for r in ddg_results:
-                    results.append({
-                        "title": r.get("title"),
-                        "href": r.get("href"),
-                        "body": r.get("body")
-                    })
+                    results.append(
+                        {"title": r.get("title"), "href": r.get("href"), "body": r.get("body")}
+                    )
                 print(f"  ✅ DDG Broad found {len(results)} results.")
                 return results
     except Exception as e:
@@ -246,15 +243,12 @@ def generate_linkedin_posts(articles_text, country):
     """
 
     # Multi-Model Fallback Chain
-    
+
     for model_name in [country_model, "gemini-3-flash", "gemini-flash-latest"]:
         try:
             print(f"  Attempting generation with {model_name}...")
-            response = client.models.generate_content(
-                model=model_name,
-                contents=prompt
-            )
-            
+            response = client.models.generate_content(model=model_name, contents=prompt)
+
             if response.text:
                 raw_text = response.text
                 # Apply 2026 Compliance Layers
@@ -263,8 +257,9 @@ def generate_linkedin_posts(articles_text, country):
         except Exception as e:
             print(f"  ⚠️ {model_name} failed: {e}")
             continue
-            
+
     return "Error: All models in fallback chain failed."
+
 
 def show_phone_preview(posts_text):
     """Render posts in a terminal-based phone preview."""
@@ -283,119 +278,120 @@ def show_phone_preview(posts_text):
         chunks.append(current_post.strip())
 
     for i, content in enumerate(chunks):
-        title = f"Post {i+1} Preview (Mobile View)"
+        title = f"Post {i + 1} Preview (Mobile View)"
         # Strip the "Post X:" header for the panel body
         panel_body = content.split("\n", 1)[-1] if "\n" in content else content
-        
+
         console.print("\n")
-        console.print(Panel(
-            Text(panel_body),
-            title=f"[bold]📱 {title}[/]",
-            width=50,
-            padding=(1, 2),
-            border_style="bright_blue",
-            box=ROUNDED
-        ))
+        console.print(
+            Panel(
+                Text(panel_body),
+                title=f"[bold]📱 {title}[/]",
+                width=50,
+                padding=(1, 2),
+                border_style="bright_blue",
+                box=ROUNDED,
+            )
+        )
+
 
 def main():
     parser = argparse.ArgumentParser(
         description="Marcus Vane: AI Legal Strategist & Content Generator",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
-        "--countries", 
-        nargs="+", 
-        default=["Germany", "USA"], 
-        help="List of countries to process news for"
+        "--countries",
+        nargs="+",
+        default=["Germany", "USA"],
+        help="List of countries to process news for",
     )
     parser.add_argument(
-        "--max-results", 
-        type=int, 
-        default=5, 
-        help="Max news results to scrape per country"
+        "--max-results", type=int, default=5, help="Max news results to scrape per country"
     )
     parser.add_argument(
-        "--interactive", 
-        action="store_true", 
-        help="Run in interactive mode, prompting for country details"
+        "--interactive",
+        action="store_true",
+        help="Run in interactive mode, prompting for country details",
     )
     parser.add_argument(
         "--topic",
         type=str,
         default=None,
-        help="Specific legal topic to newsjack (e.g. 'Insolvency')"
+        help="Specific legal topic to newsjack (e.g. 'Insolvency')",
     )
-    
+
     args = parser.parse_args()
-    
+
     countries = args.countries
     if args.interactive:
         print("\n--- 🕵️ Marcus Vane Interactive Mode ---")
         user_input = input("Enter countries separated by space (default: Germany USA): ").strip()
         if user_input:
             countries = user_input.split()
-            
+
     final_output = ""
-    
+
     for country in countries:
         print(f"\n--- 🌍 Processing {country} ---")
-        
+
         # 1. Search
         search_results = search_legal_news(country, max_results=args.max_results, topic=args.topic)
         if not search_results:
             print(f"  ⚠️ No results found for {country}.")
             continue
-            
+
         print(f"  Found {len(search_results)} URLs initially.")
-        
+
         # 2. Scrape & Filter
         aggregated_content = ""
         valid_count = 0
-        
+
         for res in search_results:
             print(f"  🔍 Scraping: {res['href']}")
-            text = scrape_content(res['href'])
-            
+            text = scrape_content(res["href"])
+
             if text:
                 # Relevance Check
                 print("  ✅ Generating Strategy...")
                 if is_relevant(text):
                     print("    Checking relevance...")
-                    title = res.get('title') or "Legal News Article"
+                    title = res.get("title") or "Legal News Article"
                     aggregated_content += f"\n\n--- Source: {title} ---\n{text[:3000]}"
                     valid_count += 1
                 else:
                     print("    ❌ Not relevant (skipped)")
             else:
                 print("    ⚠️ Failed to extract text.")
-                
+
             if valid_count >= 3:
                 break
-        
+
         if not aggregated_content:
             print("  ⚠️ No relevant content could be scraped.")
             continue
-            
+
         # 3. Generate
         posts = generate_linkedin_posts(aggregated_content, country)
-        
+
         print("\n=== ✨ GENERATED POSTS ===")
         show_phone_preview(posts)
-        
+
         final_output += f"# {country}\n\n{posts}\n\n"
-        
+
     if final_output:
         # Save to file with timestamp in subfolder
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         output_dir = "LinkedIn_Posts"
         os.makedirs(output_dir, exist_ok=True)
         filename = os.path.join(output_dir, f"linkedin_posts_{timestamp}.md")
-        
+
         with open(filename, "w", encoding="utf-8") as f:
             f.write(final_output)
         print(f"\n✅ Saved all posts to '{filename}'.")
     else:
         print("\n⚠️ No content generated.")
+
 
 if __name__ == "__main__":
     main()

@@ -4,10 +4,10 @@ Purpose: Handle logistics and interviewer briefing for candidate interviews.
 """
 
 import os
-import json
-from datetime import datetime, timedelta
-from google import genai
+from datetime import datetime
+
 from dotenv import load_dotenv
+from google import genai
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -24,7 +24,11 @@ PARTNER_DATABASE = {
         {"name": "Lisa Hoffmann", "specialty": "FinTech/DeFi", "interviews_this_week": 2},
     ],
     "restructuring": [
-        {"name": "Dr. Klaus Müller", "specialty": "Restructuring/Insolvency", "interviews_this_week": 0},
+        {
+            "name": "Dr. Klaus Müller",
+            "specialty": "Restructuring/Insolvency",
+            "interviews_this_week": 0,
+        },
         {"name": "Anna Weber", "specialty": "Distressed M&A", "interviews_this_week": 3},
     ],
     "m&a": [
@@ -32,8 +36,9 @@ PARTNER_DATABASE = {
     ],
     "employment": [
         {"name": "Dr. Sarah Klein", "specialty": "Employment Law", "interviews_this_week": 2},
-    ]
+    ],
 }
+
 
 def find_matching_interviewer(candidate_niche: str) -> dict:
     """
@@ -41,29 +46,36 @@ def find_matching_interviewer(candidate_niche: str) -> dict:
     Checks interviewer load to ensure no partner does >3 interviews/week.
     """
     niche_key = candidate_niche.lower()
-    
+
     # Try exact match first
     for key in PARTNER_DATABASE:
         if key in niche_key or niche_key in key:
             partners = PARTNER_DATABASE[key]
-            available = [p for p in partners if p['interviews_this_week'] < MAX_INTERVIEWS_PER_PARTNER_PER_WEEK]
+            available = [
+                p
+                for p in partners
+                if p["interviews_this_week"] < MAX_INTERVIEWS_PER_PARTNER_PER_WEEK
+            ]
             if available:
                 # Return the one with lowest load
-                return min(available, key=lambda x: x['interviews_this_week'])
-    
+                return min(available, key=lambda x: x["interviews_this_week"])
+
     # Fallback: return any available partner
-    for key, partners in PARTNER_DATABASE.items():
-        available = [p for p in partners if p['interviews_this_week'] < MAX_INTERVIEWS_PER_PARTNER_PER_WEEK]
+    for _key, partners in PARTNER_DATABASE.items():
+        available = [
+            p for p in partners if p["interviews_this_week"] < MAX_INTERVIEWS_PER_PARTNER_PER_WEEK
+        ]
         if available:
-            return min(available, key=lambda x: x['interviews_this_week'])
-    
+            return min(available, key=lambda x: x["interviews_this_week"])
+
     return None
+
 
 def generate_time_slots(days_ahead: int = 7) -> list:
     """Generate available evening time slots for the next N days."""
     # The original logic for generating slots is replaced by a call to the generative model.
     # The model will be prompted to suggest evening slots for the next N days.
-    
+
     today = datetime.now().strftime("%Y-%m-%d")
     prompt = f"""
     Generate a list of 10 distinct evening time slots for interviews over the next {days_ahead} days, starting from tomorrow ({today}).
@@ -76,20 +88,21 @@ def generate_time_slots(days_ahead: int = 7) -> list:
     Tuesday, 23 July 2024 at 18:30 CET
     Wednesday, 24 July 2024 at 19:00 CET
     """
-    
+
     response = client.models.generate_content(
-        model='gemini-1.5-flash', # Using gemini-1.5-flash as gemini-3-flash is not a standard model name
-        contents=prompt
+        model="gemini-1.5-flash",  # Using gemini-1.5-flash as gemini-3-flash is not a standard model name
+        contents=prompt,
     )
-    
+
     # Parse the response into a list of strings
-    slots = [s.strip() for s in response.text.split('\n') if s.strip()]
-    return slots[:10] # Ensure we return at most 10 options as per original function's intent
+    slots = [s.strip() for s in response.text.split("\n") if s.strip()]
+    return slots[:10]  # Ensure we return at most 10 options as per original function's intent
+
 
 def generate_scheduling_email(candidate_name: str) -> str:
     """Generate the scheduling email to send to candidate."""
     slots = generate_time_slots()
-    
+
     email = f"""
 Dear {candidate_name},
 
@@ -100,7 +113,7 @@ To ensure complete discretion, we prefer evening meetings. Please let me know wh
 """
     for i, slot in enumerate(slots, 1):
         email += f"  {i}. {slot}\n"
-    
+
     email += """
 The call will be a relaxed 30-minute virtual coffee – no formal interview structure. We simply want to understand your goals and share how our model works.
 
@@ -112,6 +125,7 @@ Gunnercooke Germany
 """
     return email
 
+
 def generate_briefing_dossier(
     candidate_name: str,
     current_firm: str,
@@ -119,14 +133,14 @@ def generate_briefing_dossier(
     frustration_score: int,
     frustration_reasons: str,
     portable_revenue: float,
-    interviewer_name: str
+    interviewer_name: str,
 ) -> str:
     """
     Generate a Briefing Dossier for the interviewer.
-    
+
     Includes Frustration Score from Agent A and Revenue Estimate from Agent B.
     """
-    
+
     dossier = f"""
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                         CONFIDENTIAL BRIEFING DOSSIER                        ║
@@ -144,7 +158,7 @@ def generate_briefing_dossier(
 
 📊 AGENT A: FRUSTRATION SCORE
 ───────────────────────────────────────────────────────────────────────────────
-  Score: {frustration_score}/100 {'🔥🔥🔥' if frustration_score > 80 else '🔥🔥' if frustration_score > 60 else '🔥'}
+  Score: {frustration_score}/100 {"🔥🔥🔥" if frustration_score > 80 else "🔥🔥" if frustration_score > 60 else "🔥"}
   
   Reasons:
   {frustration_reasons}
@@ -152,7 +166,7 @@ def generate_briefing_dossier(
 💰 AGENT B: REVENUE ESTIMATE
 ───────────────────────────────────────────────────────────────────────────────
   Estimated Portable Revenue: €{portable_revenue:,.0f}
-  Assessment: {'✅ GO (>€200k)' if portable_revenue >= 200000 else '⚠️ BORDERLINE' if portable_revenue >= 150000 else '❌ BELOW THRESHOLD'}
+  Assessment: {"✅ GO (>€200k)" if portable_revenue >= 200000 else "⚠️ BORDERLINE" if portable_revenue >= 150000 else "❌ BELOW THRESHOLD"}
 
 🎯 INTERVIEW GUIDANCE
 ───────────────────────────────────────────────────────────────────────────────
@@ -186,10 +200,10 @@ def generate_briefing_dossier(
 
 class SchedulingConcierge:
     """Main class for Agent D functionality."""
-    
+
     def __init__(self):
         self.pending_interviews = []
-    
+
     def process_acceptance(
         self,
         candidate_name: str,
@@ -198,21 +212,21 @@ class SchedulingConcierge:
         practice_area: str,
         frustration_score: int,
         frustration_reasons: str,
-        portable_revenue: float
+        portable_revenue: float,
     ) -> dict:
         """
         Process when a candidate accepts an interview request.
-        
+
         Returns scheduling email and briefing dossier.
         """
         # Task 1: Find matching interviewer
         interviewer = find_matching_interviewer(practice_area)
         if not interviewer:
             return {"error": "No available interviewers for this niche"}
-        
+
         # Task 2: Generate scheduling email
         scheduling_email = generate_scheduling_email(candidate_name)
-        
+
         # Task 3: Generate briefing dossier
         briefing = generate_briefing_dossier(
             candidate_name=candidate_name,
@@ -221,14 +235,14 @@ class SchedulingConcierge:
             frustration_score=frustration_score,
             frustration_reasons=frustration_reasons,
             portable_revenue=portable_revenue,
-            interviewer_name=interviewer['name']
+            interviewer_name=interviewer["name"],
         )
-        
+
         return {
             "status": "success",
             "interviewer": interviewer,
             "scheduling_email": scheduling_email,
-            "briefing_dossier": briefing
+            "briefing_dossier": briefing,
         }
 
 
@@ -237,9 +251,9 @@ if __name__ == "__main__":
     print("=" * 80)
     print("AGENT D: SCHEDULING CONCIERGE")
     print("=" * 80)
-    
+
     concierge = SchedulingConcierge()
-    
+
     # Simulate candidate acceptance (data would come from Agent A & B)
     result = concierge.process_acceptance(
         candidate_name="Dr. Marcus Weber",
@@ -248,19 +262,21 @@ if __name__ == "__main__":
         practice_area="Restructuring",
         frustration_score=85,
         frustration_reasons="Counsel for 6 years at Tier-1 firm; Lead on major deals but not Partner; Up-or-Out policy",
-        portable_revenue=280000
+        portable_revenue=280000,
     )
-    
+
     if result["status"] == "success":
         print(f"\n✅ Matched with Interviewer: {result['interviewer']['name']}")
         print(f"   Specialty: {result['interviewer']['specialty']}")
-        print(f"   Current Load: {result['interviewer']['interviews_this_week']}/{MAX_INTERVIEWS_PER_PARTNER_PER_WEEK} interviews this week")
-        
+        print(
+            f"   Current Load: {result['interviewer']['interviews_this_week']}/{MAX_INTERVIEWS_PER_PARTNER_PER_WEEK} interviews this week"
+        )
+
         print("\n" + "=" * 80)
         print("📧 SCHEDULING EMAIL (Send to Candidate)")
         print("=" * 80)
         print(result["scheduling_email"])
-        
+
         print("\n" + "=" * 80)
         print("📋 BRIEFING DOSSIER (Send to Interviewer)")
         print("=" * 80)

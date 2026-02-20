@@ -1,7 +1,8 @@
 import os
 import sys
-from google import genai
+
 from dotenv import load_dotenv
+from google import genai
 
 # Load env
 load_dotenv()
@@ -10,6 +11,7 @@ if not GOOGLE_API_KEY:
     raise ValueError("GOOGLE_API_KEY is missing")
 
 client = genai.Client(api_key=GOOGLE_API_KEY)
+
 
 def generate_replies(input_text):
     prompt = f"""
@@ -31,15 +33,13 @@ def generate_replies(input_text):
     Option 2 (Challenge): [Comment]
     Option 3 (Question): [Comment]
     """
-    
+
     try:
-        response = client.models.generate_content(
-            model='gemini-3-flash',
-            contents=prompt
-        )
+        response = client.models.generate_content(model="gemini-3-flash", contents=prompt)
         return response.text
     except Exception as e:
         return f"Error: {e}"
+
 
 if __name__ == "__main__":
     print("--- LinkedIn Reply Generator ---")
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     else:
         print("Please paste the text of the post you want to comment on (Ctrl+D to finish):")
         text = sys.stdin.read()
-        
+
     replies = generate_replies(text)
     print("\n=== GENERATED REPLIES ===\n")
     print(replies)

@@ -1,6 +1,8 @@
-import os
 import glob
+import os
+
 from jinja2 import Template
+
 
 def generate_newsletter():
     # 1. Find the latest Markdown post files
@@ -8,16 +10,16 @@ def generate_newsletter():
     files = glob.glob(os.path.join(post_dir, "*.md"))
     # Sort by time desc
     files.sort(key=os.path.getmtime, reverse=True)
-    
+
     if not files:
         print("No post files found to generate newsletter.")
         return
 
     latest_files = files[:3]
     print(f"Aggregating {len(latest_files)} latest post collections for newsletter.")
-    
+
     content_html = ""
-    
+
     for fpath in latest_files:
         with open(fpath, "r", encoding="utf-8") as f:
             content = f.read()
@@ -52,14 +54,15 @@ def generate_newsletter():
     </body>
     </html>
     """)
-    
+
     final_html = template.render(content=content_html)
-    
+
     output_path = "LinkedIn_Posts/newsletter_digest.html"
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(final_html)
-        
+
     print(f"Newsletter generated at: {output_path}")
+
 
 if __name__ == "__main__":
     generate_newsletter()

@@ -2,11 +2,10 @@ import os
 import time
 from datetime import datetime
 
-from dotenv import load_dotenv
-from ddgs import DDGS
-from google import genai
 import trafilatura
-from bs4 import BeautifulSoup
+from ddgs import DDGS
+from dotenv import load_dotenv
+from google import genai
 
 # Load environment variables
 load_dotenv()
@@ -18,6 +17,7 @@ if not GOOGLE_API_KEY:
 
 client = genai.Client(api_key=GOOGLE_API_KEY)
 
+
 def search_legal_news(country="USA", max_results=5):
     """
     Search for latest legal news using DuckDuckGo (Steps 1 & 2) and Brave Search (Fallback).
@@ -28,18 +28,15 @@ def search_legal_news(country="USA", max_results=5):
         primary_query = "site:lto.de OR site:juve.de aktuelle jura nachrichten"
         # 2. DuckDuckGo Broad
         secondary_query = "aktuelle jura nachrichten deutschland anwalt rechtsprechung"
-        # 3. Brave Fallback
-        fallback_query = "aktuelle jura nachrichten deutschland anwalt"
         region = "de-de"
     else:
         primary_query = "site:abajournal.com OR site:law.com legal news United States"
         secondary_query = "legal news headlines United States"
-        fallback_query = "legal news headlines United States"
         region = "us-en"
-    
+
     print(f"Searching for legal news in {country}...")
     results = []
-    
+
     # --- 1. Primary: DuckDuckGo Specific ---
     print(f"Attempting Primary Search (DDG Specific): {primary_query}")
     try:
@@ -47,11 +44,9 @@ def search_legal_news(country="USA", max_results=5):
             ddg_results = ddgs.text(primary_query, region=region, max_results=max_results)
             if ddg_results:
                 for r in ddg_results:
-                    results.append({
-                        "title": r.get("title"),
-                        "href": r.get("href"),
-                        "body": r.get("body")
-                    })
+                    results.append(
+                        {"title": r.get("title"), "href": r.get("href"), "body": r.get("body")}
+                    )
                 print(f"  ✅ DDG Specific found {len(results)} results.")
                 return results
             else:
@@ -68,20 +63,19 @@ def search_legal_news(country="USA", max_results=5):
             ddg_results = ddgs.text(secondary_query, region=region, max_results=max_results)
             if ddg_results:
                 for r in ddg_results:
-                     results.append({
-                        "title": r.get("title"),
-                        "href": r.get("href"),
-                        "body": r.get("body")
-                    })
+                    results.append(
+                        {"title": r.get("title"), "href": r.get("href"), "body": r.get("body")}
+                    )
                 print(f"  ✅ DDG Broad found {len(results)} results.")
                 return results
             else:
                 print("  ⚠️ DDG Broad returned no results.")
     except Exception as e:
         print(f"  ❌ DDG Broad failed: {e}")
-    
+
     # Removed brittle Brave fallback to prevent hanging
     return results
+
 
 def scrape_content(url):
     """
@@ -97,13 +91,14 @@ def scrape_content(url):
         print(f"Error scraping {url}: {e}")
         return None
 
+
 def is_relevant(text):
     """
     Check if the article is a significant legal development using a cheap model.
     """
     if not text or len(text) < 200:
         return False
-        
+
     prompt = f"""
     Is this article about a significant legal development? 
     Answer ONLY with YES or NO.
@@ -113,20 +108,18 @@ def is_relevant(text):
     """
     try:
         # Use a cheaper/faster model for this check
-        response = client.models.generate_content(
-            model='gemini-3-flash',
-            contents=prompt
-        )
+        response = client.models.generate_content(model="gemini-3-flash", contents=prompt)
         return "YES" in (response.text or "").upper()
     except Exception:
-        return True # Fallback to include if check fails
+        return True  # Fallback to include if check fails
+
 
 def generate_linkedin_posts(articles_text, country):
     """
     Generate LinkedIn posts using Gemini.
     """
     print(f"Generating posts for {country}...")
-    
+
     # Determine language based on country
     if country.lower() in ["germany", "de"]:
         lang_instr = "IMPORTANT: The output must be in **GERMAN**."
@@ -134,7 +127,7 @@ def generate_linkedin_posts(articles_text, country):
     else:
         lang_instr = "IMPORTANT: The output must be in **ENGLISH**."
         placeholder = "[Content in English]"
-    
+
     formatted_date = datetime.now().strftime("%Y-%m-%d")
 
     prompt = f"""
@@ -192,78 +185,80 @@ def generate_linkedin_posts(articles_text, country):
 
     try:
         # Switching to Gemini 3 Flash Preview as currently active/working
-        response = client.models.generate_content(
-            model='gemini-3-flash',
-            contents=prompt
-        )
+        response = client.models.generate_content(model="gemini-3-flash", contents=prompt)
         return response.text
     except Exception as e:
         return f"Error gathering generation: {e}"
 
+
 def main():
     countries = ["Germany", "USA"]
-    
+
     final_output = ""
-    
+
     for country in countries:
         print(f"\n--- Processing {country} ---")
-        
+
         # 1. Search
-        search_results = search_legal_news(country, max_results=5) # Increased to 5 to allow filtering
+        search_results = search_legal_news(
+            country, max_results=5
+        )  # Increased to 5 to allow filtering
         if not search_results:
             print(f"No results found for {country}.")
             continue
-            
+
         print(f"Found {len(search_results)} URLs initially.")
-        
+
         # 2. Scrape & Filter
         aggregated_content = ""
         valid_count = 0
-        
+
         for res in search_results:
             print(f"Scraping: {res['href']}")
-            text = scrape_content(res['href'])
-            
+            text = scrape_content(res["href"])
+
             if text:
                 # Relevance Check
                 print("  Checking relevance...")
                 if is_relevant(text):
                     print("  ✅ Relevant")
                     # Use title placeholder if real title extraction failed
-                    title = res.get('title') or "Legal News Article"
-                    aggregated_content += f"\n\n--- Source: {title} ---\n{text[:3000]}" # Limit text per article
+                    title = res.get("title") or "Legal News Article"
+                    aggregated_content += (
+                        f"\n\n--- Source: {title} ---\n{text[:3000]}"  # Limit text per article
+                    )
                     valid_count += 1
                 else:
                     print("  ❌ Not relevant (skipped)")
             else:
                 print("  Failed to extract text.")
-                
+
             # Stop if we have enough good content (e.g., 3 good articles)
             if valid_count >= 3:
                 break
-        
+
         if not aggregated_content:
             print("No relevant content could be scraped.")
             continue
-            
+
         # 3. Generate
         posts = generate_linkedin_posts(aggregated_content, country)
-        
+
         print("\n=== GENERATED POSTS ===")
         print(posts)
-        
+
         final_output += f"# {country}\n\n{posts}\n\n"
-        
+
     # Save to file with timestamp in subfolder
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     output_dir = "LinkedIn_Posts"
     os.makedirs(output_dir, exist_ok=True)
     filename = os.path.join(output_dir, f"linkedin_posts_{timestamp}.md")
-    
+
     with open(filename, "w", encoding="utf-8") as f:
-        final_output_utf8 = final_output # This line was in the instruction, though it's redundant
         f.write(final_output)
     print(f"\nSaved all posts to '{filename}'.")
+
 
 if __name__ == "__main__":
     main()

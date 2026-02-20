@@ -3,10 +3,11 @@ Agent B: The "Rainmaker" Profiler
 Purpose: Validate the business case (revenue potential) of a candidate by estimating their Portable Book of Business.
 """
 
-import os
 import json
-from google import genai
+import os
+
 from dotenv import load_dotenv
+from google import genai
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -58,18 +59,19 @@ Output Format - Return a JSON object:
 }
 """
 
+
 def analyze_book_of_business(deal_sheet: str, candidate_name: str = "Unknown") -> dict:
     """
     Analyzes a lawyer's deal sheet or biography to estimate portable revenue.
-    
+
     Args:
         deal_sheet: Raw text containing their deals, clients, and matters
         candidate_name: Name of the candidate
-    
+
     Returns:
         Business case memo as JSON
     """
-    
+
     full_prompt = f"""
     {SYSTEM_PROMPT}
     
@@ -80,19 +82,16 @@ def analyze_book_of_business(deal_sheet: str, candidate_name: str = "Unknown") -
     
     Provide your analysis as valid JSON. Be conservative in your estimates.
     """
-    
+
     try:
-        response = client.models.generate_content(
-            model='gemini-3-pro',
-            contents=full_prompt
-        )
-        
+        response = client.models.generate_content(model="gemini-3-pro", contents=full_prompt)
+
         text = response.text
         if "```json" in text:
             text = text.split("```json")[1].split("```")[0]
         elif "```" in text:
             text = text.split("```")[1].split("```")[0]
-            
+
         result = json.loads(text.strip())
         return result
     except json.JSONDecodeError:
@@ -100,19 +99,20 @@ def analyze_book_of_business(deal_sheet: str, candidate_name: str = "Unknown") -
     except Exception as e:
         return {"error": str(e)}
 
+
 def generate_business_case_memo(analysis: dict) -> str:
     """
     Generates a human-readable Business Case Memo from the analysis.
     """
     if "error" in analysis:
         return f"Error in analysis: {analysis['error']}"
-    
-    name = analysis.get('candidate_name', 'Unknown')
-    total_portable = analysis.get('total_portable_revenue', 0)
-    recommendation = analysis.get('recommendation', 'UNKNOWN')
-    reasoning = analysis.get('reasoning', '')
-    clients = analysis.get('clients', [])
-    
+
+    name = analysis.get("candidate_name", "Unknown")
+    total_portable = analysis.get("total_portable_revenue", 0)
+    recommendation = analysis.get("recommendation", "UNKNOWN")
+    reasoning = analysis.get("reasoning", "")
+    clients = analysis.get("clients", [])
+
     memo = f"""
 ╔══════════════════════════════════════════════════════════════════╗
 ║                    BUSINESS CASE MEMO                            ║
@@ -124,24 +124,24 @@ def generate_business_case_memo(analysis: dict) -> str:
 📊 REVENUE ANALYSIS
 ───────────────────────────────────────────────────────────────────
 """
-    
+
     for client in clients:
-        client_type = "🏢" if client.get('type') == 'Institutional' else "🤝"
+        client_type = "🏢" if client.get("type") == "Institutional" else "🤝"
         memo += f"""
-{client_type} {client.get('name', 'Unknown Client')}
-   Type: {client.get('type', 'Unknown')}
-   Est. Hours/Year: {client.get('estimated_hours_per_year', 0):,}
-   Gross Revenue: €{client.get('gross_revenue', 0):,.0f}
-   Portability: {client.get('portability_factor', 0):.0%}
-   → Portable Revenue: €{client.get('portable_revenue', 0):,.0f}
+{client_type} {client.get("name", "Unknown Client")}
+   Type: {client.get("type", "Unknown")}
+   Est. Hours/Year: {client.get("estimated_hours_per_year", 0):,}
+   Gross Revenue: €{client.get("gross_revenue", 0):,.0f}
+   Portability: {client.get("portability_factor", 0):.0%}
+   → Portable Revenue: €{client.get("portable_revenue", 0):,.0f}
 """
-    
+
     memo += f"""
 ───────────────────────────────────────────────────────────────────
 💰 TOTAL PORTABLE REVENUE: €{total_portable:,.0f}
    Threshold: €200,000
 
-{'✅' if recommendation == 'GO' else '❌'} RECOMMENDATION: {recommendation}
+{"✅" if recommendation == "GO" else "❌"} RECOMMENDATION: {recommendation}
 
 📝 REASONING:
 {reasoning}
@@ -154,37 +154,37 @@ def generate_business_case_memo(analysis: dict) -> str:
 def estimate_portable_revenue_manual(clients: list) -> dict:
     """
     Manual calculation if you have structured client data.
-    
+
     Args:
         clients: List of dicts with keys: name, type ('Institutional'/'Relationship'), hours_per_year
-    
+
     Returns:
         Summary dict
     """
     total_gross = 0
     total_portable = 0
-    
+
     for client in clients:
-        hours = client.get('hours_per_year', 0)
+        hours = client.get("hours_per_year", 0)
         gross = hours * HOURLY_RATE
-        
-        if client.get('type') == 'Institutional':
+
+        if client.get("type") == "Institutional":
             portable = gross * (1 - INSTITUTIONAL_DISCOUNT)
         else:
             portable = gross * (1 - RELATIONSHIP_DISCOUNT)
-        
-        client['gross_revenue'] = gross
-        client['portable_revenue'] = portable
-        
+
+        client["gross_revenue"] = gross
+        client["portable_revenue"] = portable
+
         total_gross += gross
         total_portable += portable
-    
+
     return {
         "clients": clients,
         "total_gross_revenue": total_gross,
         "total_portable_revenue": total_portable,
         "recommendation": "GO" if total_portable >= MIN_PORTABLE_REVENUE else "NO GO",
-        "reasoning": f"Portable revenue of €{total_portable:,.0f} {'exceeds' if total_portable >= MIN_PORTABLE_REVENUE else 'is below'} €200k threshold."
+        "reasoning": f"Portable revenue of €{total_portable:,.0f} {'exceeds' if total_portable >= MIN_PORTABLE_REVENUE else 'is below'} €200k threshold.",
     }
 
 
@@ -225,16 +225,16 @@ if __name__ == "__main__":
     
     Chambers & Partners: "A technically excellent lawyer who clients trust implicitly."
     """
-    
+
     print("=" * 70)
     print("AGENT B: RAINMAKER PROFILER")
     print("=" * 70)
     print("\nAnalyzing Portable Book of Business...\n")
-    
+
     analysis = analyze_book_of_business(sample_deal_sheet, "Dr. Marcus Weber")
     memo = generate_business_case_memo(analysis)
     print(memo)
-    
+
     # Also save the raw JSON
     print("\n--- RAW JSON ANALYSIS ---")
     print(json.dumps(analysis, indent=2, ensure_ascii=False))
