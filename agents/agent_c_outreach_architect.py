@@ -3,10 +3,11 @@ Agent C: The Outreach Architect
 Purpose: Write hyper-personalized outreach messages that convert.
 """
 
-import os
 import json
-from google import genai
+import os
+
 from dotenv import load_dotenv
+from google import genai
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -40,27 +41,28 @@ Return a JSON object:
 Keep the total message (body + P.S.) under 100 words.
 """
 
+
 def generate_outreach(
     candidate_name: str,
     current_firm: str,
     recent_achievement: str,
     practice_area: str,
-    sender_name: str = "Managing Partner"
+    sender_name: str = "Managing Partner",
 ) -> dict:
     """
     Generates a hyper-personalized outreach message.
-    
+
     Args:
         candidate_name: Name of the target candidate
         current_firm: Their current firm
         recent_achievement: A specific deal, award, or publication to reference
         practice_area: Their specialty
         sender_name: Name of the sender (Gunnercooke partner)
-    
+
     Returns:
         JSON with message components
     """
-    
+
     full_prompt = f"""
     {SYSTEM_PROMPT}
     
@@ -74,19 +76,16 @@ def generate_outreach(
     
     Generate the outreach message as valid JSON. Remember: max 100 words total, peer-to-peer tone, reference the Netto-Rechner.
     """
-    
+
     try:
-        response = client.models.generate_content(
-            model='gemini-3-pro',
-            contents=full_prompt
-        )
-        
+        response = client.models.generate_content(model="gemini-3-pro", contents=full_prompt)
+
         text = response.text
         if "```json" in text:
             text = text.split("```json")[1].split("```")[0]
         elif "```" in text:
             text = text.split("```")[1].split("```")[0]
-            
+
         result = json.loads(text.strip())
         return result
     except json.JSONDecodeError:
@@ -94,23 +93,24 @@ def generate_outreach(
     except Exception as e:
         return {"error": str(e)}
 
+
 def format_linkedin_message(outreach: dict) -> str:
     """Formats the outreach for copy-paste into LinkedIn."""
     if "error" in outreach:
         return f"Error: {outreach['error']}"
-    
+
     return f"""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📧 LINKEDIN MESSAGE (Copy-Paste Ready)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-{outreach.get('message_body', '')}
+{outreach.get("message_body", "")}
 
-{outreach.get('ps_line', '')}
+{outreach.get("ps_line", "")}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 Stats: {outreach.get('character_count', 'N/A')} characters
-📌 Subject (if email): {outreach.get('subject_line', 'N/A')}
+📊 Stats: {outreach.get("character_count", "N/A")} characters
+📌 Subject (if email): {outreach.get("subject_line", "N/A")}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
 
@@ -119,25 +119,19 @@ def format_linkedin_message(outreach: dict) -> str:
 def generate_batch_outreach(candidates: list) -> list:
     """
     Generate outreach for multiple candidates.
-    
+
     Args:
         candidates: List of dicts with keys: name, firm, achievement, practice_area
-    
+
     Returns:
         List of outreach messages
     """
     results = []
     for c in candidates:
         outreach = generate_outreach(
-            c.get('name'),
-            c.get('firm'),
-            c.get('achievement'),
-            c.get('practice_area')
+            c.get("name"), c.get("firm"), c.get("achievement"), c.get("practice_area")
         )
-        results.append({
-            "candidate": c.get('name'),
-            "outreach": outreach
-        })
+        results.append({"candidate": c.get("name"), "outreach": outreach})
     return results
 
 
@@ -146,17 +140,17 @@ if __name__ == "__main__":
     print("=" * 70)
     print("AGENT C: OUTREACH ARCHITECT")
     print("=" * 70)
-    
+
     # Example candidate from Agent A's output
     outreach = generate_outreach(
         candidate_name="Dr. Marcus Weber",
         current_firm="Hengeler Mueller",
         recent_achievement="Lead advisory role on the €120m restructuring of a major German retail group in 2024",
         practice_area="Restructuring & Insolvency",
-        sender_name="Sebastian Förster"
+        sender_name="Sebastian Förster",
     )
-    
+
     print(format_linkedin_message(outreach))
-    
+
     print("\n--- RAW JSON ---")
     print(json.dumps(outreach, indent=2, ensure_ascii=False))

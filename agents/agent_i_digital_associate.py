@@ -3,10 +3,11 @@ Agent I: The "Digital Associate"
 Purpose: Perform legal grunt work - review NDAs/contracts against playbook.
 """
 
-import os
 import json
-from google import genai
+import os
+
 from dotenv import load_dotenv
+from google import genai
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -37,9 +38,10 @@ CONSTRAINT: Be commercially pragmatic. Do NOT flag minor stylistic issues.
 Focus on: unlimited liability, broad indemnities, IP assignment, non-compete, termination rights.
 """
 
+
 def review_contract(contract_text: str, contract_type: str = "NDA") -> dict:
     """Review a contract and generate a Red Flag Report."""
-    
+
     prompt = f"""
     {SYSTEM_PROMPT}
     
@@ -50,52 +52,56 @@ def review_contract(contract_text: str, contract_type: str = "NDA") -> dict:
     
     Generate the Red Flag Report as valid JSON.
     """
-    
+
     try:
-        response = client.models.generate_content(
-            model='gemini-3-pro',
-            contents=prompt
-        )
-        
+        response = client.models.generate_content(model="gemini-3-pro", contents=prompt)
+
         text = response.text
         if "```json" in text:
             text = text.split("```json")[1].split("```")[0]
         elif "```" in text:
             text = text.split("```")[1].split("```")[0]
-        
+
         return json.loads(text.strip())
     except Exception as e:
         return {"error": str(e)}
+
 
 def format_red_flag_report(report: dict) -> str:
     """Format the report for display."""
     if "error" in report:
         return f"Error: {report['error']}"
-    
+
     output = f"""
 ╔══════════════════════════════════════════════════════════════════╗
 ║                    RED FLAG REPORT                               ║
 ║                    Agent I: Digital Associate                    ║
 ╠══════════════════════════════════════════════════════════════════╣
-║ Document: {report.get('document_type', 'Unknown'):<52} ║
-║ Overall Risk: {report.get('overall_risk', 'Unknown'):<48} ║
+║ Document: {report.get("document_type", "Unknown"):<52} ║
+║ Overall Risk: {report.get("overall_risk", "Unknown"):<48} ║
 ╠══════════════════════════════════════════════════════════════════╣
 
 📋 SUMMARY:
-{report.get('summary', 'No summary')}
+{report.get("summary", "No summary")}
 
 🚩 RED FLAGS:
 """
-    
-    for i, flag in enumerate(report.get('red_flags', []), 1):
-        risk_icon = "🔴" if flag['risk_level'] == 'HIGH' else "🟡" if flag['risk_level'] == 'MEDIUM' else "🟢"
+
+    for i, flag in enumerate(report.get("red_flags", []), 1):
+        risk_icon = (
+            "🔴"
+            if flag["risk_level"] == "HIGH"
+            else "🟡"
+            if flag["risk_level"] == "MEDIUM"
+            else "🟢"
+        )
         output += f"""
-{risk_icon} #{i}: {flag['clause']} [{flag['risk_level']}]
-   Current: "{flag.get('current_text', 'N/A')[:100]}..."
-   Fix: "{flag.get('suggested_edit', 'N/A')[:100]}..."
-   Why: {flag.get('explanation', 'N/A')}
+{risk_icon} #{i}: {flag["clause"]} [{flag["risk_level"]}]
+   Current: "{flag.get("current_text", "N/A")[:100]}..."
+   Fix: "{flag.get("suggested_edit", "N/A")[:100]}..."
+   Why: {flag.get("explanation", "N/A")}
 """
-    
+
     return output
 
 
@@ -121,10 +127,10 @@ if __name__ == "__main__":
     5. LIMITATION OF LIABILITY
     [Intentionally left blank]
     """
-    
+
     print("=" * 70)
     print("AGENT I: DIGITAL ASSOCIATE")
     print("=" * 70)
-    
+
     report = review_contract(sample_nda, "Mutual NDA")
     print(format_red_flag_report(report))

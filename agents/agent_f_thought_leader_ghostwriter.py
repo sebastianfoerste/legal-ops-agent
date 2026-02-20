@@ -3,10 +3,11 @@ Agent F: The "Thought Leader" Ghostwriter
 Purpose: Turn signals from Agent E into LinkedIn posts.
 """
 
-import os
 import json
-from google import genai
+import os
+
 from dotenv import load_dotenv
+from google import genai
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -51,60 +52,59 @@ OUTPUT FORMAT (JSON):
 }
 """
 
+
 def generate_linkedin_post(signal: dict, partner_name: str = "Senior Partner") -> dict:
     """
     Generate a LinkedIn post from a Signal Hunter brief.
-    
+
     Args:
         signal: Dict from Agent E with headline, business_pain, suggested_angle, etc.
         partner_name: Name of the partner for voice calibration
-    
+
     Returns:
         JSON with the LinkedIn post
     """
-    
+
     prompt = f"""
     {SYSTEM_PROMPT}
     
     SIGNAL INPUT:
-    Headline: {signal.get('headline', 'Unknown topic')}
-    Regulation/Event: {signal.get('regulation_or_event', 'N/A')}
-    Business Pain: {signal.get('business_pain', 'N/A')}
-    Target Audience: {signal.get('target_audience', 'N/A')}
-    Suggested Angle: {signal.get('suggested_angle', 'N/A')}
-    Urgency: {signal.get('urgency', 'MEDIUM')}
+    Headline: {signal.get("headline", "Unknown topic")}
+    Regulation/Event: {signal.get("regulation_or_event", "N/A")}
+    Business Pain: {signal.get("business_pain", "N/A")}
+    Target Audience: {signal.get("target_audience", "N/A")}
+    Suggested Angle: {signal.get("suggested_angle", "N/A")}
+    Urgency: {signal.get("urgency", "MEDIUM")}
     
     PARTNER NAME: {partner_name}
     
     Generate the LinkedIn post as valid JSON. Remember: max 1,500 characters, contrarian hook, business focus, Gunnercooke pivot.
     """
-    
+
     try:
-        response = client.models.generate_content(
-            model='gemini-3-pro',
-            contents=prompt
-        )
-        
+        response = client.models.generate_content(model="gemini-3-pro", contents=prompt)
+
         text = response.text
         if "```json" in text:
             text = text.split("```json")[1].split("```")[0]
         elif "```" in text:
             text = text.split("```")[1].split("```")[0]
-        
+
         result = json.loads(text.strip())
         return result
     except Exception as e:
         return {"error": str(e)}
 
+
 def format_post_preview(post_data: dict) -> str:
     """Format the post for preview."""
     if "error" in post_data:
         return f"Error: {post_data['error']}"
-    
-    post = post_data.get('linkedin_post', '')
-    chars = post_data.get('character_count', len(post))
-    hashtags = post_data.get('hashtags', [])
-    
+
+    post = post_data.get("linkedin_post", "")
+    chars = post_data.get("character_count", len(post))
+    hashtags = post_data.get("hashtags", [])
+
     preview = f"""
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                        LINKEDIN POST PREVIEW                                 ║
@@ -114,19 +114,20 @@ def format_post_preview(post_data: dict) -> str:
 
 ╠══════════════════════════════════════════════════════════════════════════════╣
 ║  📊 Characters: {chars}/1500                                                  
-║  🏷️  Hashtags: {', '.join(hashtags)}
+║  🏷️  Hashtags: {", ".join(hashtags)}
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
     return preview
 
+
 def process_signals_batch(signals: list, partner_name: str = "Senior Partner") -> list:
     """
     Process multiple signals and generate posts for each.
-    
+
     Args:
         signals: List of signals from Agent E
         partner_name: Partner whose voice to use
-    
+
     Returns:
         List of generated posts
     """
@@ -134,10 +135,7 @@ def process_signals_batch(signals: list, partner_name: str = "Senior Partner") -
     for signal in signals:
         print(f"  Generating post for: {signal.get('headline', 'Unknown')[:40]}...")
         post = generate_linkedin_post(signal, partner_name)
-        posts.append({
-            "signal": signal,
-            "post": post
-        })
+        posts.append({"signal": signal, "post": post})
     return posts
 
 
@@ -145,7 +143,7 @@ if __name__ == "__main__":
     print("=" * 80)
     print("AGENT F: THOUGHT LEADER GHOSTWRITER")
     print("=" * 80)
-    
+
     # Example signal (would normally come from Agent E)
     sample_signal = {
         "headline": "New LkSG Enforcement Wave Hits Mittelstand",
@@ -153,12 +151,12 @@ if __name__ == "__main__":
         "business_pain": "Mid-sized manufacturers are receiving BAFA enforcement letters demanding full supply chain audits within 30 days. Many lack the internal resources to comply, facing fines up to 2% of global revenue.",
         "target_audience": "CEOs and Compliance Officers of manufacturing companies with 1,000+ employees",
         "suggested_angle": "The hidden cost isn't the fine – it's the operational disruption of a rushed compliance project",
-        "urgency": "HIGH"
+        "urgency": "HIGH",
     }
-    
+
     print("\n📝 Generating LinkedIn Post...")
     post = generate_linkedin_post(sample_signal, "Sebastian Förster")
     print(format_post_preview(post))
-    
+
     print("\n--- RAW JSON ---")
     print(json.dumps(post, indent=2, ensure_ascii=False))
