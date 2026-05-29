@@ -5,7 +5,7 @@ This project is structured as a **Hub-and-Spoke Multi-Agent System**.
 ## Core Components
 
 ### `master_orchestrator.py`
-The brain of the operation. It uses the `GunnercookeOrchestrator` class to manage state and sequential execution.
+The brain of the operation. It uses the `ApexLawOrchestrator` class to manage state and sequential execution.
 - **State Management**: Keeps a `self.log` of all actions and `self.results` for the final JSON dump.
 - **Pipelines**: Defined as async methods (`run_recruiting_pipeline`, `run_content_pipeline`).
 - **Concurrency**: Uses `asyncio.to_thread` to wrap synchronous agent logic, enabling parallel processing of multiple candidates.

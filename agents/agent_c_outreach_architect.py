@@ -5,16 +5,15 @@ Purpose: Write hyper-personalized outreach messages that convert.
 
 import json
 import os
+import sys
 
-from dotenv import load_dotenv
-from google import genai
-
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-client = genai.Client(api_key=GOOGLE_API_KEY)
+# Add parent directory to path to resolve src config
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.config import GEMINI_3_PRO
+from src.gemini_client import client
 
 SYSTEM_PROMPT = """
-You are the Ghostwriter for the Managing Partner of Gunnercooke Germany. You are writing a direct message to a senior lawyer at a competitor firm.
+You are the Ghostwriter for the Managing Partner of ApexLaw Germany. You are writing a direct message to a senior lawyer at a competitor firm.
 
 TONE GUIDELINES:
 - Professional, 'Tacheles' (direct/plain-speaking), peer-to-peer
@@ -57,7 +56,7 @@ def generate_outreach(
         current_firm: Their current firm
         recent_achievement: A specific deal, award, or publication to reference
         practice_area: Their specialty
-        sender_name: Name of the sender (Gunnercooke partner)
+        sender_name: Name of the sender (ApexLaw partner)
 
     Returns:
         JSON with message components
@@ -72,13 +71,13 @@ def generate_outreach(
     - Practice Area: {practice_area}
     - Recent Achievement: {recent_achievement}
     
-    SENDER: {sender_name}, Managing Partner, Gunnercooke Germany
+    SENDER: {sender_name}, Managing Partner, ApexLaw Germany
     
     Generate the outreach message as valid JSON. Remember: max 100 words total, peer-to-peer tone, reference the Netto-Rechner.
     """
 
     try:
-        response = client.models.generate_content(model="gemini-3-pro", contents=full_prompt)
+        response = client.models.generate_content(model=GEMINI_3_PRO, contents=full_prompt)
 
         text = response.text
         if "```json" in text:
@@ -143,11 +142,11 @@ if __name__ == "__main__":
 
     # Example candidate from Agent A's output
     outreach = generate_outreach(
-        candidate_name="Dr. Marcus Weber",
-        current_firm="Hengeler Mueller",
+        candidate_name="Dr. Marcus Vance",
+        current_firm="Helm & Mueller",
         recent_achievement="Lead advisory role on the €120m restructuring of a major German retail group in 2024",
         practice_area="Restructuring & Insolvency",
-        sender_name="Sebastian Förster",
+        sender_name="Alex Vancer",
     )
 
     print(format_linkedin_message(outreach))

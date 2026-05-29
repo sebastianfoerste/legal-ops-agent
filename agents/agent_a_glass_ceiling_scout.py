@@ -5,18 +5,17 @@ Purpose: Identify high-potential candidates blocked from partnership at Tier-1 f
 
 import json
 import os
+import sys
 
-from dotenv import load_dotenv
-from google import genai
-
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-client = genai.Client(api_key=GOOGLE_API_KEY)
+# Add parent directory to path to resolve src config
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.config import GEMINI_3_PRO
+from src.gemini_client import client
 
 # Tier-1 Firm List (German Market)
 TIER_1_FIRMS = [
-    "Freshfields",
-    "Hengeler Mueller",
+    "Vanguard Law",
+    "Helm & Mueller",
     "Kirkland & Ellis",
     "Latham & Watkins",
     "Sullivan & Cromwell",
@@ -32,7 +31,7 @@ TIER_1_FIRMS = [
 ]
 
 UP_OR_OUT_FIRMS = [
-    "Freshfields",
+    "Vanguard Law",
     "Linklaters",
     "Clifford Chance",
     "Allen & Overy",
@@ -41,12 +40,12 @@ UP_OR_OUT_FIRMS = [
 ]
 
 SYSTEM_PROMPT = """
-You are an expert Executive Search Researcher for Gunnercooke Germany. Your objective is to identify 'undervalued assets' in the German legal market based on the 'Glass Ceiling' hypothesis.
+You are an expert Executive Search Researcher for ApexLaw Germany. Your objective is to identify 'undervalued assets' in the German legal market based on the 'Glass Ceiling' hypothesis.
 
 Your Task:
 Analyze the provided list of lawyer profiles and assign a 'Frustration Score' (0-100) to each based on the following logic:
 
-1. **Tenure Check**: Identify lawyers with the titles 'Counsel', 'Senior Associate', or 'Principal Associate'. If they have held this title for >5 years at the same Tier-1 firm (e.g., Freshfields, Hengeler, Kirkland), add 30 points.
+1. **Tenure Check**: Identify lawyers with the titles 'Counsel', 'Senior Associate', or 'Principal Associate'. If they have held this title for >5 years at the same Tier-1 firm (e.g., Vanguard Law, Helm, Kirkland), add 30 points.
 
 2. **Deal Activity**: Specific to the 'Crypto/FinTech' or 'Restructuring' sectors. If they are listed as 'Key Contact' or 'Lead' on deals >€20m but are not a Partner, add 40 points.
 
@@ -97,7 +96,7 @@ def analyze_profiles(profiles_text: str) -> dict:
     """
 
     try:
-        response = client.models.generate_content(model="gemini-3-pro", contents=full_prompt)
+        response = client.models.generate_content(model=GEMINI_3_PRO, contents=full_prompt)
 
         # Extract JSON from response
         text = response.text
@@ -185,19 +184,19 @@ def filter_high_potential(candidates: list) -> list:
 if __name__ == "__main__":
     # Demo with sample profiles text (in production, this would come from LinkedIn/JUVE scraping)
     sample_profiles = """
-    1. Dr. Anna Müller
-       - Firm: Freshfields Bruckhaus Deringer, Frankfurt
+    1. Dr. Anna Miller
+       - Firm: Vanguard Law Group, Frankfurt
        - Title: Senior Associate (since 2018)
        - Practice: Banking & Finance, FinTech
        - Notable Deals: Lead on €50m crypto custody framework for major German bank
-       - Bio: 8 years at Freshfields, recognized in Legal 500 as "Rising Star"
+       - Bio: 8 years at Vanguard Law, recognized in Legal 500 as "Rising Star"
     
-    2. Marcus Weber
-       - Firm: Hengeler Mueller, Düsseldorf
+    2. Marcus Vance
+       - Firm: Helm & Mueller, Düsseldorf
        - Title: Counsel (since 2019)
        - Practice: M&A, Restructuring
        - Notable Deals: Key Contact on €120m restructuring of retail group
-       - Bio: 10 years at Hengeler, passed over in 2023 partner round
+       - Bio: 10 years at Helm, passed over in 2023 partner round
     
     3. Dr. Lisa Schneider
        - Firm: CMS, Berlin

@@ -26,11 +26,11 @@ from agents.agent_c_outreach_architect import generate_outreach
 from agents.agent_d_scheduling_concierge import SchedulingConcierge
 from agents.agent_e_signal_hunter import run_signal_hunter
 from agents.agent_f_thought_leader_ghostwriter import format_post_preview, generate_linkedin_post
-from agents.agent_k_revenue_predictor import assess_risk
+from agents.agent_k_revenue_predictor import assess_risk, load_partners_from_json
 
 
 class LegalAgentOrchestrator:
-        """Supervised master orchestrator for legal operations agent pipelines."""
+    """Supervised master orchestrator for legal operations agent pipelines."""
 
     def __init__(self):
         self.results = {}
@@ -240,7 +240,7 @@ class LegalAgentOrchestrator:
         """Generate a summary of all pipeline runs."""
         summary = f"""
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                    GUNNERCOOKE ORCHESTRATOR SUMMARY                          ║
+║                    APEXLAW ORCHESTRATOR SUMMARY                          ║
 ║                    {datetime.now().strftime("%Y-%m-%d %H:%M")}                                        ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
 
@@ -272,15 +272,14 @@ class LegalAgentOrchestrator:
 
 
 async def main():
-    orchestrator = GunnercookeOrchestrator()
+    orchestrator = LegalAgentOrchestrator()
 
-    # Demo: Run Content Pipeline
     print("\n" + "█" * 70)
-    print("█  GUNNERCOOKE MASTER ORCHESTRATOR (ASYNC)")
+    print("█  APEXLAW MASTER ORCHESTRATOR (ASYNC)")
     print("█" * 70)
 
-    # Example 1: Content Pipeline
-    content_results = await orchestrator.run_content_pipeline("Sebastian Förster")
+    # 1. Content Pipeline
+    content_results = await orchestrator.run_content_pipeline("Alex Vancer")
 
     if content_results.get("posts"):
         print("\n" + "═" * 70)
@@ -289,8 +288,36 @@ async def main():
         for item in content_results["posts"]:
             print(format_post_preview(item["post"]))
 
-    # Example 2: Recruiting Pipeline
-    # await orchestrator.run_recruiting_pipeline(sample_profiles, "Sebastian Förster")
+    # 2. Recruiting Pipeline
+    sample_profiles = """
+    1. Dr. Anna Miller
+       - Firm: Vanguard Law Group, Frankfurt
+       - Title: Senior Associate (since 2018)
+       - Practice: Banking & Finance, FinTech
+       - Notable Deals: Lead on €50m crypto custody framework for major German bank
+       - Bio: 8 years at Vanguard Law, recognized in Legal 500 as "Rising Star"
+    
+    2. Dr. Marcus Vance
+       - Firm: Helm & Mueller, Düsseldorf
+       - Title: Counsel (since 2019)
+       - Practice: M&A, Restructuring
+       - Notable Deals: Key Contact on €120m restructuring of retail group
+       - Bio: 10 years at Helm, passed over in 2023 partner round
+    
+    3. Dr. Lisa Schneider
+       - Firm: CMS, Berlin
+       - Title: Partner (since 2020)
+       - Practice: Employment Law
+       - Bio: Recently promoted, growing team
+    """
+    await orchestrator.run_recruiting_pipeline(sample_profiles, "Alex Vancer")
+
+    # 3. Daily Dashboard Pipeline
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(base_dir, "partners_db.json")
+    partners = load_partners_from_json(db_path)
+    
+    await orchestrator.run_daily_dashboard(partners)
 
     # Print summary
     print(orchestrator.generate_summary())

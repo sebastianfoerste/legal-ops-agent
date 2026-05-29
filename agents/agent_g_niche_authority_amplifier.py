@@ -6,12 +6,10 @@ Purpose: Engage with potential clients on LinkedIn by drafting thoughtful commen
 import json
 import os
 
-from dotenv import load_dotenv
-from google import genai
-
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-client = genai.Client(api_key=GOOGLE_API_KEY)
+# Add parent directory to path to resolve src config
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.gemini_client import client
 
 # Mock CRM data - Top 50 Target CEOs (in production, this would be Salesforce)
 TARGET_CEOS = [
@@ -37,7 +35,7 @@ TARGET_CEOS = [
 ]
 
 SYSTEM_PROMPT = """
-You are a Community Manager for a Gunnercooke Partner. Your task is to draft LinkedIn comments on posts by target CEOs.
+You are a Community Manager for a ApexLaw Partner. Your task is to draft LinkedIn comments on posts by target CEOs.
 
 GOAL: Move the partner from 'Invisible' to 'Top Voice' in that comment section.
 

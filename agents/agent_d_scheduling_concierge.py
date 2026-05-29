@@ -4,14 +4,13 @@ Purpose: Handle logistics and interviewer briefing for candidate interviews.
 """
 
 import os
+import sys
 from datetime import datetime
 
-from dotenv import load_dotenv
-from google import genai
-
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-client = genai.Client(api_key=GOOGLE_API_KEY)
+# Add parent directory to path to resolve src config
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.config import GEMINI_3_FLASH
+from src.gemini_client import client
 
 # Configuration
 MAX_INTERVIEWS_PER_PARTNER_PER_WEEK = 3
@@ -25,7 +24,7 @@ PARTNER_DATABASE = {
     ],
     "restructuring": [
         {
-            "name": "Dr. Klaus Müller",
+            "name": "Dr. Klaus Miller",
             "specialty": "Restructuring/Insolvency",
             "interviews_this_week": 0,
         },
@@ -42,7 +41,7 @@ PARTNER_DATABASE = {
 
 def find_matching_interviewer(candidate_niche: str) -> dict:
     """
-    Match candidate with a Gunnercooke partner in the same niche.
+    Match candidate with a ApexLaw partner in the same niche.
     Checks interviewer load to ensure no partner does >3 interviews/week.
     """
     niche_key = candidate_niche.lower()
@@ -90,7 +89,7 @@ def generate_time_slots(days_ahead: int = 7) -> list:
     """
 
     response = client.models.generate_content(
-        model="gemini-1.5-flash",  # Using gemini-1.5-flash as gemini-3-flash is not a standard model name
+        model=GEMINI_3_FLASH,
         contents=prompt,
     )
 
@@ -106,7 +105,7 @@ def generate_scheduling_email(candidate_name: str) -> str:
     email = f"""
 Dear {candidate_name},
 
-Thank you for your interest in a conversation with Gunnercooke Germany.
+Thank you for your interest in a conversation with ApexLaw Germany.
 
 To ensure complete discretion, we prefer evening meetings. Please let me know which of the following times works for you:
 
@@ -121,7 +120,7 @@ If none of these times suit, please suggest alternatives that work for you.
 
 Best regards,
 Scheduling Coordinator
-Gunnercooke Germany
+ApexLaw Germany
 """
     return email
 
@@ -144,7 +143,7 @@ def generate_briefing_dossier(
     dossier = f"""
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                         CONFIDENTIAL BRIEFING DOSSIER                        ║
-║                            Gunnercooke Germany                               ║
+║                            ApexLaw Germany                               ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
 ║  Interview Date: [TO BE SCHEDULED]                                           ║
 ║  Interviewer: {interviewer_name:<60} ║
@@ -184,7 +183,7 @@ def generate_briefing_dossier(
   ✗ Making them "sell" themselves to you
   
   KEY TALKING POINTS:
-  1. "At Gunnercooke, you keep what you earn. Let me show you the numbers."
+  1. "At ApexLaw, you keep what you earn. Let me show you the numbers."
   2. "You've been a Senior Associate for {frustration_score // 10} years doing Partner work. 
       Here, you'd be equity partner from day one."
   3. "Our model is designed for people exactly like you – senior, frustrated, ready."
@@ -256,9 +255,9 @@ if __name__ == "__main__":
 
     # Simulate candidate acceptance (data would come from Agent A & B)
     result = concierge.process_acceptance(
-        candidate_name="Dr. Marcus Weber",
+        candidate_name="Dr. Marcus Vance",
         candidate_email="m.weber@hengeler.com",
-        current_firm="Hengeler Mueller",
+        current_firm="Helm & Mueller",
         practice_area="Restructuring",
         frustration_score=85,
         frustration_reasons="Counsel for 6 years at Tier-1 firm; Lead on major deals but not Partner; Up-or-Out policy",

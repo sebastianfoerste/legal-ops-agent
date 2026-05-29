@@ -6,17 +6,15 @@ Purpose: Perform legal grunt work - review NDAs/contracts against playbook.
 import json
 import os
 
-from dotenv import load_dotenv
-from google import genai
-
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-client = genai.Client(api_key=GOOGLE_API_KEY)
+# Add parent directory to path to resolve src config
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.gemini_client import client
 
 SYSTEM_PROMPT = """
 You are a Senior Associate at a top-tier law firm. Review the attached document.
 
-TASK: Compare against the 'Gunnercooke Standard Playbook' and create a 'Red Flag Report'.
+TASK: Compare against the 'ApexLaw Standard Playbook' and create a 'Red Flag Report'.
 
 OUTPUT FORMAT (JSON):
 {

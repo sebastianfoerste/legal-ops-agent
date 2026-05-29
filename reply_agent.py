@@ -1,16 +1,9 @@
 import os
 import sys
 
-from dotenv import load_dotenv
-from google import genai
-
-# Load env
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-if not GOOGLE_API_KEY:
-    raise ValueError("GOOGLE_API_KEY is missing")
-
-client = genai.Client(api_key=GOOGLE_API_KEY)
+# Add parent directory to path to resolve src config
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from src.gemini_client import client
 
 
 def generate_replies(input_text):

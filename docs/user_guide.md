@@ -1,6 +1,6 @@
 # Legal Agent Orchestrator - User Guide
 
-The **Legal Agent Orchestrator** is an autonomous multi-agent system designed for **Gunnercooke** to automate high-value partner recruiting, content generation, and risk monitoring.
+The **Legal Agent Orchestrator** is an autonomous multi-agent system designed for **ApexLaw** to automate high-value partner recruiting, content generation, and risk monitoring.
 
 ## 🚀 Quick Start
 

@@ -1,3 +1,3 @@
 """
-Agents package for Gunnercooke automation.
+Agents package for ApexLaw automation.
 """

@@ -1,8 +1,5 @@
-"""
-Agent K: The Revenue Predictor
-Purpose: Monitor financial risk of new hires during their 'Bridge Fund' period.
-"""
-
+import os
+import json
 from dataclasses import dataclass
 
 
@@ -15,6 +12,26 @@ class PartnerFinancials:
     cash_collected: list  # List of monthly collections
     pipeline_value: float  # Open matters value
     pipeline_probability: float  # Weighted probability (0-1)
+
+
+def load_partners_from_json(file_path: str) -> list[PartnerFinancials]:
+    """Load partner profiles from a JSON database."""
+    if not os.path.exists(file_path):
+        return []
+    with open(file_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return [
+        PartnerFinancials(
+            name=p["name"],
+            start_date=p["start_date"],
+            monthly_draw=float(p["monthly_draw"]),
+            months_active=int(p["months_active"]),
+            cash_collected=[float(val) for val in p["cash_collected"]],
+            pipeline_value=float(p["pipeline_value"]),
+            pipeline_probability=float(p["pipeline_probability"]),
+        )
+        for p in data
+    ]
 
 
 # Historical benchmark
@@ -153,20 +170,29 @@ def format_risk_report(assessment: dict) -> str:
 
 
 if __name__ == "__main__":
-    # Example partner in month 4
-    partner = PartnerFinancials(
-        name="Dr. Marcus Weber",
-        start_date="2025-10-01",
-        monthly_draw=15000,  # €15k/month guaranteed
-        months_active=4,
-        cash_collected=[8000, 12000, 18000, 22000],  # Monthly collections
-        pipeline_value=150000,  # €150k in open matters
-        pipeline_probability=0.6,  # 60% likely to close
-    )
-
     print("=" * 70)
     print("AGENT K: REVENUE PREDICTOR")
     print("=" * 70)
 
-    assessment = assess_risk(partner)
-    print(format_risk_report(assessment))
+    # Resolve database path relative to this file
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    db_path = os.path.join(base_dir, "partners_db.json")
+
+    partners = load_partners_from_json(db_path)
+    if not partners:
+        print("No partners found in database, running with fallback demo partner.")
+        partners = [
+            PartnerFinancials(
+                name="Dr. Marcus Vance",
+                start_date="2025-10-01",
+                monthly_draw=15000.0,
+                months_active=4,
+                cash_collected=[8000.0, 12000.0, 18000.0, 22000.0],
+                pipeline_value=150000.0,
+                pipeline_probability=0.6,
+            )
+        ]
+
+    for partner in partners:
+        assessment = assess_risk(partner)
+        print(format_risk_report(assessment))
