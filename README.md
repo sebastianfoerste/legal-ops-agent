@@ -85,6 +85,10 @@ cp .env.example .env
 python master_orchestrator.py
 ```
 
+## Launch readiness
+
+For a reviewer-friendly runbook covering demo path, checks, sample-data rules, architecture and safety posture, see [`docs/launch-readiness.md`](docs/launch-readiness.md).
+
 ## Legal-tech domain concepts
 
 The project covers:
