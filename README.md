@@ -1,206 +1,90 @@
-# LegalAgent Swarm 🤖⚖️
+# LegalAgent Swarm
+
+A supervised multi-agent prototype for legal operations, structured intake, risk triage, review routing and human-approved outputs.
 
 [![Stack](https://img.shields.io/badge/Stack-Python%20%7C%20AsyncIO%20%7C%20Pydantic-brightgreen?style=flat-square)](https://github.com/sebastianforste/legal_agent)
-[![Domain](https://img.shields.io/badge/Domain-Legal%20Recruiting%20%26%20BD-blue?style=flat-square)](https://github.com/sebastianforste/legal_agent)
+[![Domain](https://img.shields.io/badge/Domain-Legal%20Operations-blue?style=flat-square)](https://github.com/sebastianforste/legal_agent)
 [![AI](https://img.shields.io/badge/AI-Google%20Gemini%20Pro-orange?style=flat-square)](https://ai.google.dev/)
 [![Orchestration](https://img.shields.io/badge/Orchestration-Multi--Agent%20AsyncIO-purple?style=flat-square)](https://github.com/sebastianforste/legal_agent)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](./LICENSE)
 
-> **LegalAgent Swarm** is a production-grade, highly concurrent **Multi-Agent Intelligence Swarm** for automated legal recruiting, corporate partner headhunting, and strategic business development — powered by Python AsyncIO and Google Gemini Pro.
+## Overview
 
----
+LegalAgent demonstrates how a coordinated set of specialized AI agents can handle structured legal operations work: matter intake, product counsel review, contract risk review, regulatory monitoring and approval workflow design.
 
-## 📋 Overview
-
-Legal recruiting and business development in law firms is time-intensive, high-stakes, and repetitive. LegalAgent replaces manual candidate scouting, revenue profiling, and outreach drafting with a coordinated swarm of specialized AI agents that run concurrently — achieving a **3–5× throughput improvement** over sequential approaches.
+Each agent handles a bounded task, passes typed outputs to the next stage, and routes to a human approval step before any output is persisted or acted upon. The architecture is intentionally supervisor-controlled rather than autonomous.
 
 **Core capabilities:**
-- Automated candidate discovery and signals-based scouting
-- Partner revenue estimation from public dockets and business records
-- AI-driven outreach composition matching individual partner personas
-- Calendar routing and scheduling automation
-- Real-time regulatory and market monitoring
+- Structured matter intake and classification
+- Contract risk triage and routing to appropriate review workflows
+- Regulatory change monitoring with summarization and alert drafting
+- Product counsel review support for privacy, AI governance and vendor contracts
+- Approval gate design with escalation logic and audit trail
+- Calendar routing and scheduling coordination
 
----
+## Architecture
 
-## 🏗️ Architecture
+A **Master Orchestrator** manages asynchronous concurrent execution across specialized agents using Python AsyncIO. Each agent communicates through strict Pydantic schema contracts, ensuring all agent-to-agent data exchanges are validated before processing.
 
-```
-                        ┌──────────────────────┐
-                        │  Master Orchestrator  │
-                        │  (master_orchestrator) │
-                        └──────────┬───────────┘
-                                   │  AsyncIO Concurrent Execution
-          ┌────────────────────────┼─────────────────────────┐
-          ▼                        ▼                          ▼
-  ┌───────────────┐      ┌─────────────────┐      ┌──────────────────┐
-  │  Agent A      │      │  Agent B         │      │  Agent C          │
-  │  Scout        │      │  Revenue         │      │  Outreach         │
-  │               │      │  Profiler        │      │  Architect        │
-  │ • Scouting    │      │ • Revenue est.   │      │ • Persona match   │
-  │ • Signal scan │      │ • Risk analysis  │      │ • Tone compliance │
-  └───────┬───────┘      └────────┬────────┘      └────────┬─────────┘
-          │                       │                         │
-          └───────────────────────┴─────────────────────────┘
-                                  │
-                                  ▼
-                      ┌───────────────────────┐
-                      │  Agent D: Concierge   │
-                      │  Calendar routing &   │
-                      │  triage scheduling    │
-                      └───────────────────────┘
-```
+**Agents:**
+- **Intake Agent:** Classifies and structures incoming matters by type, urgency and routing path
+- **Review Agent:** Applies rule-based and LLM-assisted risk analysis to contracts and regulatory documents
+- **Monitor Agent:** Tracks regulatory sources and generates structured change alerts
+- **Concierge Agent:** Handles scheduling, routing and human-in-the-loop handoff
 
-**Additional Agent Modules:**
-| Agent | Role | Legal-Tech Function |
-|-------|------|---------------------|
-| Signal Hunter (E) | Market monitoring | Real-time regulatory & case law alerts |
-| Thought Leader (F) | Content generation | High-status partner content for LinkedIn |
-| Revenue Predictor (K) | Risk profiling | Partner retention risk assessment |
-| Insolvency Finder (L) | BD intelligence | Identifies distressed companies for BD targeting |
+**Additional modules:**
+- **Signal Hunter:** Real-time regulatory and case law alerts
+- **Approval Router:** Escalation triggers, data minimisation and reusable legal playbooks
 
----
+## Tech Stack
 
-## 🛠️ Tech Stack
+- **Language:** Python 3.12+
+- **Concurrency:** `asyncio`, `aiohttp`
+- **AI Model:** Google Gemini Pro / Flash
+- **Data Validation:** Pydantic v2
+- **Build/CI:** `uv`, `ruff`, `mypy`, GitHub Actions
+- **Testing:** `pytest`, `pytest-asyncio`
 
-| Layer | Technology |
-|-------|------------|
-| **Language** | Python 3.12+ |
-| **Concurrency** | `asyncio`, `aiohttp` |
-| **AI Model** | Google Gemini Pro / Flash (via `google-generativeai`) |
-| **Data Validation** | Pydantic v2 (strict schema contracts) |
-| **Build Tools** | `uv`, `ruff`, `mypy`, `pre-commit` |
-| **Testing** | `pytest`, `pytest-asyncio` |
-| **CI/CD** | GitHub Actions |
+## Quick Start
 
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Python 3.12+
-- Google Gemini API Key ([get one here](https://ai.google.dev/))
-
-### Installation
+**Prerequisites:** Python 3.12+ and a Google Gemini API Key.
 
 ```bash
-# Clone the repository
-git clone https://github.com/sebastianforste/legal_agent.git
+# Clone and install
+git clone https://github.com/sebastianforste/legal_agent
 cd legal_agent
-
-# Install dependencies (using uv — recommended)
-pip install uv
-uv pip install -r requirements.txt
-
-# Or using standard pip
 pip install -r requirements.txt
-```
 
-### Configuration
-
-```bash
-# Copy the example environment file
+# Configure
 cp .env.example .env
+# Add GEMINI_API_KEY to .env
 
-# Add your Gemini API key
-echo "GEMINI_API_KEY=your_api_key_here" >> .env
-```
-
-### Running the Swarm
-
-```bash
-# Run the full agent pipeline
+# Run
 python master_orchestrator.py
-
-# Or use the Makefile shortcuts
-make install   # Install all dependencies
-make run       # Execute the orchestrator
-make check     # Run linting + type checks + tests
-make test      # Run test suite only
+# or
+make run
 ```
 
----
+## Legal-Tech Domain Concepts
 
-## 📂 Project Structure
+The project covers:
 
-```
-legal_agent/
-├── agents/
-│   ├── agent_a_glass_ceiling_scout.py    # Candidate signals scouting
-│   ├── agent_b_rainmaker_profiler.py     # Revenue & risk profiling
-│   ├── agent_c_outreach_architect.py     # Persona-matched outreach
-│   ├── agent_d_scheduling_concierge.py   # Calendar routing
-│   ├── agent_e_signal_hunter.py          # Regulatory monitoring
-│   └── agent_f_thought_leader.py         # LinkedIn content generation
-├── src/
-│   └── ...                               # Core utilities
-├── tests/                                 # pytest test suite
-├── models.py                              # Shared Pydantic schemas
-├── master_orchestrator.py                 # AsyncIO pipeline coordinator
-├── recruiting_agent.py                    # Standalone recruiting workflow
-├── agent.py                               # Base agent class
-├── pyproject.toml                         # Project config (ruff, mypy)
-├── requirements.in                        # Pinned dependencies
-└── Makefile                               # Dev task shortcuts
-```
+- **Contract Lifecycle Management (CLM):** Monitoring contract events and triggering review workflows
+- **Compliance Automation:** Real-time regulatory change detection and structured summarization
+- **Legal Process Optimization:** Automated triage, routing and human approval gates
+- **Audit Trail Design:** Schema-validated outputs with persistence only after human review
 
----
+## Key Design Decisions
 
-## ⚖️ Legal-Tech Domain: Key Concepts
+1. **Human-in-the-loop by default:** No output is acted upon without an explicit approval step
+2. **Schema-first communication:** Pydantic contracts enforce data integrity across all agent boundaries
+3. **High-concurrency AsyncIO:** Parallel processing of intake items without blocking the review pipeline
+4. **Modular agents:** Each agent can be tested, replaced or extended independently
 
-This project applies modern AI engineering to core **legal operations** and **law firm business development** challenges:
+## Security
 
-- **Contract Lifecycle Management (CLM)**: Signal-based monitoring of partner contract events and milestones
-- **Compliance Automation**: Real-time statutory and regulatory change detection
-- **eDiscovery Integration**: Document parsing and semantic indexing of legal texts
-- **Legal Process Optimization**: Automated triage and workflow routing for intake processes
-- **Regulatory Workflows**: Jurisdictional routing and compliance status tracking
+API keys are managed via `.env` and never logged. All LLM outputs undergo Pydantic schema validation before persistence. See [SECURITY.md](./SECURITY.md) for responsible disclosure.
 
----
+## Contact
 
-## 🔬 Key Innovations
-
-### 1. High-Concurrency AsyncIO Pipeline
-All agents execute concurrently via Python's `asyncio` event loop. Candidate batches processed in **parallel** yield a 3–5× throughput improvement vs sequential LLM calls.
-
-### 2. Rainmaker Revenue Profiler
-Mathematical revenue estimation models applied to public court dockets and business records produce a structured "Partner Onboarding Viability Score" — quantifying book-of-business potential before outreach.
-
-### 3. Persona-Matched Outreach Engine
-Outreach campaigns are synthesized to match each target's communication style, seniority, and specialization — maintaining professional tone compliance without robotic boilerplate.
-
-### 4. Pydantic Schema Contracts
-All agent-to-agent data exchanges are validated through strict Pydantic v2 models, eliminating type mismatches and ensuring deterministic pipeline behavior at scale.
-
----
-
-## ✅ Recent Milestones
-
-- ✅ **Async refactor**: Full parallel candidate processing with `asyncio`
-- ✅ **Type safety**: Pydantic v2 schemas for all agent data contracts
-- ✅ **Performance**: 3–5× throughput on multi-candidate batches
-- ✅ **Pre-commit hooks**: `ruff` + `mypy` enforced on every commit
-- ✅ **Test suite**: `pytest-asyncio` integration and unit tests
-
----
-
-## 🔒 Security & Compliance
-
-- API keys managed via `.env` (never committed — see `.gitignore`)
-- See [SECURITY.md](./SECURITY.md) for responsible disclosure
-- All LLM outputs are validated through Pydantic schemas before persistence
-
----
-
-## 📬 Contact & Portfolio
-
-Built by **Sebastian Forste** — Legal Engineer & AI Architect
-
-- 🌐 Portfolio: [sebastianforste.github.io](https://sebastianforste.github.io)
-- 💼 LinkedIn: [linkedin.com/in/sebastianforste](https://linkedin.com/in/sebastianforste)
-- 📧 Email: [sebastianforste@gmail.com](mailto:sebastianforste@gmail.com)
-
----
-
-*Part of the [StrategyOS](https://github.com/sebastianforste/strategy-os) legal engineering ecosystem.*
+Built by Sebastian Forste — [sebastianforste.github.io](https://sebastianforste.github.io/)
