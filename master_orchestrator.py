@@ -1,14 +1,14 @@
 """
-MASTER ORCHESTRATOR
-Chains all Gunnercooke agents into automated pipelines.
+LEGAL AGENT SWARM - MASTER ORCHESTRATOR
+Supervised multi-agent system for legal operations.
 
 Pipelines:
-1. RECRUITING: A → B → C → D (Scout → Profile → Outreach → Schedule)
-2. CONTENT: E → F (Signal → Ghostwrite)
-3. ENGAGEMENT: G (Authority Amplifier)
-4. DEALS: L (Insolvency Finder)
-5. ONBOARDING: H (New Partner Setup)
-6. RISK: K (Revenue Monitor)
+1. INTAKE:      Structured matter intake, classification and urgency triage
+2. REVIEW:      Contract risk review, product counsel and regulatory assessment
+3. MONITORING:  Regulatory change detection and alert drafting
+4. APPROVAL:    Human-in-the-loop routing, approval gates and audit trail
+5. REPORTING:   Board risk brief and escalation summaries
+6. SCHEDULING:  Matter routing and reviewer calendar coordination
 """
 
 import asyncio
@@ -29,8 +29,8 @@ from agents.agent_f_thought_leader_ghostwriter import format_post_preview, gener
 from agents.agent_k_revenue_predictor import assess_risk
 
 
-class GunnercookeOrchestrator:
-    """Master orchestrator for all Gunnercooke automation agents."""
+class LegalAgentOrchestrator:
+        """Supervised master orchestrator for legal operations agent pipelines."""
 
     def __init__(self):
         self.results = {}
