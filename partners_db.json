@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Dr. Marcus Vance",
+    "start_date": "2025-10-01",
+    "monthly_draw": 15000.0,
+    "months_active": 4,
+    "cash_collected": [8000.0, 12000.0, 18000.0, 22000.0],
+    "pipeline_value": 150000.0,
+    "pipeline_probability": 0.6
+  },
+  {
+    "name": "Sarah Jenkins",
+    "start_date": "2025-11-01",
+    "monthly_draw": 18000.0,
+    "months_active": 3,
+    "cash_collected": [5000.0, 7000.0, 8000.0],
+    "pipeline_value": 80000.0,
+    "pipeline_probability": 0.4
+  },
+  {
+    "name": "Jean-Luc Picard",
+    "start_date": "2025-08-01",
+    "monthly_draw": 20000.0,
+    "months_active": 6,
+    "cash_collected": [22000.0, 24000.0, 25000.0, 28000.0, 30000.0, 31000.0],
+    "pipeline_value": 300000.0,
+    "pipeline_probability": 0.8
+  }
+]

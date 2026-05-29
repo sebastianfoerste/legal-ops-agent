@@ -116,3 +116,5 @@ API keys are managed via `.env` and never logged. All LLM outputs undergo Pydant
 ## Contact
 
 Built by Sebastian Förste: [github.com/sebastianforste](https://github.com/sebastianforste)
+
+*Part of the [StrategyOS](https://github.com/sebastianforste/strategy-os-public) legal engineering ecosystem.*

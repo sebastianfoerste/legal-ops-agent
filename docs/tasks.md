@@ -1,7 +1,7 @@
 # Development Tasks: Legal Agent
 
 ## Phase 1: Core Orchestration (COMPLETE ✅)
-- [x] Create `GunnercookeOrchestrator` class.
+- [x] Create `ApexLawOrchestrator` class.
 - [x] Implement Recruiting Pipeline (A-D).
 - [x] Implement Content Pipeline (E-F).
 - [x] Implement Daily Dashboard logic.

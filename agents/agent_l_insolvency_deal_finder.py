@@ -12,7 +12,7 @@ from ddgs import DDGS
 PARTNER_RELATIONSHIPS = {
     "Dr. Thomas Richter": ["Dr. Michael Schmidt (Insolvenzverwalter)", "Kanzlei Müller & Partner"],
     "Anna Weber": ["Dr. Klaus Hoffmann", "Schultze & Braun"],
-    "Dr. Marcus Weber": ["Dr. Stefan Weniger", "hww hermann wienberg wilhelm"],
+    "Dr. Marcus Vance": ["Dr. Stefan Weniger", "hww hermann wienberg wilhelm"],
 }
 
 KNOWN_ADMINISTRATORS = [
@@ -74,7 +74,7 @@ def extract_filing_details(filing: dict) -> dict:
 
 
 def check_partner_relationships(administrator: str) -> list:
-    """Check if any Gunnercooke partner knows this administrator."""
+    """Check if any ApexLaw partner knows this administrator."""
     matches = []
     admin_lower = administrator.lower()
 

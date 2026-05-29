@@ -1,1 +1,261 @@
-{}
+{
+  "content": {
+    "signals": [
+      {
+        "headline": "Crypto custody rules threaten German Mittelstand",
+        "regulation_or_event": "MiCAR Regulation",
+        "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+        "target_audience": "CFOs of FinTech firms and asset managers",
+        "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+        "urgency": "HIGH",
+        "source_url": "https://example.com/micar-regulatory-update"
+      },
+      {
+        "headline": "Crypto custody rules threaten German Mittelstand",
+        "regulation_or_event": "MiCAR Regulation",
+        "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+        "target_audience": "CFOs of FinTech firms and asset managers",
+        "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+        "urgency": "HIGH",
+        "source_url": "https://example.com/micar-regulatory-update"
+      },
+      {
+        "headline": "Crypto custody rules threaten German Mittelstand",
+        "regulation_or_event": "MiCAR Regulation",
+        "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+        "target_audience": "CFOs of FinTech firms and asset managers",
+        "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+        "urgency": "HIGH",
+        "source_url": "https://example.com/micar-regulatory-update"
+      },
+      {
+        "headline": "Crypto custody rules threaten German Mittelstand",
+        "regulation_or_event": "MiCAR Regulation",
+        "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+        "target_audience": "CFOs of FinTech firms and asset managers",
+        "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+        "urgency": "HIGH",
+        "source_url": "https://example.com/micar-regulatory-update"
+      },
+      {
+        "headline": "Crypto custody rules threaten German Mittelstand",
+        "regulation_or_event": "MiCAR Regulation",
+        "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+        "target_audience": "CFOs of FinTech firms and asset managers",
+        "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+        "urgency": "HIGH",
+        "source_url": "https://example.com/micar-regulatory-update"
+      }
+    ],
+    "posts": [
+      {
+        "signal": {
+          "headline": "Crypto custody rules threaten German Mittelstand",
+          "regulation_or_event": "MiCAR Regulation",
+          "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+          "target_audience": "CFOs of FinTech firms and asset managers",
+          "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+          "urgency": "HIGH",
+          "source_url": "https://example.com/micar-regulatory-update"
+        },
+        "post": {
+          "error": "Expecting value: line 1 column 1 (char 0)"
+        }
+      },
+      {
+        "signal": {
+          "headline": "Crypto custody rules threaten German Mittelstand",
+          "regulation_or_event": "MiCAR Regulation",
+          "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+          "target_audience": "CFOs of FinTech firms and asset managers",
+          "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+          "urgency": "HIGH",
+          "source_url": "https://example.com/micar-regulatory-update"
+        },
+        "post": {
+          "error": "Expecting value: line 1 column 1 (char 0)"
+        }
+      },
+      {
+        "signal": {
+          "headline": "Crypto custody rules threaten German Mittelstand",
+          "regulation_or_event": "MiCAR Regulation",
+          "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+          "target_audience": "CFOs of FinTech firms and asset managers",
+          "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+          "urgency": "HIGH",
+          "source_url": "https://example.com/micar-regulatory-update"
+        },
+        "post": {
+          "error": "Expecting value: line 1 column 1 (char 0)"
+        }
+      }
+    ]
+  },
+  "recruiting": [
+    {
+      "candidate": {
+        "Name": "Dr. Marcus Vance",
+        "Current_Firm": "Helm & Mueller",
+        "Years_in_Role": 10,
+        "Estimated_Book_of_Business": "€1.2M",
+        "Frustration_Score": 85,
+        "Reason_for_Score": "Held Counsel for 10 years at Helm & Mueller; passed over in 2023 partner round"
+      },
+      "revenue_analysis": {
+        "total_portable_revenue": 850000.0,
+        "recommendation": "GO",
+        "risk_score": 30,
+        "mitigation_strategy": "Offer equity track within 18 months, support with active BD support to transition clients."
+      },
+      "outreach": {
+        "error": "Failed to parse JSON",
+        "raw_response": "\nDr. Marcus Vance.\n\nYour recent deal performance in this sector was noticed.\n\nYet, your firm continues to hold you back from the equity partnership.\n\nTraditional firms cap your earnings while taking the lion's share of your collections.\n\nWe don't.\n\nAt ApexLaw Germany, you keep up to 90% of what you bring in.\n\nLet's discuss a conflict-free transition.\n"
+      },
+      "scheduling": {
+        "status": "success",
+        "interviewer": {
+          "name": "Dr. Klaus Miller",
+          "specialty": "Restructuring/Insolvency",
+          "interviews_this_week": 0
+        },
+        "scheduling_email": "\nDear Dr. Marcus Vance,\n\nThank you for your interest in a conversation with ApexLaw Germany.\n\nTo ensure complete discretion, we prefer evening meetings. Please let me know which of the following times works for you:\n\n  1. Tuesday, 02 June 2026 at 18:30 CET\n  2. Wednesday, 03 June 2026 at 19:00 CET\n  3. Thursday, 04 June 2026 at 18:00 CET\n  4. Monday, 08 June 2026 at 18:30 CET\n  5. Tuesday, 09 June 2026 at 19:00 CET\n\nThe call will be a relaxed 30-minute virtual coffee – no formal interview structure. We simply want to understand your goals and share how our model works.\n\nIf none of these times suit, please suggest alternatives that work for you.\n\nBest regards,\nScheduling Coordinator\nApexLaw Germany\n",
+        "briefing_dossier": "\n╔══════════════════════════════════════════════════════════════════════════════╗\n║                         CONFIDENTIAL BRIEFING DOSSIER                        ║\n║                            ApexLaw Germany                               ║\n╠══════════════════════════════════════════════════════════════════════════════╣\n║  Interview Date: [TO BE SCHEDULED]                                           ║\n║  Interviewer: Dr. Klaus Miller                                             ║\n╠══════════════════════════════════════════════════════════════════════════════╣\n\n📋 CANDIDATE PROFILE\n───────────────────────────────────────────────────────────────────────────────\n  Name:           Dr. Marcus Vance\n  Current Firm:   Helm & Mueller\n  Practice Area:  Restructuring\n\n📊 AGENT A: FRUSTRATION SCORE\n───────────────────────────────────────────────────────────────────────────────\n  Score: 85/100 🔥🔥🔥\n  \n  Reasons:\n  Held Counsel for 10 years at Helm & Mueller; passed over in 2023 partner round\n\n💰 AGENT B: REVENUE ESTIMATE\n───────────────────────────────────────────────────────────────────────────────\n  Estimated Portable Revenue: €850,000\n  Assessment: ✅ GO (>€200k)\n\n🎯 INTERVIEW GUIDANCE\n───────────────────────────────────────────────────────────────────────────────\n\n  ⚠️  REMINDER: This is a SALES CONVERSATION, not an interrogation.\n  \n  FOCUS ON:\n  ✓ Their frustrations with Big Law (they have a score of 85!)\n  ✓ The FREEDOM they will gain (no billable targets, equity from day 1)\n  ✓ The UPSIDE (70/30 split, transparent Netto-Rechner)\n  \n  AVOID:\n  ✗ Asking why they want to leave (they are blocked – that's why)\n  ✗ Testing their technical knowledge\n  ✗ Making them \"sell\" themselves to you\n  \n  KEY TALKING POINTS:\n  1. \"At ApexLaw, you keep what you earn. Let me show you the numbers.\"\n  2. \"You've been a Senior Associate for 8 years doing Partner work. \n      Here, you'd be equity partner from day one.\"\n  3. \"Our model is designed for people exactly like you – senior, frustrated, ready.\"\n\n  CLOSE WITH:\n  \"If this sounds interesting, we move fast. Would you like me to send you the \n   Netto-Rechner so you can model your own income?\"\n\n═══════════════════════════════════════════════════════════════════════════════\n"
+      }
+    },
+    {
+      "candidate": {
+        "Name": "Dr. Anna Miller",
+        "Current_Firm": "Vanguard Law Group",
+        "Years_in_Role": 8,
+        "Estimated_Book_of_Business": "€850k",
+        "Frustration_Score": 75,
+        "Reason_for_Score": "Held Senior Associate for 8 years at Vanguard Law; lead on €50m crypto custody deals but not Partner"
+      },
+      "revenue_analysis": {
+        "total_portable_revenue": 850000.0,
+        "recommendation": "GO",
+        "risk_score": 30,
+        "mitigation_strategy": "Offer equity track within 18 months, support with active BD support to transition clients."
+      },
+      "outreach": {
+        "error": "Failed to parse JSON",
+        "raw_response": "\nDr. Anna Miller.\n\nYour recent deal performance in this sector was noticed.\n\nYet, your firm continues to hold you back from the equity partnership.\n\nTraditional firms cap your earnings while taking the lion's share of your collections.\n\nWe don't.\n\nAt ApexLaw Germany, you keep up to 90% of what you bring in.\n\nLet's discuss a conflict-free transition.\n"
+      },
+      "scheduling": {
+        "status": "success",
+        "interviewer": {
+          "name": "Dr. Klaus Miller",
+          "specialty": "Restructuring/Insolvency",
+          "interviews_this_week": 0
+        },
+        "scheduling_email": "\nDear Dr. Anna Miller,\n\nThank you for your interest in a conversation with ApexLaw Germany.\n\nTo ensure complete discretion, we prefer evening meetings. Please let me know which of the following times works for you:\n\n  1. Tuesday, 02 June 2026 at 18:30 CET\n  2. Wednesday, 03 June 2026 at 19:00 CET\n  3. Thursday, 04 June 2026 at 18:00 CET\n  4. Monday, 08 June 2026 at 18:30 CET\n  5. Tuesday, 09 June 2026 at 19:00 CET\n\nThe call will be a relaxed 30-minute virtual coffee – no formal interview structure. We simply want to understand your goals and share how our model works.\n\nIf none of these times suit, please suggest alternatives that work for you.\n\nBest regards,\nScheduling Coordinator\nApexLaw Germany\n",
+        "briefing_dossier": "\n╔══════════════════════════════════════════════════════════════════════════════╗\n║                         CONFIDENTIAL BRIEFING DOSSIER                        ║\n║                            ApexLaw Germany                               ║\n╠══════════════════════════════════════════════════════════════════════════════╣\n║  Interview Date: [TO BE SCHEDULED]                                           ║\n║  Interviewer: Dr. Klaus Miller                                             ║\n╠══════════════════════════════════════════════════════════════════════════════╣\n\n📋 CANDIDATE PROFILE\n───────────────────────────────────────────────────────────────────────────────\n  Name:           Dr. Anna Miller\n  Current Firm:   Vanguard Law Group\n  Practice Area:  Restructuring\n\n📊 AGENT A: FRUSTRATION SCORE\n───────────────────────────────────────────────────────────────────────────────\n  Score: 75/100 🔥🔥\n  \n  Reasons:\n  Held Senior Associate for 8 years at Vanguard Law; lead on €50m crypto custody deals but not Partner\n\n💰 AGENT B: REVENUE ESTIMATE\n───────────────────────────────────────────────────────────────────────────────\n  Estimated Portable Revenue: €850,000\n  Assessment: ✅ GO (>€200k)\n\n🎯 INTERVIEW GUIDANCE\n───────────────────────────────────────────────────────────────────────────────\n\n  ⚠️  REMINDER: This is a SALES CONVERSATION, not an interrogation.\n  \n  FOCUS ON:\n  ✓ Their frustrations with Big Law (they have a score of 75!)\n  ✓ The FREEDOM they will gain (no billable targets, equity from day 1)\n  ✓ The UPSIDE (70/30 split, transparent Netto-Rechner)\n  \n  AVOID:\n  ✗ Asking why they want to leave (they are blocked – that's why)\n  ✗ Testing their technical knowledge\n  ✗ Making them \"sell\" themselves to you\n  \n  KEY TALKING POINTS:\n  1. \"At ApexLaw, you keep what you earn. Let me show you the numbers.\"\n  2. \"You've been a Senior Associate for 7 years doing Partner work. \n      Here, you'd be equity partner from day one.\"\n  3. \"Our model is designed for people exactly like you – senior, frustrated, ready.\"\n\n  CLOSE WITH:\n  \"If this sounds interesting, we move fast. Would you like me to send you the \n   Netto-Rechner so you can model your own income?\"\n\n═══════════════════════════════════════════════════════════════════════════════\n"
+      }
+    }
+  ],
+  "dashboard": {
+    "date": "2026-05-29T12:21:06.315915",
+    "risk_alerts": [
+      {
+        "partner": "Dr. Marcus Vance",
+        "months_active": 4,
+        "burn_rate": {
+          "total_draw": 60000.0,
+          "total_collected": 60000.0,
+          "net_position": 0.0,
+          "burn_rate_pct": 0.0
+        },
+        "pipeline": {
+          "raw_pipeline": 150000.0,
+          "probability": 0.6,
+          "weighted_pipeline": 90000.0,
+          "projected_monthly": 11250.0
+        },
+        "curve_comparison": {
+          "ideal_collected": 51000.0,
+          "actual_collected": 60000.0,
+          "performance_index": 1.1764705882352942,
+          "status": "AHEAD"
+        },
+        "next_month_projection": 13875.0,
+        "monthly_draw": 15000.0,
+        "at_risk": true,
+        "alert": "⚠️ AT RISK: Projected €13,875 < Draw €15,000"
+      },
+      {
+        "partner": "Sarah Jenkins",
+        "months_active": 3,
+        "burn_rate": {
+          "total_draw": 54000.0,
+          "total_collected": 20000.0,
+          "net_position": -34000.0,
+          "burn_rate_pct": 62.96296296296296
+        },
+        "pipeline": {
+          "raw_pipeline": 80000.0,
+          "probability": 0.4,
+          "weighted_pipeline": 32000.0,
+          "projected_monthly": 3555.5555555555557
+        },
+        "curve_comparison": {
+          "ideal_collected": 37800.0,
+          "actual_collected": 20000.0,
+          "performance_index": 0.5291005291005291,
+          "status": "BEHIND"
+        },
+        "next_month_projection": 5733.333333333334,
+        "monthly_draw": 18000.0,
+        "at_risk": true,
+        "alert": "⚠️ AT RISK: Projected €5,733 < Draw €18,000"
+      }
+    ],
+    "signals": [
+      {
+        "headline": "Crypto custody rules threaten German Mittelstand",
+        "regulation_or_event": "MiCAR Regulation",
+        "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+        "target_audience": "CFOs of FinTech firms and asset managers",
+        "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+        "urgency": "HIGH",
+        "source_url": "https://example.com/micar-regulatory-update"
+      },
+      {
+        "headline": "Crypto custody rules threaten German Mittelstand",
+        "regulation_or_event": "MiCAR Regulation",
+        "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+        "target_audience": "CFOs of FinTech firms and asset managers",
+        "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+        "urgency": "HIGH",
+        "source_url": "https://example.com/micar-regulatory-update"
+      },
+      {
+        "headline": "Crypto custody rules threaten German Mittelstand",
+        "regulation_or_event": "MiCAR Regulation",
+        "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+        "target_audience": "CFOs of FinTech firms and asset managers",
+        "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+        "urgency": "HIGH",
+        "source_url": "https://example.com/micar-regulatory-update"
+      },
+      {
+        "headline": "Crypto custody rules threaten German Mittelstand",
+        "regulation_or_event": "MiCAR Regulation",
+        "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+        "target_audience": "CFOs of FinTech firms and asset managers",
+        "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+        "urgency": "HIGH",
+        "source_url": "https://example.com/micar-regulatory-update"
+      },
+      {
+        "headline": "Crypto custody rules threaten German Mittelstand",
+        "regulation_or_event": "MiCAR Regulation",
+        "business_pain": "German companies face high compliance overhead to secure crypto licenses under the new MiCAR framework.",
+        "target_audience": "CFOs of FinTech firms and asset managers",
+        "suggested_angle": "How to convert the burden of MiCAR licensing into an institutional credibility asset.",
+        "urgency": "HIGH",
+        "source_url": "https://example.com/micar-regulatory-update"
+      }
+    ]
+  }
+}

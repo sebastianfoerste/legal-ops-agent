@@ -5,16 +5,15 @@ Purpose: Turn signals from Agent E into LinkedIn posts.
 
 import json
 import os
+import sys
 
-from dotenv import load_dotenv
-from google import genai
-
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-client = genai.Client(api_key=GOOGLE_API_KEY)
+# Add parent directory to path to resolve src config
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.config import GEMINI_3_PRO
+from src.gemini_client import client
 
 SYSTEM_PROMPT = """
-You are a LinkedIn Ghostwriter for a senior Gunnercooke Partner.
+You are a LinkedIn Ghostwriter for a senior ApexLaw Partner.
 
 VOICE:
 - Direct, authoritative, but not arrogant
@@ -33,7 +32,7 @@ STRUCTURE (MUST FOLLOW):
    - Use emojis sparingly but effectively
    - Focus on €, risk, and time
    
-3. **The Pivot** (Lines 11-13): How the Gunnercooke 'Seniority' model solves this better.
+3. **The Pivot** (Lines 11-13): How the ApexLaw 'Seniority' model solves this better.
    - Example: "You need a senior advisor, not a junior memo."
    
 4. **CTA** (Final line): "DM me for the checklist." or similar
@@ -78,11 +77,11 @@ def generate_linkedin_post(signal: dict, partner_name: str = "Senior Partner") -
     
     PARTNER NAME: {partner_name}
     
-    Generate the LinkedIn post as valid JSON. Remember: max 1,500 characters, contrarian hook, business focus, Gunnercooke pivot.
+    Generate the LinkedIn post as valid JSON. Remember: max 1,500 characters, contrarian hook, business focus, ApexLaw pivot.
     """
 
     try:
-        response = client.models.generate_content(model="gemini-3-pro", contents=prompt)
+        response = client.models.generate_content(model=GEMINI_3_PRO, contents=prompt)
 
         text = response.text
         if "```json" in text:
@@ -155,7 +154,7 @@ if __name__ == "__main__":
     }
 
     print("\n📝 Generating LinkedIn Post...")
-    post = generate_linkedin_post(sample_signal, "Sebastian Förster")
+    post = generate_linkedin_post(sample_signal, "Alex Vancer")
     print(format_post_preview(post))
 
     print("\n--- RAW JSON ---")

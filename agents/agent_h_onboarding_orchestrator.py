@@ -43,7 +43,7 @@ class OnboardingOrchestrator:
     def send_welcome(self, name, email, start_date):
         print("\n📧 WELCOME PACKET")
         self.log("Welcome Email", "DONE", f"Sent to {email}")
-        return {"recipient": email, "subject": "Welcome to Gunnercooke 🚀"}
+        return {"recipient": email, "subject": "Welcome to ApexLaw 🚀"}
 
     def run(self, name, email, start_date, address, phone, bio):
         print("=" * 60)
@@ -63,8 +63,8 @@ class OnboardingOrchestrator:
 if __name__ == "__main__":
     o = OnboardingOrchestrator()
     o.run(
-        "Dr. Marcus Weber",
-        "marcus.weber@gunnercooke.de",
+        "Dr. Marcus Vance",
+        "marcus.weber@apexlaw.de",
         "2026-02-01",
         "Königsallee 92, Düsseldorf",
         "+49 211 123 4567",

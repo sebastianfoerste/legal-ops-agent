@@ -5,13 +5,12 @@ Purpose: Validate the business case (revenue potential) of a candidate by estima
 
 import json
 import os
+import sys
 
-from dotenv import load_dotenv
-from google import genai
-
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-client = genai.Client(api_key=GOOGLE_API_KEY)
+# Add parent directory to path to resolve src config
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.config import GEMINI_3_PRO
+from src.gemini_client import client
 
 # Revenue thresholds
 MIN_PORTABLE_REVENUE = 200_000  # €200k threshold for "Go"
@@ -22,7 +21,7 @@ INSTITUTIONAL_DISCOUNT = 0.80  # 80% discount (only 20% portable)
 RELATIONSHIP_DISCOUNT = 0.20  # 20% discount (80% portable)
 
 SYSTEM_PROMPT = """
-You are a Financial Analyst for Gunnercooke Germany. I will provide you with a lawyer's Deal Sheet or public biography. Your goal is to estimate their 'Portable Book of Business'.
+You are a Financial Analyst for ApexLaw Germany. I will provide you with a lawyer's Deal Sheet or public biography. Your goal is to estimate their 'Portable Book of Business'.
 
 Analysis Instructions:
 
@@ -84,7 +83,7 @@ def analyze_book_of_business(deal_sheet: str, candidate_name: str = "Unknown") -
     """
 
     try:
-        response = client.models.generate_content(model="gemini-3-pro", contents=full_prompt)
+        response = client.models.generate_content(model=GEMINI_3_PRO, contents=full_prompt)
 
         text = response.text
         if "```json" in text:
@@ -116,7 +115,7 @@ def generate_business_case_memo(analysis: dict) -> str:
     memo = f"""
 ╔══════════════════════════════════════════════════════════════════╗
 ║                    BUSINESS CASE MEMO                            ║
-║                    Gunnercooke Germany                           ║
+║                    ApexLaw Germany                           ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║  Candidate: {name:<52} ║
 ╠══════════════════════════════════════════════════════════════════╣
@@ -191,7 +190,7 @@ def estimate_portable_revenue_manual(clients: list) -> dict:
 # Example Usage
 if __name__ == "__main__":
     sample_deal_sheet = """
-    Dr. Marcus Weber - Counsel, Hengeler Mueller Düsseldorf
+    Dr. Marcus Vance - Counsel, Helm & Mueller Düsseldorf
     
     Practice Areas: Restructuring, Distressed M&A, Insolvency
     
@@ -231,7 +230,7 @@ if __name__ == "__main__":
     print("=" * 70)
     print("\nAnalyzing Portable Book of Business...\n")
 
-    analysis = analyze_book_of_business(sample_deal_sheet, "Dr. Marcus Weber")
+    analysis = analyze_book_of_business(sample_deal_sheet, "Dr. Marcus Vance")
     memo = generate_business_case_memo(analysis)
     print(memo)
 

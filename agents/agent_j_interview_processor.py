@@ -7,11 +7,16 @@ Author: Google Antigravity (2026)
 from __future__ import annotations
 
 import os
+import sys
 import time
 from datetime import datetime
 
 from dotenv import load_dotenv
 from google import genai
+
+# Add parent directory to path to resolve src config
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.config import GEMINI_3_FLASH, REASONING_MODEL_CHAIN
 
 try:
     from agents.prompt_guardrails import (
@@ -40,7 +45,7 @@ TRANSCRIPT_CHUNK_SUMMARY_PROMPT = """
 TASK: TRANSCRIPT CHUNK SUMMARY
 TRANSCRIPT CHUNK {chunk_index}/{total_chunks}
 
-You are the structured note-taker for Sebastian, a partner at gunnercooke.
+You are the structured note-taker for Sebastian, a partner at apexlaw.
 Extract only what is explicitly stated in this interview excerpt.
 Do not invent facts.
 
@@ -86,7 +91,7 @@ Summaries to merge:
 
 WOLF_SCHNEIDER_EMAIL_PROMPT = """
 TASK: FINAL EMAIL SYNTHESIS
-You are the Executive Assistant and Protokollführer for Sebastian, a partner at gunnercooke.
+You are the Executive Assistant and Protokollführer for Sebastian, a partner at apexlaw.
 Your work is characterized by legal precision and an excellent writing style.
 
 ### CORE PROTOCOLS (STRICTANTS):
@@ -112,7 +117,7 @@ Language: {language}
 3. Body: A factual summary of the candidate focusing on:
    - Hard Skills & Expertise.
    - Business Case (Portable revenue/clients).
-   - Motivation for joining gunnercooke.
+   - Motivation for joining apexlaw.
 4. Call to Action: "Er/Sie möchte nun gerne mit Dir sprechen."
 5. Contact Details:
    "Seine/Ihre E-Mail-Adresse lautet"
@@ -158,16 +163,14 @@ class InterviewProcessorError(RuntimeError):
 class InterviewProcessor:
     def __init__(
         self,
-        model_id: str = "gemini-3-flash-preview",
+        model_id: str = GEMINI_3_FLASH,
         prompt_budget: PromptBudget | None = None,
     ):
         self.model_id = model_id
         self.prompt_budget = prompt_budget or PromptBudget()
         self.retry_delay_seconds = 5
-        if GOOGLE_API_KEY:
-            self.client = genai.Client(api_key=GOOGLE_API_KEY)
-        else:
-            self.client = None
+        from src.gemini_client import client
+        self.client = client
 
     def detect_language(self, text: str) -> str:
         """Roughly detect if text is German or English."""
@@ -177,16 +180,13 @@ class InterviewProcessor:
 
     def _generate_with_fallback(self, prompt: str) -> str:
         """Try multiple models, but fail cleanly if they all fail."""
-        if not self.client:
-            raise InterviewProcessorError("GOOGLE_API_KEY not found in environment.")
-
         prompt_len = len(prompt)
         if prompt_len > self.prompt_budget.input_budget_chars:
             raise InterviewProcessorError(
                 f"Prompt budget exceeded ({prompt_len}/{self.prompt_budget.input_budget_chars} chars)."
             )
 
-        models = [self.model_id, "gemini-pro-latest", "gemini-flash-latest"]
+        models = [self.model_id] + [m for m in REASONING_MODEL_CHAIN if m != self.model_id]
         last_error: Exception | None = None
         for model_name in models:
             try:
@@ -363,7 +363,7 @@ if __name__ == "__main__":
     Sebastian: Hallo, danke dass Sie sich Zeit nehmen. Erzählen Sie mal von Ihrem Business Case.
     Kandidat: Ich bringe ein Team von 3 Leuten mit und ca. 600k Umsatz aus dem Bereich M&A.
     Ich möchte weg von der aktuellen Kanzlei, weil die Strukturen zu starr sind.
-    Gunnercooke scheint mir da flexibler zu sein.
+    ApexLaw scheint mir da flexibler zu sein.
     """
 
     agent = InterviewProcessor()

@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 from datetime import datetime
 
@@ -7,15 +8,14 @@ from ddgs import DDGS
 from dotenv import load_dotenv
 from google import genai
 
-# Load environment variables
-load_dotenv()
+# Add current workspace directory to system path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Configure Gemini API
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-if not GOOGLE_API_KEY:
-    raise ValueError("GOOGLE_API_KEY not found in .env file")
+from src.config import GEMINI_3_FLASH
 
-client = genai.Client(api_key=GOOGLE_API_KEY)
+# Add parent directory to path to resolve src config
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from src.gemini_client import client
 
 
 def search_legal_news(country="USA", max_results=5):
@@ -185,7 +185,7 @@ def generate_linkedin_posts(articles_text, country):
 
     try:
         # Switching to Gemini 3 Flash Preview as currently active/working
-        response = client.models.generate_content(model="gemini-3-flash", contents=prompt)
+        response = client.models.generate_content(model=GEMINI_3_FLASH, contents=prompt)
         return response.text
     except Exception as e:
         return f"Error gathering generation: {e}"
