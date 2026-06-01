@@ -2,10 +2,10 @@
 
 A supervised multi-agent prototype for legal operations, structured intake, risk triage, review routing and human-approved outputs.
 
-[![Stack](https://img.shields.io/badge/Stack-Python%20%7C%20AsyncIO%20%7C%20Pydantic-brightgreen?style=flat-square)](https://github.com/sebastianforste/legal_agent)
-[![Domain](https://img.shields.io/badge/Domain-Legal%20Operations-blue?style=flat-square)](https://github.com/sebastianforste/legal_agent)
+[![Stack](https://img.shields.io/badge/Stack-Python%20%7C%20AsyncIO%20%7C%20Pydantic-brightgreen?style=flat-square)](https://github.com/sebastianfoerste/legal_agent)
+[![Domain](https://img.shields.io/badge/Domain-Legal%20Operations-blue?style=flat-square)](https://github.com/sebastianfoerste/legal_agent)
 [![AI](https://img.shields.io/badge/AI-Google%20Gemini%20Pro-orange?style=flat-square)](https://ai.google.dev/)
-[![Orchestration](https://img.shields.io/badge/Orchestration-Multi--Agent%20AsyncIO-purple?style=flat-square)](https://github.com/sebastianforste/legal_agent)
+[![Orchestration](https://img.shields.io/badge/Orchestration-Multi--Agent%20AsyncIO-purple?style=flat-square)](https://github.com/sebastianfoerste/legal_agent)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](./LICENSE)
 
 ## What this proves
@@ -78,7 +78,7 @@ Additional modules:
 Prerequisites: Python 3.12+ and a Google Gemini API key.
 
 ```bash
-git clone https://github.com/sebastianforste/legal_agent
+git clone https://github.com/sebastianfoerste/legal_agent
 cd legal_agent
 pip install -r requirements.txt
 cp .env.example .env
@@ -115,6 +115,6 @@ API keys are managed via `.env` and never logged. All LLM outputs undergo Pydant
 
 ## Contact
 
-Built by Sebastian Förste: [github.com/sebastianforste](https://github.com/sebastianforste)
+Built by Sebastian Förste: [github.com/sebastianfoerste](https://github.com/sebastianfoerste)
 
-*Part of the [StrategyOS](https://github.com/sebastianforste/strategy-os-public) legal engineering ecosystem.*
+*Part of the [StrategyOS](https://github.com/sebastianfoerste/strategy-os-public) legal engineering ecosystem.*
