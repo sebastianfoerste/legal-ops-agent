@@ -6,12 +6,6 @@ LegalOps Agent turns recurring legal work into bounded, typed tasks: matter inta
 [![Domain](https://img.shields.io/badge/Domain-Legal%20Operations-blue?style=flat-square)](https://github.com/sebastianfoerste/legal-ops-agent)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](./LICENSE)
 
-## What this proves
-
-LegalOps Agent shows how legal work can move through software without pretending that software is the lawyer. It turns an incoming matter into a typed intake record, deterministic risk findings, source verification, reviewer routing and an explicit review state. Export stays blocked until a human reviewer approves the assessment with a written note.
-
-The repository is intentionally narrow. It is a public proof of legal infrastructure for AI-native SaaS teams: contract intake, DPA triage, AI vendor review, product-launch review, customer commitments, regulatory monitoring and approval gates.
-
 For evaluator context, see [Launch Readiness](docs/launch-readiness.md) and the [User Guide](docs/user_guide.md).
 
 ## Core workflow
