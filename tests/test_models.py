@@ -1,47 +1,54 @@
 import pytest
 from pydantic import ValidationError
 
-from models import CandidateProfile, OutreachMessage, Signal
+from models import LegalOpsAssessment, MatterIntake, ReviewDecision, RiskFinding, RoutingDecision
 
 
-def test_candidate_profile_accepts_optional_fields():
-    candidate = CandidateProfile(
-        name="Jane Doe",
-        current_role="Partner",
-        current_firm="Example LLP",
-        years_experience=12,
-        frustration_score=65,
-    )
-    assert candidate.book_of_business is None
-    assert candidate.practice_area is None
-
-
-def test_candidate_profile_rejects_invalid_frustration_score():
+def test_matter_intake_rejects_short_summary():
     with pytest.raises(ValidationError):
-        CandidateProfile(
-            name="Jane Doe",
-            current_role="Partner",
-            current_firm="Example LLP",
-            years_experience=12,
-            frustration_score=120,
+        MatterIntake(
+            title="DPA review",
+            requester="Sales",
+            business_unit="Enterprise",
+            matter_type="privacy",
+            jurisdiction="EU",
+            summary="Too short",
         )
 
 
-def test_signal_rejects_invalid_impact_rating():
+def test_review_decision_requires_approval_note_detail():
     with pytest.raises(ValidationError):
-        Signal(
-            source="Law Gazette",
-            headline="New Regulation",
-            summary="A summary",
-            impact_rating=11,
-            relevant_practice_areas=["Corporate"],
-        )
+        ReviewDecision(reviewer="GC", state="approved", note="Approved.")
 
 
-def test_outreach_message_defaults_to_linkedin_platform():
-    message = OutreachMessage(
-        candidate_name="Jane Doe",
-        subject="Intro",
-        body="Hello",
+def test_assessment_export_requires_approved_state():
+    matter = MatterIntake(
+        title="Enterprise customer DPA review",
+        requester="Sales",
+        business_unit="Enterprise",
+        matter_type="privacy",
+        jurisdiction="EU",
+        summary="Customer asks for changes to data processing terms and audit controls.",
     )
-    assert message.platform == "LinkedIn"
+    finding = RiskFinding(
+        category="privacy",
+        severity="medium",
+        summary="Data processing terms require review.",
+        evidence="DPA request",
+        recommended_action="Review roles, subprocessors and transfer basis.",
+    )
+    routing = RoutingDecision(
+        owner_role="Privacy Counsel",
+        reviewers=["Privacy Counsel"],
+        rationale="Privacy matter requires specialist review before export.",
+        sla_hours=24,
+    )
+
+    with pytest.raises(ValidationError):
+        LegalOpsAssessment(
+            matter=matter,
+            findings=[finding],
+            routing=routing,
+            review_state="needs_review",
+            export_allowed=True,
+        )

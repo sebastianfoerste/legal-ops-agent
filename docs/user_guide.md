@@ -1,57 +1,36 @@
-# Legal Agent Orchestrator - User Guide
+# User Guide
 
-The **Legal Agent Orchestrator** is an autonomous multi-agent system designed for **ApexLaw** to automate high-value partner recruiting, content generation, and risk monitoring.
-
-## 🚀 Quick Start
-
-### 1. Requirements
-Ensure you have the required dependencies:
-```bash
-pip install -r requirements.txt
-```
-(Requires `google-generative-ai`, `duckduckgo-search`, `trafilatura`, `beautifulsoup4`, `python-dotenv`)
-
-### 2. Environment Setup
-Create a `.env` file in the root directory:
-```bash
-GOOGLE_API_KEY=your_gemini_key_here
-```
-
-### 3. Running the Orchestrator
-The main entry point is `master_orchestrator.py`. It runs the demonstration pipelines.
+## Run the demo
 
 ```bash
+python -m pip install -r requirements.lock
 python master_orchestrator.py
 ```
 
-By default, this will trigger:
-1.  **Content Pipeline**: Search for legal signals and generate LinkedIn posts.
-2.  **Summary Generation**: Print a report of all actions.
-3.  **Result Saving**: Outputs `orchestrator_results.json`.
+The demo creates a synthetic enterprise DPA review, generates risk findings, routes reviewers and applies a documented human approval. The first assessment blocks export. The reviewed assessment allows export because the synthetic findings contain no blocker severity.
 
----
+## Call the local runtime
 
-## 🧩 Pipelines Explained
+```bash
+PORT=18085 python -m runtime_agent.app
+```
 
-### 1. Recruiting Pipeline (Agents A → B → C → D)
-*Automated Headhunting for High-Value Partners.*
-- **Agent A (Glass Ceiling Scout)**: Analyzes LinkedIn profiles to calculate a "Frustration Score" (likelihood of moving).
-- **Agent B (Rainmaker Profiler)**: Estimates portable book of business (Revenue). Filters candidates < €200k.
-- **Agent C (Outreach Architect)**: Drafts hyper-personalized outreach messages based on the candidate's recent wins.
-- **Agent D (Scheduling Concierge)**: Handlers scheduling and briefing.
+Health check:
 
-### 2. Content Pipeline (Agents E → F)
-*Thought Leadership Automation.*
-- **Agent E (Signal Hunter)**: Scans legal news (DuckDuckGo/Brave) for regulatory updates or insolvency news.
-- **Agent F (Ghostwriter)**: Writes viral LinkedIn posts in the voice of a "Senior Partner" based on the signals.
+```bash
+curl -fsS http://127.0.0.1:18085/health
+```
 
-### 3. Daily Dashboard (Agents K, L, E)
-*Risk & Opportunity Monitor.*
-- **Agent K (Revenue Predictor)**: Checks partner financials for risk (Revenue drops).
-- **Agent L**: Insolvency finder (Not yet fully active).
+MCP-style manifest:
 
----
+```bash
+curl -fsS http://127.0.0.1:18085/mcp/manifest
+```
 
-## 📂 Output Files
-- `orchestrator_results.json`: Complete dump of all pipeline data.
-- `LinkedIn_Posts/`: Markdown files containing generated content (from `agent.py` standalone runs).
+## Review gate
+
+Approval, rejection, revision requests and escalation require written review notes. This is intentional. The system is designed for auditability, not one-click legal output.
+
+## Data boundary
+
+Use synthetic or approved public data only. External model calls remain disabled unless `LEGAL_AGENT_EXTERNAL_MODEL_ENABLED=true` is set deliberately.

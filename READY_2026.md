@@ -1,21 +1,19 @@
-# Legal Agent
+# LegalOps Agent Readiness
 
-## 🌟 2026 Alignment Status: READY
+## Current status
 
-## 🛠️ Stack
-- **Framework**: Python 3.12 (Strict Typing)
-- **AI**: Gemini 3 Flash (Primary) + Gemini 2.5 Flash Lite (Fallback)
-- **Storage**: Local CSV / Markdown Artifacts
+Ready as a public portfolio prototype for supervised legal-operations workflows.
 
-## 🧠 Intelligence Logic
-- **Persona**: Marcus Vane (The Strategist)
-- **Anti-Robot Filter**: ACTIVE (Banning "Delve", "Leverage", etc.)
-- **Viral Syntax**: ACTIVE (Bro-etry, double-spaced)
+## Boundaries
 
-## 🚀 Roadmap
-- [x] Phase 1: Core Scraper Logic
-- [x] Phase 2: Agentic 2026 Refactor
-- [ ] Phase 3: Integration with StrategyOS Hub
+- Synthetic demo data only.
+- External model calls disabled by default.
+- Human approval required before export.
+- No client, candidate, matter or account data should be processed through external tools without explicit approval.
 
----
-*“Ready for the Autonomous Intelligence Era.”*
+## Validation path
+
+```bash
+make check
+python -m compileall master_orchestrator.py models.py src runtime_agent tests
+```
