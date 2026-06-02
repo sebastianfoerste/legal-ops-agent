@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from models import MatterIntake, ReviewDecision
-from src.exports import write_customer_commitment_register
+from src.exports import write_customer_commitment_register, write_source_verification_report
 from src.legal_ops import apply_review_decision, assess_matter, build_sample_matter
 from src.review_packet import write_review_packet
 
@@ -28,6 +28,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--commitments-output",
         type=Path,
         help="Write the customer-commitment register JSON to this path.",
+    )
+    parser.add_argument(
+        "--sources-output",
+        type=Path,
+        help="Write the source-verification report JSON to this path.",
     )
     parser.add_argument("--approve-note", help="Apply an approval note after assessment.")
     parser.add_argument(
@@ -54,6 +59,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         write_review_packet(assessment, args.packet_output)
     if args.commitments_output:
         write_customer_commitment_register(assessment, args.commitments_output)
+    if args.sources_output:
+        write_source_verification_report(assessment, args.sources_output)
     return payload
 
 

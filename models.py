@@ -16,6 +16,9 @@ RiskSeverity = Literal["low", "medium", "high", "blocker"]
 ReviewState = Literal["needs_review", "approved", "rejected", "revision_requested", "escalated"]
 ControlStatus = Literal["pass", "warning", "blocker"]
 AuditEventType = Literal["assessment_created", "review_decision_applied", "review_packet_generated"]
+SourceCategory = Literal[
+    "synthetic", "public_regulatory", "public_unapproved", "blocked", "missing"
+]
 
 
 class MatterIntake(BaseModel):
@@ -71,6 +74,17 @@ class CustomerCommitmentRecord(BaseModel):
     review_required: bool = True
 
 
+class SourceVerificationRecord(BaseModel):
+    """Deterministic source-boundary verification for an intake reference."""
+
+    source_ref: str = Field(..., min_length=3)
+    category: SourceCategory
+    status: ControlStatus
+    reason: str = Field(..., min_length=12)
+    public_authority: str | None = None
+    requires_human_review: bool = True
+
+
 class AuditEvent(BaseModel):
     """Audit event for the supervised legal-ops workflow."""
 
@@ -102,6 +116,7 @@ class LegalOpsAssessment(BaseModel):
     matter: MatterIntake
     findings: list[RiskFinding]
     controls: list[ControlCheck] = Field(default_factory=list)
+    source_verifications: list[SourceVerificationRecord] = Field(default_factory=list)
     customer_commitments: list[CustomerCommitmentRecord] = Field(default_factory=list)
     routing: RoutingDecision
     review_state: ReviewState = "needs_review"

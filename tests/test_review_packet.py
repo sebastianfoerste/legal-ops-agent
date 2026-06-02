@@ -8,6 +8,7 @@ def test_review_packet_contains_controls_commitments_and_audit_trail():
 
     assert "# LegalOps Review Packet" in packet
     assert "## Controls" in packet
+    assert "## Source Verification" in packet
     assert "## Customer Commitment Register" in packet
     assert "## Audit Trail" in packet
     assert assessment.assessment_id in packet

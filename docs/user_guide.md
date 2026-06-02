@@ -16,10 +16,15 @@ python -m src.cli \
   --input examples/matters/enterprise_dpa.json \
   --json-output demo_output/assessment.json \
   --packet-output demo_output/review-packet.md \
-  --commitments-output demo_output/customer-commitments.json
+  --commitments-output demo_output/customer-commitments.json \
+  --sources-output demo_output/source-verification.json
 ```
 
-The packet includes the matter summary, findings, controls, customer commitment register and audit trail. The commitment export writes the same customer-facing commitments as portable JSON.
+The packet includes the matter summary, findings, controls, source verification, customer commitment register and audit trail. The commitment and source exports write portable JSON for review systems.
+
+## Verify public source references
+
+The source verifier classifies references without fetching external content. Synthetic examples are allowed for demos. Public regulatory references using allowlisted domains such as ESMA, EBA, EDPB, EUR-Lex, BaFin and Bundesbank are marked as source-boundary passes, but still require human legal review before reliance.
 
 ## Call the local runtime
 

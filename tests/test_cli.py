@@ -7,6 +7,7 @@ def test_cli_writes_json_and_review_packet(tmp_path):
     json_output = tmp_path / "assessment.json"
     packet_output = tmp_path / "packet.md"
     commitments_output = tmp_path / "commitments.json"
+    sources_output = tmp_path / "sources.json"
     parser = build_parser()
     args = parser.parse_args(
         [
@@ -18,6 +19,8 @@ def test_cli_writes_json_and_review_packet(tmp_path):
             str(packet_output),
             "--commitments-output",
             str(commitments_output),
+            "--sources-output",
+            str(sources_output),
         ]
     )
 
@@ -29,3 +32,6 @@ def test_cli_writes_json_and_review_packet(tmp_path):
     commitments = json.loads(commitments_output.read_text(encoding="utf-8"))
     assert commitments["assessment_id"] == payload["assessment_id"]
     assert len(commitments["commitments"]) == 3
+    sources = json.loads(sources_output.read_text(encoding="utf-8"))
+    assert sources["assessment_id"] == payload["assessment_id"]
+    assert sources["source_verifications"][0]["status"] == "pass"

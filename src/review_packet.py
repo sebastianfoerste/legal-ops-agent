@@ -52,6 +52,22 @@ def _lines_for_commitments(assessment: LegalOpsAssessment) -> list[str]:
     ]
 
 
+def _lines_for_sources(assessment: LegalOpsAssessment) -> list[str]:
+    if not assessment.source_verifications:
+        return ["- No source verification records available."]
+    lines: list[str] = []
+    for item in assessment.source_verifications:
+        authority = f" | authority: {item.public_authority}" if item.public_authority else ""
+        lines.append(
+            (
+                f"- {item.status}: {item.source_ref} | category: {item.category}"
+                f"{authority} | human review: {item.requires_human_review}"
+            )
+        )
+        lines.append(f"  Reason: {item.reason}")
+    return lines
+
+
 def _audit_events_for_packet(assessment: LegalOpsAssessment) -> list[AuditEvent]:
     return [
         *assessment.audit_events,
@@ -104,6 +120,10 @@ def build_review_packet(assessment: LegalOpsAssessment) -> str:
         "## Controls",
         "",
         *_lines_for_controls(assessment),
+        "",
+        "## Source Verification",
+        "",
+        *_lines_for_sources(assessment),
         "",
         "## Customer Commitment Register",
         "",

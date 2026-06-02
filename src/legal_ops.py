@@ -14,11 +14,11 @@ from models import (
     ReviewDecision,
     RiskFinding,
     RoutingDecision,
+    SourceVerificationRecord,
 )
+from src.source_verification import verify_source_refs
 
 SYSTEM_ACTOR = "LegalOps Agent"
-APPROVED_SOURCE_PREFIXES = ("synthetic:", "public:")
-BLOCKED_SOURCE_PREFIXES = ("client:", "candidate:", "privileged:", "confidential:")
 
 
 def utc_now_iso() -> str:
@@ -31,15 +31,18 @@ def stable_assessment_id(matter: MatterIntake) -> str:
 
 
 def blocked_source_refs(matter: MatterIntake) -> list[str]:
-    return [ref for ref in matter.source_refs if ref.lower().startswith(BLOCKED_SOURCE_PREFIXES)]
+    return [
+        record.source_ref
+        for record in verify_source_refs(matter.source_refs)
+        if record.status == "blocker"
+    ]
 
 
 def unapproved_source_refs(matter: MatterIntake) -> list[str]:
     return [
-        ref
-        for ref in matter.source_refs
-        if not ref.lower().startswith(APPROVED_SOURCE_PREFIXES)
-        and not ref.lower().startswith(BLOCKED_SOURCE_PREFIXES)
+        record.source_ref
+        for record in verify_source_refs(matter.source_refs)
+        if record.status == "warning" and record.category != "missing"
     ]
 
 
@@ -123,6 +126,17 @@ def generate_findings(matter: MatterIntake) -> list[RiskFinding]:
             )
         )
 
+    if matter.matter_type == "regulatory_monitoring":
+        findings.append(
+            RiskFinding(
+                category="regulatory_monitoring",
+                severity="medium",
+                summary="Regulatory monitoring requires source verification and legal interpretation.",
+                evidence=", ".join(matter.source_refs) if matter.source_refs else matter.title,
+                recommended_action="Verify source boundaries and route any checklist update for legal review.",
+            )
+        )
+
     if not findings:
         findings.append(
             RiskFinding(
@@ -137,22 +151,30 @@ def generate_findings(matter: MatterIntake) -> list[RiskFinding]:
     return findings
 
 
-def generate_controls(matter: MatterIntake, findings: list[RiskFinding]) -> list[ControlCheck]:
-    blocked_refs = blocked_source_refs(matter)
-    unapproved_refs = unapproved_source_refs(matter)
+def generate_controls(
+    matter: MatterIntake,
+    findings: list[RiskFinding],
+    source_verifications: list[SourceVerificationRecord],
+) -> list[ControlCheck]:
+    blocked_refs = [
+        record.source_ref for record in source_verifications if record.status == "blocker"
+    ]
+    warning_refs = [
+        record.source_ref for record in source_verifications if record.status == "warning"
+    ]
 
     if blocked_refs:
         source_boundary_status: ControlStatus = "blocker"
         source_boundary_summary = "Blocked source references prevent export."
         source_boundary_evidence = ", ".join(blocked_refs)
-    elif matter.source_refs and not unapproved_refs:
+    elif matter.source_refs and not warning_refs:
         source_boundary_status = "pass"
         source_boundary_summary = "Matter source boundary is explicit."
         source_boundary_evidence = ", ".join(matter.source_refs)
-    elif unapproved_refs:
+    elif warning_refs:
         source_boundary_status = "warning"
         source_boundary_summary = "Source references require approval before reviewer reliance."
-        source_boundary_evidence = ", ".join(unapproved_refs)
+        source_boundary_evidence = ", ".join(warning_refs)
     else:
         source_boundary_status = "warning"
         source_boundary_summary = "Matter source boundary is missing."
@@ -236,6 +258,8 @@ def route_matter(matter: MatterIntake, findings: list[RiskFinding]) -> RoutingDe
         reviewers.append("AI Governance Lead")
     if "customer_commitments" in categories:
         reviewers.append("Commercial Counsel")
+    if "regulatory_monitoring" in categories:
+        reviewers.append("Regulatory Counsel")
     if matter.urgency == "high":
         reviewers.append("General Counsel")
 
@@ -253,6 +277,7 @@ def route_matter(matter: MatterIntake, findings: list[RiskFinding]) -> RoutingDe
 
 
 def assess_matter(matter: MatterIntake) -> LegalOpsAssessment:
+    source_verifications = verify_source_refs(matter.source_refs)
     findings = generate_findings(matter)
     routing = route_matter(matter, findings)
     created_at = utc_now_iso()
@@ -261,7 +286,8 @@ def assess_matter(matter: MatterIntake) -> LegalOpsAssessment:
         created_at_utc=created_at,
         matter=matter,
         findings=findings,
-        controls=generate_controls(matter, findings),
+        controls=generate_controls(matter, findings, source_verifications),
+        source_verifications=source_verifications,
         customer_commitments=build_customer_commitment_register(matter),
         routing=routing,
         review_state="needs_review",
