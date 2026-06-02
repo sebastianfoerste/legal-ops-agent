@@ -1,20 +1,34 @@
 # What This Proves for a General Counsel Candidate
 
-This repository serves as a concrete proof of work demonstrating the legal engineering and operational capabilities required of a first General Counsel at an AI-native SaaS company.
+This repository is a public proof of legal engineering for an AI-native SaaS legal function. It shows how legal work can be decomposed into typed intake, deterministic controls, reviewer routing and human-approved outputs.
 
-## 1. Legal Workflows as Structured Internal Product Infrastructure
-Traditional legal teams operate reactively via email inboxes. This repository demonstrates the ability to translate recurring legal tasks into structured, scalable Python workflows:
-- **Typed Handoffs and Pydantic Schemas**: Matters, risk findings, reviewer routing, review decisions, and assessments are modeled as strict Pydantic classes (`models.py`).
-- **Deterministic Risk Triage**: Every request is validated and triaged programmatically through rules (such as custom data retention, GDPR special category data, copyleft licenses). This makes routine intake self-serve and routes high-stakes issues directly to the GC.
-- **Reviewer Routing**: Based on the urgency, type, and risk profile of a matter, the engine determines the required approvals and routes to the appropriate human reviewers (e.g. DPO, GC, InfoSec).
+## Structured Legal Operations
 
-## 2. Technical Alignment with Core Engineering and Product
-A General Counsel in an AI-native company must speak the same language as the engineering and product teams:
-- **Local MCP Server Integration**: Exposes core legal functions as a Model Context Protocol (MCP) server (`mcp.json`). This shows how the legal function can interface directly with AI systems, allowing developers or customer agents to query risk assessment and review states programmatically.
-- **Robust Software Hygiene**: Pytest unit test suites, linting, Ruff style enforcement, and type checking verify that legal tools can be held to the same operational standards as production software.
+The app turns a legal matter into a `MatterIntake`, deterministic `RiskFinding` records, `ControlCheck` records, `SourceVerificationRecord` records and a `LegalOpsAssessment`. The result is a legal workflow that engineering teams can inspect, test and integrate.
 
-## 3. Practical AI Governance and Risk Mitigation
-For a platform running agents on customer data, this prototype implements real-world governance boundaries:
-- **Zero Autonomous Legal Advice**: The system is designed to check rules and compile information, but **never** creates final legal decisions or submissions.
-- **Hard Approval Gates**: Assessments are locked and export is blocked until a qualified human lawyer submits a signed review decision and note.
-- **Redaction & Data Hygiene**: Synthetic data fixtures are used to prevent leakage of client-confidential or candidate-specific material.
+The current demo covers:
+
+- Enterprise DPA review.
+- AI product-launch review.
+- Public regulatory monitoring.
+- Customer-commitment tracking.
+- Source-boundary verification.
+- Human review gates before export.
+
+## Source And Data Discipline
+
+The app treats source boundaries as product architecture. Synthetic demo sources pass. Public regulatory references are checked against a fixed domain allowlist without network access. Sensitive prefixes such as `client:`, `candidate:`, `privileged:` and `confidential:` become blocker inputs.
+
+This matters for a legal AI function because confidentiality and provenance need to be built into the workflow, rather than added as prose after the fact.
+
+## Human Review Gates
+
+Assessments begin in `needs_review`. Export remains blocked until a reviewer records an approval decision with a sufficiently detailed note. Blocker findings continue to prevent export after approval.
+
+The architecture therefore supports AI-assisted legal operations while preserving review, accountability and human judgment.
+
+## Engineering Signal
+
+The repo uses Pydantic contracts, deterministic functions, a local MCP-style tool surface, CLI fixtures, runtime health checks and tests for validation, source boundaries, review gates, packet generation and documentation integrity.
+
+For a first General Counsel role at an AI-native SaaS company, that is the practical signal: legal judgment translated into systems that product and engineering teams can use safely.
