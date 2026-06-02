@@ -7,10 +7,11 @@
 - [x] Add explicit MCP configuration.
 - [x] Add runtime health and manifest canary.
 - [x] Add tests for validation, export gates, review notes and MCP tools.
+- [x] Add fixture-driven CLI and markdown review packet generation.
+- [x] Add a customer-commitment register export.
+- [x] Add blocked source-boundary controls.
+- [x] Add redacted sample contract clause fixtures.
 
 ## Next
 
-- [ ] Add a redacted sample contract clause fixture.
-- [ ] Add a customer-commitment register export fixture.
 - [ ] Add optional source-citation verification for public regulatory materials.
-- [ ] Add a small CLI for passing approved JSON matter files into the workflow.

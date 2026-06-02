@@ -6,7 +6,7 @@ This document explains how to evaluate and run LegalOps Agent.
 
 LegalOps Agent demonstrates supervised legal-operations architecture for AI-native SaaS teams. It decomposes legal work into typed intake, deterministic risk findings, review routing and documented human approval.
 
-The core proof is controlled orchestration. Legal tasks move through typed stages, and no consequential output is exported until a reviewer approves it with a written note.
+The core proof is controlled orchestration. Legal tasks move through typed stages, and no consequential output is exported until a reviewer approves it with a written note. Client, candidate, privileged and confidential source references are blocker inputs.
 
 ## Architecture
 
@@ -31,6 +31,16 @@ python master_orchestrator.py
 
 External model calls are disabled by default. Set `LEGAL_AGENT_EXTERNAL_MODEL_ENABLED=true` only for approved test data.
 
+For fixture-based evaluation:
+
+```bash
+python -m src.cli \
+  --input examples/matters/enterprise_dpa.json \
+  --json-output demo_output/assessment.json \
+  --packet-output demo_output/review-packet.md \
+  --commitments-output demo_output/customer-commitments.json
+```
+
 ## Runtime canary
 
 ```bash
@@ -52,4 +62,4 @@ Use synthetic matters, public regulatory examples and mock commercial terms. Do 
 
 ## Good evaluator route
 
-A reviewer should inspect the README, `models.py`, `src/legal_ops.py`, `src/mcp_tools.py`, `runtime_agent/app.py`, the tests and `SECURITY.md`. The key signal is that the architecture treats agents as controlled workflow components with source boundaries and review gates.
+A reviewer should inspect the README, `models.py`, `src/legal_ops.py`, `src/exports.py`, `src/mcp_tools.py`, `runtime_agent/app.py`, the tests and `SECURITY.md`. The key signal is that the architecture treats agents as controlled workflow components with source boundaries and review gates.

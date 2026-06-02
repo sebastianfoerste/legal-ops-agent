@@ -1,6 +1,46 @@
 from __future__ import annotations
 
-from models import LegalOpsAssessment, MatterIntake, ReviewDecision, RiskFinding, RoutingDecision
+import hashlib
+import json
+from datetime import datetime, timezone
+
+from models import (
+    AuditEvent,
+    ControlCheck,
+    ControlStatus,
+    CustomerCommitmentRecord,
+    LegalOpsAssessment,
+    MatterIntake,
+    ReviewDecision,
+    RiskFinding,
+    RoutingDecision,
+)
+
+SYSTEM_ACTOR = "LegalOps Agent"
+APPROVED_SOURCE_PREFIXES = ("synthetic:", "public:")
+BLOCKED_SOURCE_PREFIXES = ("client:", "candidate:", "privileged:", "confidential:")
+
+
+def utc_now_iso() -> str:
+    return datetime.now(tz=timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def stable_assessment_id(matter: MatterIntake) -> str:
+    payload = json.dumps(matter.model_dump(mode="json"), sort_keys=True)
+    return f"loa_{hashlib.sha256(payload.encode('utf-8')).hexdigest()[:16]}"
+
+
+def blocked_source_refs(matter: MatterIntake) -> list[str]:
+    return [ref for ref in matter.source_refs if ref.lower().startswith(BLOCKED_SOURCE_PREFIXES)]
+
+
+def unapproved_source_refs(matter: MatterIntake) -> list[str]:
+    return [
+        ref
+        for ref in matter.source_refs
+        if not ref.lower().startswith(APPROVED_SOURCE_PREFIXES)
+        and not ref.lower().startswith(BLOCKED_SOURCE_PREFIXES)
+    ]
 
 
 def build_sample_matter() -> MatterIntake:
@@ -23,6 +63,21 @@ def build_sample_matter() -> MatterIntake:
 
 def generate_findings(matter: MatterIntake) -> list[RiskFinding]:
     findings: list[RiskFinding] = []
+    blocked_refs = blocked_source_refs(matter)
+
+    if blocked_refs:
+        findings.append(
+            RiskFinding(
+                category="source_boundary",
+                severity="blocker",
+                summary="Matter references blocked source material.",
+                evidence=", ".join(blocked_refs),
+                recommended_action=(
+                    "Remove client, candidate, privileged or confidential source "
+                    "references before processing."
+                ),
+            )
+        )
 
     if matter.data_categories:
         findings.append(
@@ -82,6 +137,93 @@ def generate_findings(matter: MatterIntake) -> list[RiskFinding]:
     return findings
 
 
+def generate_controls(matter: MatterIntake, findings: list[RiskFinding]) -> list[ControlCheck]:
+    blocked_refs = blocked_source_refs(matter)
+    unapproved_refs = unapproved_source_refs(matter)
+
+    if blocked_refs:
+        source_boundary_status: ControlStatus = "blocker"
+        source_boundary_summary = "Blocked source references prevent export."
+        source_boundary_evidence = ", ".join(blocked_refs)
+    elif matter.source_refs and not unapproved_refs:
+        source_boundary_status = "pass"
+        source_boundary_summary = "Matter source boundary is explicit."
+        source_boundary_evidence = ", ".join(matter.source_refs)
+    elif unapproved_refs:
+        source_boundary_status = "warning"
+        source_boundary_summary = "Source references require approval before reviewer reliance."
+        source_boundary_evidence = ", ".join(unapproved_refs)
+    else:
+        source_boundary_status = "warning"
+        source_boundary_summary = "Matter source boundary is missing."
+        source_boundary_evidence = "No source references supplied."
+
+    controls = [
+        ControlCheck(
+            control_id="source-boundary",
+            status=source_boundary_status,
+            summary=source_boundary_summary,
+            evidence=source_boundary_evidence,
+            owner_role="Legal Operations",
+        ),
+        ControlCheck(
+            control_id="human-review-gate",
+            status="pass",
+            summary="Export is blocked until a human review decision is recorded.",
+            evidence="review_state starts as needs_review",
+            owner_role="General Counsel",
+        ),
+    ]
+
+    if any(finding.severity == "blocker" for finding in findings):
+        controls.append(
+            ControlCheck(
+                control_id="blocker-gate",
+                status="blocker",
+                summary="At least one blocker finding prevents export.",
+                evidence="blocker finding present",
+                owner_role="General Counsel",
+            )
+        )
+
+    if matter.customer_commitments:
+        controls.append(
+            ControlCheck(
+                control_id="commitment-register",
+                status="warning",
+                summary="Customer commitments must be recorded before final signature.",
+                evidence=", ".join(matter.customer_commitments),
+                owner_role="Commercial Counsel",
+            )
+        )
+
+    if matter.data_categories:
+        controls.append(
+            ControlCheck(
+                control_id="data-map",
+                status="warning",
+                summary="Data categories require privacy mapping and retention checks.",
+                evidence=", ".join(matter.data_categories),
+                owner_role="Privacy Counsel",
+            )
+        )
+
+    return controls
+
+
+def build_customer_commitment_register(matter: MatterIntake) -> list[CustomerCommitmentRecord]:
+    source = matter.source_refs[0] if matter.source_refs else "matter-intake"
+    return [
+        CustomerCommitmentRecord(
+            commitment=commitment,
+            owner_role="Commercial Counsel",
+            source=source,
+            review_required=True,
+        )
+        for commitment in matter.customer_commitments
+    ]
+
+
 def route_matter(matter: MatterIntake, findings: list[RiskFinding]) -> RoutingDecision:
     reviewers = ["Legal Ops"]
     owner_role = "Legal Operations"
@@ -113,12 +255,25 @@ def route_matter(matter: MatterIntake, findings: list[RiskFinding]) -> RoutingDe
 def assess_matter(matter: MatterIntake) -> LegalOpsAssessment:
     findings = generate_findings(matter)
     routing = route_matter(matter, findings)
+    created_at = utc_now_iso()
     return LegalOpsAssessment(
+        assessment_id=stable_assessment_id(matter),
+        created_at_utc=created_at,
         matter=matter,
         findings=findings,
+        controls=generate_controls(matter, findings),
+        customer_commitments=build_customer_commitment_register(matter),
         routing=routing,
         review_state="needs_review",
         export_allowed=False,
+        audit_events=[
+            AuditEvent(
+                event_type="assessment_created",
+                actor=SYSTEM_ACTOR,
+                note="Assessment created from typed matter intake.",
+                timestamp_utc=created_at,
+            )
+        ],
     )
 
 
@@ -128,10 +283,22 @@ def apply_review_decision(
 ) -> LegalOpsAssessment:
     blocker_present = any(finding.severity == "blocker" for finding in assessment.findings)
     export_allowed = decision.state == "approved" and not blocker_present
-    return assessment.model_copy(
-        update={
+    audit_events = [
+        *assessment.audit_events,
+        AuditEvent(
+            event_type="review_decision_applied",
+            actor=decision.reviewer,
+            note=decision.note,
+            timestamp_utc=utc_now_iso(),
+        ),
+    ]
+    payload = assessment.model_dump(mode="python")
+    payload.update(
+        {
             "review_state": decision.state,
             "review_note": f"{decision.reviewer}: {decision.note}",
             "export_allowed": export_allowed,
+            "audit_events": audit_events,
         }
     )
+    return LegalOpsAssessment.model_validate(payload)

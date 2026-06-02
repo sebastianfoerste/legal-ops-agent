@@ -4,6 +4,7 @@ import json
 
 from models import ReviewDecision
 from src.legal_ops import apply_review_decision, assess_matter, build_sample_matter
+from src.review_packet import build_review_packet
 
 
 def run_demo() -> dict[str, object]:
@@ -23,6 +24,7 @@ def run_demo() -> dict[str, object]:
     return {
         "initial_assessment": assessment.model_dump(mode="json"),
         "reviewed_assessment": reviewed.model_dump(mode="json"),
+        "review_packet_markdown": build_review_packet(reviewed),
     }
 
 
