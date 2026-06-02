@@ -4,6 +4,7 @@ from typing import Any
 
 from models import LegalOpsAssessment, MatterIntake, ReviewDecision
 from src.legal_ops import apply_review_decision, assess_matter
+from src.review_packet import build_review_packet
 
 
 def legal_ops_mcp_manifest() -> dict[str, Any]:
@@ -36,6 +37,11 @@ def legal_ops_mcp_manifest() -> dict[str, Any]:
                 "description": "Return the source and data boundary for the public demo.",
                 "input_schema": {"type": "object", "properties": {}},
             },
+            {
+                "name": "legal.review.packet",
+                "description": "Render a markdown review packet from an assessment.",
+                "input_schema": LegalOpsAssessment.model_json_schema(),
+            },
         ],
     }
 
@@ -54,8 +60,17 @@ def run_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, An
     if name == "legal.sources.list":
         return {
             "allowed_sources": ["synthetic examples", "public regulatory materials"],
-            "blocked_sources": ["client documents", "candidate data", "privileged advice"],
+            "blocked_sources": [
+                "client documents",
+                "candidate data",
+                "privileged advice",
+                "confidential commercial material",
+            ],
             "external_processing": "disabled by default",
         }
+
+    if name == "legal.review.packet":
+        assessment = LegalOpsAssessment.model_validate(payload)
+        return {"markdown": build_review_packet(assessment)}
 
     raise ValueError(f"unsupported tool: {name}")

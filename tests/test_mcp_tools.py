@@ -10,6 +10,7 @@ def test_mcp_manifest_exposes_controlled_tools():
     assert tool_names == {
         "legal.matter.assess",
         "legal.review.decide",
+        "legal.review.packet",
         "legal.sources.list",
     }
 
@@ -23,3 +24,9 @@ def test_mcp_assess_tool_returns_blocked_assessment():
 def test_mcp_rejects_unknown_tool():
     with pytest.raises(ValueError):
         run_tool("legal.unknown", {})
+
+
+def test_mcp_review_packet_tool_returns_markdown():
+    assessment = run_tool("legal.matter.assess", build_sample_matter().model_dump(mode="json"))
+    result = run_tool("legal.review.packet", assessment)
+    assert "LegalOps Review Packet" in result["markdown"]
