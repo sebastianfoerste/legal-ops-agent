@@ -1,22 +1,27 @@
-.PHONY: lock install check test lint format
+PYTHON := $(shell if [ -x .venv/bin/python ]; then echo .venv/bin/python; else echo python; fi)
+
+.PHONY: lock install check test lint format compile
 
 lock:
 	uv pip compile requirements.in -o requirements.lock
 
 install:
-	python -m pip install --upgrade pip
-	python -m pip install -r requirements.lock
+	$(PYTHON) -m pip install --upgrade pip
+	$(PYTHON) -m pip install -r requirements.lock
 
 lint:
-	ruff check .
-	black --check .
-	mypy .
+	$(PYTHON) -m ruff check .
+	$(PYTHON) -m black --check .
+	$(PYTHON) -m mypy .
 
 test:
-	pytest -q
+	$(PYTHON) -m pytest -q
 
-check: lint test
+compile:
+	$(PYTHON) -m compileall master_orchestrator.py models.py src runtime_agent tests
+
+check: lint test compile
 
 format:
-	ruff check --fix .
-	black .
+	$(PYTHON) -m ruff check --fix .
+	$(PYTHON) -m black .

@@ -1,7 +1,4 @@
-"""
-Intelligence Core: Compliance and 2026 Content Standards.
-Detects and filters robotic or unnatural language generation.
-"""
+from __future__ import annotations
 
 import re
 
@@ -11,35 +8,39 @@ BANNED_WORDS = [
     "unleash",
     "tapestry",
     "testament",
-    "excited to",
-    "dynamic team",
-    "innovative environment",
-    "cutting-edge",
-    "game-changing",
-    "revolutionize",
+    "game changer",
+    "transformative journey",
+    "leverage synergies",
+    "in today's fast-paced world",
+    "ready for the future of",
+    "excited to share",
 ]
 
 
-def apply_2026_standards(text: str) -> str:
-    """
-    Applies the anti-robot filter and ensures viral syntax spacing constraints.
-    Replaces banned words with simpler alternatives.
-    """
-    cleaned = text
-    # Case-insensitive replacement
+def apply_language_standards(text: str) -> str:
+    """Replace promotional filler with plain legal-operations language."""
+
     replacements = {
-        r"\bdelve\b": "go deep",
+        r"\bleverage synergies\b": "coordinate work",
+        r"\bdelve\b": "review",
         r"\bleverage\b": "use",
-        r"\bunleash\b": "show",
+        r"\bunleash\b": "release",
         r"\btapestry\b": "structure",
-        r"\btestament\b": "proof",
-        r"\bexcited to\b": "ready to",
-        r"\bcutting-edge\b": "modern",
-        r"\bgame-changing\b": "effective",
-        r"\brevolutionize\b": "improve",
+        r"\btestament\b": "evidence",
+        r"\bgame changer\b": "material change",
+        r"\btransformative journey\b": "implementation",
+        r"\bin today's fast-paced world\b": "in current practice",
+        r"\bready for the future of\b": "prepared for",
+        r"\bexcited to share\b": "sharing",
     }
 
+    cleaned = text
     for pattern, replacement in replacements.items():
         cleaned = re.sub(pattern, replacement, cleaned, flags=re.IGNORECASE)
-
     return cleaned
+
+
+def apply_2026_standards(text: str) -> str:
+    """Backward-compatible alias used by older tests and integrations."""
+
+    return apply_language_standards(text)

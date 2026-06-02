@@ -1,23 +1,16 @@
-# Development Tasks: Legal Agent
+# Development Tasks
 
-## Phase 1: Core Orchestration (COMPLETE ✅)
-- [x] Create `ApexLawOrchestrator` class.
-- [x] Implement Recruiting Pipeline (A-D).
-- [x] Implement Content Pipeline (E-F).
-- [x] Implement Daily Dashboard logic.
+## Completed
 
-## Phase 2: Agent Implementation (COMPLETE ✅)
-- [x] **Agent A**: Profile Scoring logic.
-- [x] **Agent B**: Revenue Estimation logic.
-- [x] **Agent E**: Signal Hunter (Search & Filter).
-- [x] **Agent F**: Ghostwriter (Prompt Engineering).
+- [x] Remove non-legal growth artifacts from the public tree.
+- [x] Replace public demo with legal intake, risk finding, routing and review-state workflow.
+- [x] Add explicit MCP configuration.
+- [x] Add runtime health and manifest canary.
+- [x] Add tests for validation, export gates, review notes and MCP tools.
 
-## Phase 3: Robustness (IN PROGRESS)
-- [x] Add multi-layer search fallback (DDG/Brave).
-- [ ] Add real LinkedIn API integration for profile fetching (Currently Mock/Manual).
-- [ ] Connect `Agent K` to real financial database (SQL/CSV).
+## Next
 
-## Phase 4: UI & Deployment
-- [ ] Create a Streamlit Dashboard for the Orchestrator.
-- [ ] Dockerize the agent system.
-- [ ] Set up Cron jobs for the Daily Dashboard.
+- [ ] Add a redacted sample contract clause fixture.
+- [ ] Add a customer-commitment register export fixture.
+- [ ] Add optional source-citation verification for public regulatory materials.
+- [ ] Add a small CLI for passing approved JSON matter files into the workflow.

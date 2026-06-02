@@ -1,120 +1,83 @@
-# LegalAgent Swarm
+# LegalOps Agent
 
-A supervised multi-agent prototype for legal operations, structured intake, risk triage, review routing and human-approved outputs.
+Supervised legal-operations agent for intake, risk triage, review routing and human-approved outputs.
 
-[![Stack](https://img.shields.io/badge/Stack-Python%20%7C%20AsyncIO%20%7C%20Pydantic-brightgreen?style=flat-square)](https://github.com/sebastianfoerste/legal_agent)
-[![Domain](https://img.shields.io/badge/Domain-Legal%20Operations-blue?style=flat-square)](https://github.com/sebastianfoerste/legal_agent)
-[![AI](https://img.shields.io/badge/AI-Google%20Gemini%20Pro-orange?style=flat-square)](https://ai.google.dev/)
-[![Orchestration](https://img.shields.io/badge/Orchestration-Multi--Agent%20AsyncIO-purple?style=flat-square)](https://github.com/sebastianfoerste/legal_agent)
+[![Stack](https://img.shields.io/badge/Stack-Python%20%7C%20Pydantic%20%7C%20MCP-brightgreen?style=flat-square)](https://github.com/sebastianfoerste/legal-ops-agent)
+[![Domain](https://img.shields.io/badge/Domain-Legal%20Operations-blue?style=flat-square)](https://github.com/sebastianfoerste/legal-ops-agent)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](./LICENSE)
 
 ## What this proves
 
-* Legal work can be decomposed into bounded agent tasks without losing human control.
-* Schema-validated handoffs are more reliable than informal prompt chains.
-* A legal operations system should route, escalate, record and review before anything is acted upon.
+LegalOps Agent shows how legal work can move through software without pretending that software is the lawyer. It turns an incoming matter into a typed intake record, deterministic risk findings, reviewer routing and an explicit review state. Export stays blocked until a human reviewer approves the assessment with a written note.
 
-## Overview
+The repository is intentionally narrow. It is a public proof of legal infrastructure for AI-native SaaS teams: contract intake, DPA triage, AI vendor review, product-launch review, customer commitments, regulatory monitoring and approval gates.
 
-LegalAgent demonstrates how a coordinated set of specialised AI agents can handle structured legal operations work: matter intake, product counsel review, contract risk review, regulatory monitoring and approval workflow design.
-
-Each agent handles a bounded task, passes typed outputs to the next stage, and routes to a human approval step before any output is persisted or acted upon. The architecture is intentionally supervisor-controlled rather than autonomous.
-
-Core capabilities:
-
-* Structured matter intake and classification
-* Contract risk triage and routing to appropriate review workflows
-* Regulatory change monitoring with summarisation and alert drafting
-* Product counsel review support for privacy, AI governance and vendor contracts
-* Approval gate design with escalation logic and audit trail
-* Calendar routing and scheduling coordination
-
-## Architecture
-
-A Master Orchestrator manages asynchronous concurrent execution across specialised agents using Python AsyncIO. Each agent communicates through strict Pydantic schema contracts, ensuring all agent-to-agent data exchanges are validated before processing.
+## Core workflow
 
 ```mermaid
 flowchart TD
-  A[Incoming legal matter] --> B[Intake Agent]
-  B --> C[Typed matter profile]
-  C --> D{Routing decision}
-  D --> E[Review Agent]
-  D --> F[Monitor Agent]
-  D --> G[Concierge Agent]
-  E --> H[Structured risk output]
-  F --> I[Change alert draft]
-  G --> J[Scheduling or handoff]
-  H --> K[Approval Router]
-  I --> K
-  J --> K
-  K --> L{Human approved?}
-  L -- No --> M[Revise or escalate]
-  L -- Yes --> N[Persist reviewed output]
+  A[Incoming legal matter] --> B[Typed intake]
+  B --> C[Risk assessment]
+  C --> D[Reviewer routing]
+  D --> E[Assessment needs review]
+  E --> F{Human decision}
+  F -->|Approve with note| G[Export allowed]
+  F -->|Reject or revise| H[Export blocked]
 ```
 
-Agents:
+## Design principles
 
-* Intake Agent: classifies and structures incoming matters by type, urgency and routing path.
-* Review Agent: applies rule-based and LLM-assisted risk analysis to contracts and regulatory documents.
-* Monitor Agent: tracks regulatory sources and generates structured change alerts.
-* Concierge Agent: handles scheduling, routing and human-in-the-loop handoff.
+- Human review before consequential use.
+- Deterministic rules before model synthesis.
+- Pydantic schemas for every handoff.
+- Review notes required for approval, rejection and escalation.
+- Local MCP configuration for controlled tool access.
+- Synthetic sample data only.
 
-Additional modules:
+## Repository structure
 
-* Signal Hunter: regulatory and case-law alerting concept.
-* Approval Router: escalation triggers, data minimisation and reusable legal playbooks.
-
-## Tech stack
-
-* Language: Python 3.12+
-* Concurrency: `asyncio`, `aiohttp`
-* AI model: Google Gemini Pro / Flash
-* Data validation: Pydantic v2
-* Build and CI: `uv`, `ruff`, `mypy`, GitHub Actions
-* Testing: `pytest`, `pytest-asyncio`
+- [`models.py`](models.py): Pydantic contracts for matters, findings, routing, review decisions and assessments.
+- [`src/legal_ops.py`](src/legal_ops.py): Deterministic intake, risk and routing workflow.
+- [`src/mcp_tools.py`](src/mcp_tools.py): Local tool manifest and tool dispatcher for MCP-style integrations.
+- [`runtime_agent/app.py`](runtime_agent/app.py): Small HTTP canary for health checks and local workflow calls.
+- [`mcp.json`](mcp.json): Explicit local MCP server configuration.
+- [`tests/`](tests): Unit tests for validation, risk logic, review gates, MCP manifest and runtime behavior.
 
 ## Quick start
 
-Prerequisites: Python 3.12+ and a Google Gemini API key.
+Prerequisites: Python 3.12+.
 
 ```bash
-git clone https://github.com/sebastianfoerste/legal_agent
-cd legal_agent
-pip install -r requirements.txt
-cp .env.example .env
+git clone https://github.com/sebastianfoerste/legal-ops-agent
+cd legal-ops-agent
+python -m pip install -r requirements.lock
 python master_orchestrator.py
 ```
 
-## Launch readiness
+The demo uses synthetic data and does not call an external model by default.
 
-For a reviewer-friendly runbook covering demo path, checks, sample-data rules, architecture and safety posture, see [`docs/launch-readiness.md`](docs/launch-readiness.md).
+## Checks
 
-## Legal-tech domain concepts
+```bash
+make check
+```
 
-The project covers:
+This runs Ruff, Black, MyPy and Pytest.
 
-* Contract lifecycle monitoring and review workflow triggers
-* Compliance automation and structured change summaries
-* Legal process optimisation through triage, routing and approval gates
-* Audit trail design with schema-validated outputs
+## MCP surface
 
-## Key design decisions
+`mcp.json` exposes a local `legal-ops-agent` server with three controlled tools:
 
-1. Human-in-the-loop by default: no output is acted upon without an explicit approval step.
-2. Schema-first communication: Pydantic contracts enforce data integrity across agent boundaries.
-3. High-concurrency AsyncIO: intake items can be processed without blocking the review pipeline.
-4. Modular agents: each agent can be tested, replaced or extended independently.
+- `legal.matter.assess`: create a structured assessment from a typed legal matter.
+- `legal.review.decide`: apply a documented human review decision.
+- `legal.sources.list`: show the public or synthetic source boundary for the demo.
+
+These tools are designed for local evaluation. They do not send client, candidate, matter or account data to an external system.
 
 ## Safety note
 
-This is a prototype. It does not provide legal advice. Consequential legal work requires professional review, source verification and organisation-specific controls.
-
-## Security
-
-API keys are managed via `.env` and never logged. All LLM outputs undergo Pydantic schema validation before persistence. See [SECURITY.md](./SECURITY.md) for responsible disclosure.
+This is a prototype. It does not provide legal advice, legal representation or filing-ready regulatory conclusions. Consequential legal work requires qualified human review, source verification and organisation-specific controls.
 
 ## Contact
 
 Built by Sebastian Förste: [github.com/sebastianfoerste](https://github.com/sebastianfoerste)
-
-*Part of the [StrategyOS](https://github.com/sebastianfoerste/strategy-os-public) legal engineering ecosystem.*
