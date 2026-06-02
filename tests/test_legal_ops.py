@@ -73,3 +73,46 @@ def test_blocked_source_reference_prevents_export_after_approval():
     assert any(finding.category == "source_boundary" for finding in assessment.findings)
     assert any(control.status == "blocker" for control in assessment.controls)
     assert reviewed.export_allowed is False
+
+
+def test_public_regulatory_source_is_verified_and_routed():
+    matter = MatterIntake(
+        title="Public regulatory monitoring review",
+        requester="Legal Operations",
+        business_unit="Product Legal",
+        matter_type="regulatory_monitoring",
+        jurisdiction="EU",
+        summary="Legal operations reviews public regulatory monitoring before updating a checklist.",
+        urgency="medium",
+        source_refs=["public:https://www.esma.europa.eu/"],
+    )
+
+    assessment = assess_matter(matter)
+
+    assert assessment.source_verifications[0].status == "pass"
+    assert assessment.source_verifications[0].category == "public_regulatory"
+    assert assessment.source_verifications[0].public_authority == "esma.europa.eu"
+    assert any(finding.category == "regulatory_monitoring" for finding in assessment.findings)
+    assert "Regulatory Counsel" in assessment.routing.reviewers
+
+
+def test_unapproved_public_source_is_warning():
+    matter = MatterIntake(
+        title="Unapproved public source review",
+        requester="Legal Operations",
+        business_unit="Product Legal",
+        matter_type="regulatory_monitoring",
+        jurisdiction="EU",
+        summary="Legal operations checks that non-allowlisted public sources require review.",
+        urgency="medium",
+        source_refs=["public:https://example.com/regulatory-note"],
+    )
+
+    assessment = assess_matter(matter)
+
+    assert assessment.source_verifications[0].status == "warning"
+    assert assessment.source_verifications[0].category == "public_unapproved"
+    assert any(
+        control.control_id == "source-boundary" and control.status == "warning"
+        for control in assessment.controls
+    )

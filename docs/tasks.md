@@ -11,7 +11,8 @@
 - [x] Add a customer-commitment register export.
 - [x] Add blocked source-boundary controls.
 - [x] Add redacted sample contract clause fixtures.
+- [x] Add optional source-citation verification for public regulatory materials.
 
 ## Next
-
-- [ ] Add optional source-citation verification for public regulatory materials.
+- [ ] Add clause-to-obligation extraction for redacted contract fixtures.
+- [ ] Add signed JSON output manifests for exported review artifacts.

@@ -13,6 +13,7 @@ Defines the Pydantic contracts:
 - `RoutingDecision`
 - `ControlCheck`
 - `CustomerCommitmentRecord`
+- `SourceVerificationRecord`
 - `AuditEvent`
 - `ReviewDecision`
 - `LegalOpsAssessment`
@@ -26,8 +27,13 @@ Contains deterministic workflow logic:
 - Builds a synthetic sample matter.
 - Generates risk findings from matter type, data categories and customer commitments.
 - Blocks client, candidate, privileged and confidential source references.
+- Adds deterministic source-verification records to each assessment.
 - Routes review to privacy, AI-governance, commercial or GC reviewers.
 - Applies a human review decision with an audit note.
+
+### `src/source_verification.py`
+
+Classifies source references without network access. It permits synthetic demo references, verifies public regulatory domains against a fixed allowlist and blocks sensitive prefixes.
 
 ### `src/exports.py`
 
@@ -44,7 +50,7 @@ Exposes the local MCP-style tool surface:
 
 ### `src/review_packet.py`
 
-Renders a reviewer-ready markdown packet with findings, controls, customer commitments and audit events, including packet-generation evidence.
+Renders a reviewer-ready markdown packet with findings, controls, source verification, customer commitments and audit events, including packet-generation evidence.
 
 ### `src/cli.py`
 

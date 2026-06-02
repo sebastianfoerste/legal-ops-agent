@@ -5,6 +5,7 @@ from typing import Any
 from models import LegalOpsAssessment, MatterIntake, ReviewDecision
 from src.legal_ops import apply_review_decision, assess_matter
 from src.review_packet import build_review_packet
+from src.source_verification import PUBLIC_REGULATORY_DOMAINS, verify_source_refs
 
 
 def legal_ops_mcp_manifest() -> dict[str, Any]:
@@ -38,6 +39,20 @@ def legal_ops_mcp_manifest() -> dict[str, Any]:
                 "input_schema": {"type": "object", "properties": {}},
             },
             {
+                "name": "legal.sources.verify",
+                "description": "Verify source-reference boundaries without fetching external content.",
+                "input_schema": {
+                    "type": "object",
+                    "properties": {
+                        "source_refs": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                        }
+                    },
+                    "required": ["source_refs"],
+                },
+            },
+            {
                 "name": "legal.review.packet",
                 "description": "Render a markdown review packet from an assessment.",
                 "input_schema": LegalOpsAssessment.model_json_schema(),
@@ -67,6 +82,18 @@ def run_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, An
                 "confidential commercial material",
             ],
             "external_processing": "disabled by default",
+        }
+
+    if name == "legal.sources.verify":
+        source_refs = payload.get("source_refs", [])
+        if not isinstance(source_refs, list) or not all(
+            isinstance(item, str) for item in source_refs
+        ):
+            raise ValueError("source_refs must be a list of strings")
+        records = verify_source_refs(source_refs)
+        return {
+            "source_verifications": [record.model_dump(mode="json") for record in records],
+            "public_regulatory_domains": list(PUBLIC_REGULATORY_DOMAINS),
         }
 
     if name == "legal.review.packet":
