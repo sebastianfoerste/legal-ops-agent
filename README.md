@@ -6,7 +6,7 @@ LegalOps Agent turns recurring legal work into bounded, typed tasks: matter inta
 [![Domain](https://img.shields.io/badge/Domain-Legal%20Operations-blue?style=flat-square)](https://github.com/sebastianfoerste/legal-ops-agent)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](./LICENSE)
 
-For evaluator context, see [Launch Readiness](docs/launch-readiness.md) and the [User Guide](docs/user_guide.md).
+For evaluator context, start with the [User Guide](docs/user_guide.md), the examples and the tests.
 
 ## Core workflow
 
