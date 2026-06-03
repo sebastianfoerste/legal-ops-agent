@@ -2,6 +2,8 @@
 
 LegalOps Agent turns recurring legal work into bounded, typed tasks: matter intake, contract risk triage, source verification, reviewer routing and human-approved outputs. It exposes its workflow as a local MCP server with five controlled tools, so an agent platform can call legal operations the way it calls any other tool, with deterministic rules before model synthesis and a human approval gate before anything is persisted or acted on.
 
+Designed for AI-native SaaS teams where legal needs to be available inside product and revenue workflows, but consequential decisions still require accountable human approval.
+
 [![Stack](https://img.shields.io/badge/Stack-Python%20%7C%20Pydantic%20%7C%20MCP-brightgreen?style=flat-square)](https://github.com/sebastianfoerste/legal-ops-agent)
 [![Domain](https://img.shields.io/badge/Domain-Legal%20Operations-blue?style=flat-square)](https://github.com/sebastianfoerste/legal-ops-agent)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](./LICENSE)
