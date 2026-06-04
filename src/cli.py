@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from models import MatterIntake, ReviewDecision
+from src.artifact_manifest import write_artifact_manifest
 from src.exports import write_customer_commitment_register, write_source_verification_report
 from src.legal_ops import apply_review_decision, assess_matter, build_sample_matter
 from src.review_packet import write_review_packet
@@ -34,6 +35,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="Write the source-verification report JSON to this path.",
     )
+    parser.add_argument(
+        "--manifest-output",
+        type=Path,
+        help="Write a local integrity manifest for generated review artifacts.",
+    )
     parser.add_argument("--approve-note", help="Apply an approval note after assessment.")
     parser.add_argument(
         "--reviewer", default="General Counsel", help="Reviewer for approval notes."
@@ -52,15 +58,22 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         )
 
     payload = assessment.model_dump(mode="json")
+    artifacts: dict[str, Any] = {"assessment_json": payload}
     if args.json_output:
         args.json_output.parent.mkdir(parents=True, exist_ok=True)
         args.json_output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        artifacts["assessment_json"] = args.json_output
     if args.packet_output:
         write_review_packet(assessment, args.packet_output)
+        artifacts["review_packet_markdown"] = args.packet_output
     if args.commitments_output:
         write_customer_commitment_register(assessment, args.commitments_output)
+        artifacts["customer_commitment_register_json"] = args.commitments_output
     if args.sources_output:
         write_source_verification_report(assessment, args.sources_output)
+        artifacts["source_verification_json"] = args.sources_output
+    if args.manifest_output:
+        write_artifact_manifest(assessment, args.manifest_output, artifacts)
     return payload
 
 

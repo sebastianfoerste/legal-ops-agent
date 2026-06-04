@@ -8,6 +8,7 @@ def test_cli_writes_json_and_review_packet(tmp_path):
     packet_output = tmp_path / "packet.md"
     commitments_output = tmp_path / "commitments.json"
     sources_output = tmp_path / "sources.json"
+    manifest_output = tmp_path / "manifest.json"
     parser = build_parser()
     args = parser.parse_args(
         [
@@ -21,6 +22,8 @@ def test_cli_writes_json_and_review_packet(tmp_path):
             str(commitments_output),
             "--sources-output",
             str(sources_output),
+            "--manifest-output",
+            str(manifest_output),
         ]
     )
 
@@ -35,3 +38,14 @@ def test_cli_writes_json_and_review_packet(tmp_path):
     sources = json.loads(sources_output.read_text(encoding="utf-8"))
     assert sources["assessment_id"] == payload["assessment_id"]
     assert sources["source_verifications"][0]["status"] == "pass"
+    manifest = json.loads(manifest_output.read_text(encoding="utf-8"))
+    assert manifest["schema"] == "legal-ops-agent.artifact-manifest.v1"
+    assert manifest["assessment_id"] == payload["assessment_id"]
+    assert manifest["local_integrity_signature"]["algorithm"] == "sha256"
+    assert len(manifest["local_integrity_signature"]["value"]) == 64
+    assert {item["name"] for item in manifest["artifacts"]} == {
+        "assessment_json",
+        "review_packet_markdown",
+        "customer_commitment_register_json",
+        "source_verification_json",
+    }
