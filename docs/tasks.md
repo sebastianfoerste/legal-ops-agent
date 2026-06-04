@@ -15,4 +15,4 @@
 
 ## Next
 - [ ] Add clause-to-obligation extraction for redacted contract fixtures.
-- [ ] Add signed JSON output manifests for exported review artifacts.
+- [x] Add local integrity manifests for exported review artifacts.

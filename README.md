@@ -70,8 +70,13 @@ python -m src.cli \
   --json-output demo_output/assessment.json \
   --packet-output demo_output/review-packet.md \
   --commitments-output demo_output/customer-commitments.json \
-  --sources-output demo_output/source-verification.json
+  --sources-output demo_output/source-verification.json \
+  --manifest-output demo_output/artifact-manifest.json
 ```
+
+The manifest records SHA-256 digests for each generated review artifact and a
+local integrity signature over the digest set. It is designed for reviewer
+traceability. It is not an eIDAS signature.
 
 ## Checks
 
