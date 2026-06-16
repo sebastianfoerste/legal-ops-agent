@@ -8,19 +8,52 @@ Designed for AI-native SaaS teams where legal needs to be available inside produ
 [![Domain](https://img.shields.io/badge/Domain-Legal%20Operations-blue?style=flat-square)](https://github.com/sebastianfoerste/legal-ops-agent)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](./LICENSE)
 
-For evaluator context, start with the [User Guide](docs/user_guide.md), the examples and the tests.
+For evaluator context, start with the 90-second path below, the
+[Evaluator Guide](docs/evaluator-guide.md), the examples and the tests.
+
+## 90-second evaluator path
+
+```bash
+python3.13 -m venv .venv
+source .venv/bin/activate
+make install
+python -m src.cli --input examples/matters/saas_msa_deviation.json
+```
+
+The first run returns `review_state: "needs_review"` and
+`export_allowed: false`. Inspect the risk decision, reviewer routing, source
+verification records and audit trail in the JSON output.
+
+Approve the same synthetic matter with a documented human decision:
+
+```bash
+python -m src.cli \
+  --input examples/matters/saas_msa_deviation.json \
+  --approve-note "Approved after commercial counsel review of the synthetic MSA deviation." \
+  --packet-output demo_output/saas-msa-review-packet.md \
+  --manifest-output demo_output/saas-msa-artifact-manifest.json
+```
+
+Export remains blocked until approval is recorded, and it remains blocked after
+approval if a blocker finding is still present.
+
+Run the public proof gate:
+
+```bash
+make check
+```
 
 ## Core workflow
 
 ```mermaid
 flowchart TD
-  A[Incoming legal matter] --> B[Typed intake]
-  B --> C[Risk assessment]
+  A[Typed matter intake] --> B[Deterministic risk assessment]
+  B --> C[Source verification]
   C --> D[Reviewer routing]
-  D --> E[Assessment needs review]
-  E --> F{Human decision}
-  F -->|Approve with note| G[Export allowed]
-  F -->|Reject or revise| H[Export blocked]
+  D --> E[Human approval gate]
+  E -->|Approved with note and no blockers| F[Export allowed]
+  E -->|Needs review, rejected, revised, or blocker present| G[Export blocked]
+  F --> H[Artifact manifest and review packet]
 ```
 
 ## Design principles
@@ -43,7 +76,7 @@ flowchart TD
 - [`src/mcp_tools.py`](src/mcp_tools.py): Local tool manifest and tool dispatcher for MCP-style integrations.
 - [`src/review_packet.py`](src/review_packet.py): Markdown review-packet renderer for legal sign-off.
 - [`src/cli.py`](src/cli.py): Fixture-driven command line entry point.
-- [`examples/matters/`](examples/matters): Synthetic matter intake fixtures.
+- [`examples/matters/`](examples/matters): Synthetic SaaS, DPA, AI-vendor, product and regulatory-monitoring fixtures.
 - [`examples/clauses/`](examples/clauses): Synthetic redacted clause fixtures.
 - [`runtime_agent/app.py`](runtime_agent/app.py): Small HTTP canary for health checks and local workflow calls.
 - [`mcp.json`](mcp.json): Explicit local MCP server configuration.
@@ -51,7 +84,7 @@ flowchart TD
 
 ## Quick start
 
-Prerequisites: Python 3.12+.
+Prerequisites: Python 3.13+.
 
 ```bash
 git clone https://github.com/sebastianfoerste/legal-ops-agent
@@ -97,6 +130,17 @@ This runs Ruff, Black, MyPy and Pytest.
 - `legal.sources.verify`: verify source-reference boundaries without fetching external content.
 
 These tools are designed for local evaluation. They do not send client, candidate, matter or account data to an external system.
+
+See [docs/API.md](docs/API.md) for input schemas, output schemas, safety limits
+and example calls.
+
+## What this proves
+
+This repository demonstrates supervised legal operations as software. It shows
+typed intake, deterministic triage, source-boundary controls, reviewer routing,
+human approval gates, artifact manifests and local MCP-style tool calls. The
+important signal is the control model: automation prepares the matter, but a
+qualified human decision controls export.
 
 ## Safety note
 
