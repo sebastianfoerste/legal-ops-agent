@@ -1,3 +1,5 @@
+import pytest
+
 from src.source_verification import verify_source_ref, verify_source_refs
 
 
@@ -10,8 +12,17 @@ def test_verify_source_ref_accepts_public_regulatory_domain():
     assert record.requires_human_review is True
 
 
-def test_verify_source_ref_blocks_sensitive_prefix():
-    record = verify_source_ref("privileged:board-advice")
+@pytest.mark.parametrize(
+    "source_ref",
+    [
+        "client:customer-dpa",
+        "candidate:recruiting-note",
+        "privileged:board-advice",
+        "confidential:commercial-model",
+    ],
+)
+def test_verify_source_ref_blocks_sensitive_prefixes(source_ref):
+    record = verify_source_ref(source_ref)
 
     assert record.status == "blocker"
     assert record.category == "blocked"
