@@ -11,6 +11,7 @@ def test_mcp_manifest_exposes_controlled_tools():
         "legal.matter.assess",
         "legal.review.decide",
         "legal.review.packet",
+        "legal.review.packet.run",
         "legal.sources.list",
         "legal.sources.verify",
     }
@@ -31,6 +32,18 @@ def test_mcp_review_packet_tool_returns_markdown():
     assessment = run_tool("legal.matter.assess", build_sample_matter().model_dump(mode="json"))
     result = run_tool("legal.review.packet", assessment)
     assert "LegalOps Review Packet" in result["markdown"]
+
+
+def test_mcp_review_packet_runner_returns_policy_payload():
+    result = run_tool(
+        "legal.review.packet.run",
+        build_sample_matter().model_dump(mode="json"),
+    )
+
+    assert result["schema"] == "legal-ops-agent.source-verified-review-packet-run.v1"
+    assert result["status"] == "review_required"
+    assert result["policy_envelope"]["external_actions_allowed"] is False
+    assert "LegalOps Review Packet" in result["markdown_packet"]
 
 
 def test_mcp_source_verify_tool_returns_structured_report():
