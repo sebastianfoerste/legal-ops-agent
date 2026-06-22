@@ -8,6 +8,7 @@ def test_cli_writes_json_and_review_packet(tmp_path):
     packet_output = tmp_path / "packet.md"
     commitments_output = tmp_path / "commitments.json"
     sources_output = tmp_path / "sources.json"
+    review_runner_output = tmp_path / "review-runner.json"
     manifest_output = tmp_path / "manifest.json"
     parser = build_parser()
     args = parser.parse_args(
@@ -22,6 +23,8 @@ def test_cli_writes_json_and_review_packet(tmp_path):
             str(commitments_output),
             "--sources-output",
             str(sources_output),
+            "--review-runner-output",
+            str(review_runner_output),
             "--manifest-output",
             str(manifest_output),
         ]
@@ -38,6 +41,11 @@ def test_cli_writes_json_and_review_packet(tmp_path):
     sources = json.loads(sources_output.read_text(encoding="utf-8"))
     assert sources["assessment_id"] == payload["assessment_id"]
     assert sources["source_verifications"][0]["status"] == "pass"
+    review_runner = json.loads(review_runner_output.read_text(encoding="utf-8"))
+    assert review_runner["schema"] == "legal-ops-agent.source-verified-review-packet-run.v1"
+    assert review_runner["assessment_id"] == payload["assessment_id"]
+    assert review_runner["policy_envelope"]["external_actions_allowed"] is False
+    assert "LegalOps Review Packet" in review_runner["markdown_packet"]
     manifest = json.loads(manifest_output.read_text(encoding="utf-8"))
     assert manifest["schema"] == "legal-ops-agent.artifact-manifest.v1"
     assert manifest["assessment_id"] == payload["assessment_id"]
@@ -48,4 +56,5 @@ def test_cli_writes_json_and_review_packet(tmp_path):
         "review_packet_markdown",
         "customer_commitment_register_json",
         "source_verification_json",
+        "source_verified_review_packet_runner_json",
     }

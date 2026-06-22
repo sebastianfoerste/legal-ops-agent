@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 MatterType = Literal[
     "contract",
@@ -19,6 +19,7 @@ AuditEventType = Literal["assessment_created", "review_decision_applied", "revie
 SourceCategory = Literal[
     "synthetic", "public_regulatory", "public_unapproved", "blocked", "missing"
 ]
+ReviewPacketRunStatus = Literal["blocked", "review_required", "ready"]
 
 
 class MatterIntake(BaseModel):
@@ -133,3 +134,70 @@ class LegalOpsAssessment(BaseModel):
         if self.export_allowed and not self.review_note:
             raise ValueError("export requires a documented review note")
         return self
+
+
+class SourceManifestEntry(BaseModel):
+    """Safe source-verification entry for reviewer packet runs."""
+
+    source_ref: str = Field(..., min_length=3)
+    category: SourceCategory
+    status: ControlStatus
+    reason: str = Field(..., min_length=12)
+    public_authority: str | None = None
+    requires_human_review: bool = True
+    redacted: bool = False
+
+
+class SourceManifestSummary(BaseModel):
+    """Source-boundary summary for a source-verified packet run."""
+
+    pass_count: int = Field(..., ge=0)
+    warning_count: int = Field(..., ge=0)
+    blocker_count: int = Field(..., ge=0)
+    entries: list[SourceManifestEntry]
+
+
+class RiskTriageSummary(BaseModel):
+    """Compact risk and control summary for reviewer routing."""
+
+    highest_severity: RiskSeverity
+    finding_count: int = Field(..., ge=0)
+    blocker_count: int = Field(..., ge=0)
+    categories: list[str]
+    control_status: dict[str, ControlStatus]
+    recommended_next_actions: list[str]
+
+
+class ReviewPolicyEnvelope(BaseModel):
+    """Local policy boundary attached to a packet runner result."""
+
+    review_state: ReviewState
+    export_allowed: bool
+    human_review_required: bool
+    external_actions_allowed: bool = False
+    delivery_mode: Literal["local_review_only"] = "local_review_only"
+    blocked_actions: list[str] = Field(
+        default_factory=lambda: ["external_delivery", "publication", "filing", "outreach"]
+    )
+    source_boundary: str
+    legal_advice_status: Literal["draft_for_human_review"] = "draft_for_human_review"
+
+
+class SourceVerifiedReviewPacketRun(BaseModel):
+    """One-shot runner output for a source-verified review packet."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    schema_version: Literal["legal-ops-agent.source-verified-review-packet-run.v1"] = Field(
+        alias="schema"
+    )
+    assessment_id: str = Field(..., min_length=12)
+    generated_at_utc: str = Field(..., min_length=10)
+    status: ReviewPacketRunStatus
+    matter_intake: MatterIntake
+    risk_triage: RiskTriageSummary
+    source_manifest: SourceManifestSummary
+    policy_envelope: ReviewPolicyEnvelope
+    review_state: ReviewState
+    export_allowed: bool
+    markdown_packet: str

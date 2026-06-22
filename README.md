@@ -1,6 +1,6 @@
 # LegalOps Agent
 
-LegalOps Agent turns recurring legal work into bounded, typed tasks: matter intake, contract risk triage, source verification, reviewer routing and human-approved outputs. It exposes its workflow as a local MCP server with five controlled tools, so an agent platform can call legal operations the way it calls any other tool, with deterministic rules before model synthesis and a human approval gate before anything is persisted or acted on.
+LegalOps Agent turns recurring legal work into bounded, typed tasks: matter intake, contract risk triage, source verification, reviewer routing and human-approved outputs. It exposes its workflow as a local MCP server with six controlled tools, so an agent platform can call legal operations the way it calls any other tool, with deterministic rules before model synthesis and a human approval gate before anything is persisted or acted on.
 
 Designed for AI-native SaaS teams where legal needs to be available inside product and revenue workflows, but consequential decisions still require accountable human approval.
 
@@ -104,6 +104,7 @@ python -m src.cli \
   --packet-output demo_output/review-packet.md \
   --commitments-output demo_output/customer-commitments.json \
   --sources-output demo_output/source-verification.json \
+  --review-runner-output demo_output/source-verified-review-runner.json \
   --manifest-output demo_output/artifact-manifest.json
 ```
 
@@ -121,11 +122,12 @@ This runs Ruff, Black, MyPy and Pytest.
 
 ## MCP surface
 
-`mcp.json` exposes a local `legal-ops-agent` server with five controlled tools:
+`mcp.json` exposes a local `legal-ops-agent` server with six controlled tools:
 
 - `legal.matter.assess`: create a structured assessment from a typed legal matter.
 - `legal.review.decide`: apply a documented human review decision.
 - `legal.review.packet`: render a markdown review packet from an assessment.
+- `legal.review.packet.run`: assess a matter and return the source-verified packet, source manifest and policy envelope in one payload.
 - `legal.sources.list`: show the public or synthetic source boundary for the demo.
 - `legal.sources.verify`: verify source-reference boundaries without fetching external content.
 

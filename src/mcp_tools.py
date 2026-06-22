@@ -5,6 +5,7 @@ from typing import Any
 from models import LegalOpsAssessment, MatterIntake, ReviewDecision
 from src.legal_ops import apply_review_decision, assess_matter
 from src.review_packet import build_review_packet
+from src.review_packet_runner import run_source_verified_review_packet
 from src.source_verification import PUBLIC_REGULATORY_DOMAINS, verify_source_refs
 
 
@@ -57,6 +58,13 @@ def legal_ops_mcp_manifest() -> dict[str, Any]:
                 "description": "Render a markdown review packet from an assessment.",
                 "input_schema": LegalOpsAssessment.model_json_schema(),
             },
+            {
+                "name": "legal.review.packet.run",
+                "description": (
+                    "Assess a matter and return a source-verified review packet runner payload."
+                ),
+                "input_schema": MatterIntake.model_json_schema(),
+            },
         ],
     }
 
@@ -99,5 +107,12 @@ def run_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, An
     if name == "legal.review.packet":
         assessment = LegalOpsAssessment.model_validate(payload)
         return {"markdown": build_review_packet(assessment)}
+
+    if name == "legal.review.packet.run":
+        matter = MatterIntake.model_validate(payload)
+        return run_source_verified_review_packet(matter).model_dump(
+            mode="json",
+            by_alias=True,
+        )
 
     raise ValueError(f"unsupported tool: {name}")

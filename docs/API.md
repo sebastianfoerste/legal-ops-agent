@@ -91,6 +91,23 @@ Output schema:
 Safety limit: packets are reviewer drafts. They are not legal advice and do not
 override the export gate.
 
+## `legal.review.packet.run`
+
+Purpose: assess a `MatterIntake` and return one source-verified runner payload
+with risk triage, safe source manifest, policy envelope, review state and
+Markdown packet.
+
+Input schema: `MatterIntake.model_json_schema()`.
+
+Output schema: `SourceVerifiedReviewPacketRun.model_json_schema()`.
+
+Safety limits:
+
+1. The runner has no external effects.
+2. External delivery, publication, filing and outreach remain blocked.
+3. Blocked sensitive source identifiers are redacted inside the runner payload.
+4. The Markdown packet remains a draft for human review.
+
 ## `legal.sources.verify`
 
 Purpose: classify source references without fetching external content.
