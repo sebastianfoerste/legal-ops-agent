@@ -11,6 +11,8 @@ Designed for AI-native SaaS teams where legal needs to be available inside produ
 For evaluator context, start with the 90-second path below, the
 [Evaluator Guide](docs/evaluator-guide.md), the examples and the tests.
 
+![Supervised review: a SaaS MSA matter triaged to high risk, routed to four reviewers, export blocked until human approval is recorded](docs/review-gate.svg)
+
 ## 90-second evaluator path
 
 ```bash
