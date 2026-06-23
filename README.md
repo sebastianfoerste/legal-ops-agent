@@ -1,15 +1,59 @@
-# LegalOps Agent
+# legal-ops-agent
 
-LegalOps Agent turns recurring legal work into bounded, typed tasks: matter intake, contract risk triage, source verification, reviewer routing and human-approved outputs. It exposes its workflow as a local MCP server with six controlled tools, so an agent platform can call legal operations the way it calls any other tool, with deterministic rules before model synthesis and a human approval gate before anything is persisted or acted on.
+Supervised legal-operations workflow: typed intake, deterministic risk triage, reviewer routing, human-approved export, audit trail. Not legal advice; data is synthetic.
 
-Designed for AI-native SaaS teams where legal needs to be available inside product and revenue workflows, but consequential decisions still require accountable human approval.
+> **If you don't code:** scroll to [What the demo produces](#what-the-demo-produces). This repo ships a sample output you can read in the browser. The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
 
-[![Stack](https://img.shields.io/badge/Stack-Python%20%7C%20Pydantic%20%7C%20MCP-brightgreen?style=flat-square)](https://github.com/sebastianfoerste/legal-ops-agent)
-[![Domain](https://img.shields.io/badge/Domain-Legal%20Operations-blue?style=flat-square)](https://github.com/sebastianfoerste/legal-ops-agent)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](./LICENSE)
+![demo](docs/demo.png)
 
-For evaluator context, start with the 90-second path below, the
-[Evaluator Guide](docs/evaluator-guide.md), the examples and the tests.
+## Run it
+
+```bash
+git clone https://github.com/sebastianfoerste/legal-ops-agent
+cd legal-ops-agent
+make install
+PYTHONPATH=. .venv/bin/python master_orchestrator.py
+```
+
+Runs end to end, offline and deterministically.
+
+## What the demo produces
+
+The workflow runs triage over a matter intake, generates deterministic findings, and routes to reviewers. Export remains blocked until a human reviewer records an approval decision. You can read the committed sample output: [`examples/matter-run.md`](examples/matter-run.md).
+
+```markdown
+# LegalOps Review Packet: Enterprise customer DPA review
+
+- Review state: approved
+- Export: allowed
+
+## Routing
+- Owner role: Privacy Counsel
+- Reviewers: Legal Ops, Privacy Counsel, AI Governance Lead, Commercial Counsel, General Counsel
+
+## Findings
+- MEDIUM: privacy | Personal or customer data categories are in scope.
+- HIGH: customer_commitments | The matter includes bespoke customer commitments.
+- MEDIUM: ai_governance | AI processing or model-training restrictions require review.
+```
+
+In the sample run, export stays blocked until a reviewer approves — the audit trail shows who and when.
+
+## What it checks / does
+
+| Check / Step | Focus | Verification Method |
+|---|---|---|
+| Typed Matter Intake | Input validation | Ensures all details are provided according to strict Pydantic models |
+| Risk Triage | Deterministic risk scoring | Catches known issues (e.g. data retention demands, specific vendor terms) |
+| Source Verification | Provenance tracking | Verifies that references use allowed source prefixes and formats |
+
+---
+
+> **What workflow does this improve?** Recurring legal operations triage and gating.
+> **Who is the user?** A General Counsel or Legal Operations lead running the workflow.
+> **Where does human review happen?** At the Review Gate, which must be approved by the GC.
+> **What is blocked until approval?** Persisted output and downstream data export.
+> **What would I tell Product?** Real-world friction patterns and common DPA deviations to automate them in templates.
 
 ![Supervised review: a SaaS MSA matter triaged to high risk, routed to four reviewers, export blocked until human approval is recorded](docs/review-gate.svg)
 
