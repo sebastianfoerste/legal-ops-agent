@@ -7,7 +7,7 @@ README_PATH = Path("README.md")
 def test_readme_uses_current_project_name():
     readme = README_PATH.read_text(encoding="utf-8")
 
-    assert "# LegalOps Agent" in readme
+    assert "# legal-ops-agent" in readme
     assert "LegalAgent" not in readme
 
 
