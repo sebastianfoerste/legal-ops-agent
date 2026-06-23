@@ -1,62 +1,28 @@
-# Case Study: Supervised Legal Operations Agent
+# Case study — legal-ops-agent
 
-## Legal problem
+> Agentic legal work should stay accountable: structured intake, visible assumptions, human approval. Synthetic data only; not legal advice.
 
-Recurring legal operations work often arrives as unstructured requests. A lawyer or legal operations team must understand the matter, identify risk, route it to the right reviewer and prevent premature external output.
+## Problem
+"Agentic" legal tools are tempting and dangerous in equal measure: an agent that drafts and *acts* can move fast and skip the parts that make legal work defensible — structured intake, surfaced assumptions, a review gate, an audit trail. The risk isn't a bad draft; it's an unreviewed action that leaves no record.
 
-When AI is added to this process, the main risk is not only wrong drafting. The larger risk is that a workflow jumps from intake to output without visible review, provenance or approval.
+## Users
+A legal ops lead or in-house lawyer who wants AI to accelerate routine matters (vendor reviews, NDAs) without surrendering control or auditability.
 
-## Product problem
+## Workflow
+1. **Typed intake** — the matter is captured as structured fields, not free text.
+2. **Deterministic risk triage** — rules assign a severity and route accordingly.
+3. **Reviewer routing** — high-risk matters go to the right queue (e.g. Privacy), not a generic one.
+4. **Approval gate** — export is **blocked** until a human resolves requested changes and signs off.
+5. **Audit trail** — every step, change, and approval is logged with who and when.
 
-A useful legal AI workflow needs structure around the AI step. It should show what was submitted, how the matter was classified, who should review it and whether export is allowed.
+## Controls
+The agent cannot release output on its own. The approval gate is the spine: a requested change leaves the matter blocked until a human resolves it, and the override is recorded with a justification. Provenance and the audit trail are first-class, not afterthoughts.
 
-The product challenge is to create a helpful agentic workflow without pretending that legal judgment has disappeared.
+## Evaluation
+The bundled run (`examples/matter-run.md`) shows a HIGH-risk SaaS vendor matter routed to Privacy, **export blocked** pending an Art. 46 transfer mechanism, then approved by a reviewer with a logged justification — the full blocked-then-approved path.
 
-## Workflow design
+## Limitations
+It models the workflow and controls over synthetic matters; it is not integrated with a real DMS, identity provider, or e-signature, and the triage rules are illustrative defaults to be tuned per team.
 
-The prototype models a supervised legal operations workflow with:
-
-1. Typed matter intake
-2. Deterministic risk triage
-3. Reviewer routing
-4. Review status
-5. Approval controlled export
-
-The design separates intake, classification, review and export so that the system can assist the legal team without bypassing human control.
-
-## AI risk addressed
-
-The project addresses:
-
-1. Premature autonomous output
-2. Invisible escalation decisions
-3. Unclear review ownership
-4. Loss of provenance between intake and output
-5. Confusion between draft, reviewed and approved artifacts
-
-## Human review model
-
-The human reviewer remains the gatekeeper. The workflow can structure and route the matter, but final export depends on approval status.
-
-This reflects the way professional legal teams actually work: automation can accelerate coordination and preparation, but approval remains visible and accountable.
-
-## Evaluation or quality control
-
-The project uses structured schemas, deterministic routing logic and tests to make the workflow predictable and reviewable.
-
-The quality goal is not to maximize generation. The quality goal is to preserve control, traceability and review status.
-
-## What I would improve next
-
-1. Add an architecture diagram to the README
-2. Add CLI screenshots showing intake, triage and blocked export
-3. Add more synthetic matter types
-4. Add audit log events for review and approval transitions
-5. Add a reviewer dashboard or simple web UI
-6. Add policy based routing rules that can be edited without changing code
-
-## Relevance for Legal Engineer / Product Specialist roles
-
-This project demonstrates practical understanding of supervised agentic legal workflows.
-
-It is relevant for product roles where legal expertise must be translated into user journeys, review states, approval gates, escalation logic and trustworthy AI assisted outputs.
+## Next steps
+Integrate real auth/roles for the approval tiers; connect intake to a ticketing system; add SLA tracking and escalation (see `legal-function-operating-system`); persist the audit trail to an append-only store.

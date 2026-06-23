@@ -1,5 +1,7 @@
 # legal-ops-agent
 
+See [CASE_STUDY.md](CASE_STUDY.md) for the problem, controls, and limitations.
+
 Supervised legal-operations workflow: typed intake, deterministic risk triage, reviewer routing, human-approved export, audit trail. Not legal advice; data is synthetic.
 
 > **If you don't code:** scroll to [What the demo produces](#what-the-demo-produces). This repo ships a sample output you can read in the browser. The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
