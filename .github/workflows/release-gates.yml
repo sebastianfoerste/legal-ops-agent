@@ -32,7 +32,7 @@ jobs:
         run: python -m compileall . runtime_agent
       - name: Gate 6 Production health canary
         run: |
-          PORT=18085 python runtime_agent/app.py > /tmp/legal-agent-runtime.log 2>&1 &
+          PORT=18085 PYTHONPATH=. python runtime_agent/app.py > /tmp/legal-agent-runtime.log 2>&1 &
           echo $! > /tmp/legal-agent-runtime.pid
           for i in {1..60}; do
             if curl -fsS http://127.0.0.1:18085/health > /tmp/legal-agent-health.json; then

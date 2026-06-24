@@ -1,16 +1,16 @@
-import json
 from master_orchestrator import run_demo
+
 
 def main():
     demo_output = run_demo()
-    
+
     # We will format a nice run log showing blocked and approved states
     initial = demo_output["initial_assessment"]
     reviewed = demo_output["reviewed_assessment"]
     packet_markdown = demo_output["review_packet_markdown"]
-    
+
     matter = initial["matter"]
-    
+
     content = f"""# Matter Run Log: Supervised Legal-Ops Flow
 
 This run log shows the end-to-end flow of a high-urgency matter from intake to human approval, demonstrating the deterministic triage and the review-gate control that blocks export until signed off.
@@ -39,7 +39,7 @@ Upon intake, the workflow analyzes the matter facts and classifies the risk leve
 """
     for finding in initial["findings"]:
         content += f"- **[{finding['severity'].upper()}] {finding['category']}:** {finding['summary']}\n  - *Evidence:* {finding['evidence']}\n  - *Recommended Action:* {finding['recommended_action']}\n"
-        
+
     content += """
 ### Control Checks Applied:
 """
@@ -65,10 +65,11 @@ The final approved review packet:
 
 {packet_markdown}
 """
-    
+
     with open("examples/matter-run.md", "w", encoding="utf-8") as f:
         f.write(content.strip() + "\n")
     print("Successfully wrote examples/matter-run.md")
+
 
 if __name__ == "__main__":
     main()
