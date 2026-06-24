@@ -8,6 +8,8 @@ Supervised legal-operations workflow: typed intake, deterministic risk triage, r
 
 ![demo](docs/demo.png)
 
+![Architecture](docs/architecture.svg)
+
 ## Run it
 
 ```bash
@@ -199,3 +201,27 @@ This is a prototype. It does not provide legal advice, legal representation or f
 ## Contact
 
 Built by Sebastian Förste: [github.com/sebastianfoerste](https://github.com/sebastianfoerste)
+
+## Human-authored legal judgment
+AI tools assisted the implementation, but the parts that carry the value are
+human-authored: the legal answer sets, risk taxonomy, escalation logic, citations,
+and review states. The point of this repository is not code volume — it is showing
+how legal judgment can be made structured, testable, and reviewable.
+
+## Why lawyers should care
+It keeps agentic work accountable: structured intake, visible assumptions, and an
+approval gate that blocks export until a human signs off — with an audit trail.
+
+## Why product teams should care
+It is a reference pattern for safe agentic actions: deterministic checks before model
+synthesis, typed schemas, routing by risk, and export control — the parts a security
+or risk reviewer asks about before a tool ships.
+
+## Known limitations
+A public-safe prototype, not a production system.
+1. Synthetic matters only; no real DMS, identity provider, or e-signature.
+2. Triage thresholds are illustrative defaults, to be tuned per team.
+3. The audit trail is in-process, not an append-only external store.
+4. Roles/permissions are modelled, not enforced against a real IdP.
+Next production step: real auth for approval tiers, ticketing integration, live SLA
+tracking, and a persisted append-only audit log.
