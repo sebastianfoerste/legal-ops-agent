@@ -24,11 +24,9 @@ jobs:
         run: ruff check .
       - name: Gate 2 Unit tests
         run: pytest -q
-      - name: Gate 3 Integration tests
-        run: python -m compileall . runtime_agent
-      - name: Gate 4 Performance budget
-        run: python -m compileall . runtime_agent
-      - name: Gate 5 Accessibility checks
+      - name: Gate 3 Formatting (black)
+        run: black --check .
+      - name: Gate 4 Byte-compile sources
         run: python -m compileall . runtime_agent
       - name: Gate 6 Production health canary
         run: |
