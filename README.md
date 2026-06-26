@@ -1,5 +1,9 @@
 # legal-ops-agent
 
+[![Python CI](https://github.com/sebastianfoerste/legal-ops-agent/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sebastianfoerste/legal-ops-agent/actions/workflows/ci.yml)
+
+CI: passing. Deterministic test suite: 35 checks.
+
 See [CASE_STUDY.md](CASE_STUDY.md) for the problem, controls, and limitations.
 
 Supervised legal-operations workflow: typed intake, deterministic risk triage, reviewer routing, human-approved export, audit trail. Not legal advice; data is synthetic.
@@ -20,6 +24,17 @@ PYTHONPATH=. .venv/bin/python master_orchestrator.py
 ```
 
 Runs end to end, offline and deterministically.
+
+## Architecture flow
+
+1. `models.py` defines typed matter, finding, routing, review and assessment contracts.
+2. `src/legal_ops.py` performs deterministic intake, risk triage and reviewer routing.
+3. `src/source_verification.py` validates synthetic and public-regulatory source references.
+4. `src/mcp_tools.py` exposes six local MCP-style tools behind a controlled dispatcher.
+5. `src/review_packet.py` renders the lawyer-facing Markdown packet.
+6. `src/cli.py` runs fixture-to-packet flows for evaluator review.
+7. `runtime_agent/app.py` provides a small HTTP canary for local workflow checks.
+8. Export stays blocked until a documented human approval clears the review gate.
 
 ## What the demo produces
 
