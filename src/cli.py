@@ -6,7 +6,7 @@ import shlex
 from pathlib import Path
 from typing import Any
 
-from models import MatterIntake, ReviewDecision
+from models import MatterIntake, ReviewDecision, verify_audit_chain
 from src.artifact_manifest import build_artifact_manifest
 from src.exports import write_customer_commitment_register, write_source_verification_report
 from src.legal_ops import apply_review_decision, assess_matter, build_sample_matter
@@ -65,6 +65,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="Write a source-verified trust cockpit JSON snapshot.",
     )
+    parser.add_argument(
+        "--audit-chain-output",
+        type=Path,
+        help="Write the tamper-evident audit chain verification JSON to this path.",
+    )
     parser.add_argument("--approve-note", help="Apply an approval note after assessment.")
     parser.add_argument(
         "--reviewer", default="General Counsel", help="Reviewer for approval notes."
@@ -82,6 +87,7 @@ def _trust_cockpit_command(args: argparse.Namespace) -> str:
         ("--sources-output", args.sources_output),
         ("--review-runner-output", args.review_runner_output),
         ("--manifest-output", args.manifest_output),
+        ("--audit-chain-output", args.audit_chain_output),
         ("--trust-cockpit-output", args.trust_cockpit_output),
         ("--trust-cockpit-json-output", args.trust_cockpit_json_output),
     ]
@@ -139,6 +145,13 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         args.manifest_output.parent.mkdir(parents=True, exist_ok=True)
         args.manifest_output.write_text(
             json.dumps(manifest_payload, indent=2) + "\n",
+            encoding="utf-8",
+        )
+    if args.audit_chain_output:
+        chain_verification = verify_audit_chain(assessment.audit_events)
+        args.audit_chain_output.parent.mkdir(parents=True, exist_ok=True)
+        args.audit_chain_output.write_text(
+            json.dumps(chain_verification.model_dump(mode="json"), indent=2) + "\n",
             encoding="utf-8",
         )
     if args.trust_cockpit_output or args.trust_cockpit_json_output:

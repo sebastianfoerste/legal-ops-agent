@@ -12,6 +12,7 @@ def test_cli_writes_json_and_review_packet(tmp_path):
     manifest_output = tmp_path / "manifest.json"
     trust_cockpit_output = tmp_path / "trust-cockpit.md"
     trust_cockpit_json_output = tmp_path / "trust-cockpit.json"
+    audit_chain_output = tmp_path / "audit-chain.json"
     parser = build_parser()
     args = parser.parse_args(
         [
@@ -33,6 +34,8 @@ def test_cli_writes_json_and_review_packet(tmp_path):
             str(trust_cockpit_output),
             "--trust-cockpit-json-output",
             str(trust_cockpit_json_output),
+            "--audit-chain-output",
+            str(audit_chain_output),
         ]
     )
 
@@ -71,3 +74,6 @@ def test_cli_writes_json_and_review_packet(tmp_path):
     assert trust_cockpit["review_gate"]["external_actions_allowed"] is False
     assert trust_cockpit["artifact_summary"]["artifact_count"] == 5
     assert "LegalOps Trust Cockpit" in trust_cockpit_output.read_text(encoding="utf-8")
+    audit_chain = json.loads(audit_chain_output.read_text(encoding="utf-8"))
+    assert audit_chain["verified"] is True
+    assert audit_chain["event_count"] == 1
