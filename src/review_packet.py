@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from models import AuditEvent, LegalOpsAssessment
+from src.audit_chain import append_audit_event
 
 PACKET_ACTOR = "LegalOps Agent"
 
@@ -69,15 +70,13 @@ def _lines_for_sources(assessment: LegalOpsAssessment) -> list[str]:
 
 
 def _audit_events_for_packet(assessment: LegalOpsAssessment) -> list[AuditEvent]:
-    return [
-        *assessment.audit_events,
-        AuditEvent(
-            event_type="review_packet_generated",
-            actor=PACKET_ACTOR,
-            note="Review packet generated for human legal review.",
-            timestamp_utc=_utc_now_iso(),
-        ),
-    ]
+    return append_audit_event(
+        assessment.audit_events,
+        event_type="review_packet_generated",
+        actor=PACKET_ACTOR,
+        note="Review packet generated for human legal review.",
+        timestamp_utc=_utc_now_iso(),
+    )
 
 
 def _lines_for_audit(events: list[AuditEvent]) -> list[str]:

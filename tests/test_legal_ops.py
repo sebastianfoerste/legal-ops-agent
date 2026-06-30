@@ -1,4 +1,4 @@
-from models import MatterIntake, ReviewDecision
+from models import MatterIntake, ReviewDecision, verify_audit_chain
 from src.legal_ops import apply_review_decision, assess_matter, build_sample_matter
 
 
@@ -31,6 +31,10 @@ def test_apply_review_decision_allows_export_without_blockers():
     assert reviewed.export_allowed is True
     assert reviewed.review_note is not None
     assert reviewed.audit_events[-1].event_type == "review_decision_applied"
+    assert [event.seq for event in reviewed.audit_events] == [0, 1]
+    chain_result = verify_audit_chain(reviewed.audit_events)
+    assert chain_result.verified is True
+    assert chain_result.event_count == 2
 
 
 def test_route_matter_adds_gc_for_high_urgency():

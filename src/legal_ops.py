@@ -5,7 +5,6 @@ import json
 from datetime import datetime, timezone
 
 from models import (
-    AuditEvent,
     ControlCheck,
     ControlStatus,
     CustomerCommitmentRecord,
@@ -16,6 +15,7 @@ from models import (
     RoutingDecision,
     SourceVerificationRecord,
 )
+from src.audit_chain import append_audit_event
 from src.source_verification import verify_source_refs
 
 SYSTEM_ACTOR = "LegalOps Agent"
@@ -292,14 +292,13 @@ def assess_matter(matter: MatterIntake) -> LegalOpsAssessment:
         routing=routing,
         review_state="needs_review",
         export_allowed=False,
-        audit_events=[
-            AuditEvent(
-                event_type="assessment_created",
-                actor=SYSTEM_ACTOR,
-                note="Assessment created from typed matter intake.",
-                timestamp_utc=created_at,
-            )
-        ],
+        audit_events=append_audit_event(
+            [],
+            event_type="assessment_created",
+            actor=SYSTEM_ACTOR,
+            note="Assessment created from typed matter intake.",
+            timestamp_utc=created_at,
+        ),
     )
 
 
@@ -309,15 +308,13 @@ def apply_review_decision(
 ) -> LegalOpsAssessment:
     blocker_present = any(finding.severity == "blocker" for finding in assessment.findings)
     export_allowed = decision.state == "approved" and not blocker_present
-    audit_events = [
-        *assessment.audit_events,
-        AuditEvent(
-            event_type="review_decision_applied",
-            actor=decision.reviewer,
-            note=decision.note,
-            timestamp_utc=utc_now_iso(),
-        ),
-    ]
+    audit_events = append_audit_event(
+        assessment.audit_events,
+        event_type="review_decision_applied",
+        actor=decision.reviewer,
+        note=decision.note,
+        timestamp_utc=utc_now_iso(),
+    )
     payload = assessment.model_dump(mode="python")
     payload.update(
         {
