@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from models import LegalOpsAssessment, MatterIntake, ReviewDecision
+from models import LegalOpsAssessment, LegalOpsTrustCockpit, MatterIntake, ReviewDecision
 from src.legal_ops import apply_review_decision, assess_matter
 from src.review_packet import build_review_packet
 from src.review_packet_runner import run_source_verified_review_packet
 from src.source_verification import PUBLIC_REGULATORY_DOMAINS, verify_source_refs
+from src.trust_cockpit import build_trust_cockpit
 
 
 def legal_ops_mcp_manifest() -> dict[str, Any]:
@@ -65,6 +66,15 @@ def legal_ops_mcp_manifest() -> dict[str, Any]:
                 ),
                 "input_schema": MatterIntake.model_json_schema(),
             },
+            {
+                "name": "legal.review.trust_cockpit",
+                "description": (
+                    "Assess a matter and return a local trust cockpit with review gates, "
+                    "source boundaries and artifact evidence fields."
+                ),
+                "input_schema": MatterIntake.model_json_schema(),
+                "output_schema": LegalOpsTrustCockpit.model_json_schema(),
+            },
         ],
     }
 
@@ -114,5 +124,11 @@ def run_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, An
             mode="json",
             by_alias=True,
         )
+
+    if name == "legal.review.trust_cockpit":
+        matter = MatterIntake.model_validate(payload)
+        assessment = assess_matter(matter)
+        cockpit = build_trust_cockpit(assessment, fixture="mcp:legal.review.trust_cockpit")
+        return cockpit.model_dump(mode="json", by_alias=True)
 
     raise ValueError(f"unsupported tool: {name}")

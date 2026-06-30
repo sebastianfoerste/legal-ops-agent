@@ -108,6 +108,41 @@ Safety limits:
 3. Blocked sensitive source identifiers are redacted inside the runner payload.
 4. The Markdown packet remains a draft for human review.
 
+## `legal.review.trust_cockpit`
+
+Purpose: assess a `MatterIntake` and return a reviewer-facing trust cockpit
+with decision state, source boundary, review gate, customer commitments, local
+artifact evidence fields and next actions.
+
+Input schema: `MatterIntake.model_json_schema()`.
+
+Output schema: `LegalOpsTrustCockpit.model_json_schema()`.
+
+Safety limits:
+
+1. The cockpit has no external effects.
+2. External delivery, publication, filing and outreach remain blocked.
+3. Blocked sensitive source identifiers are redacted inside source and commitment fields.
+4. The output is a reviewer evidence surface for local evaluation.
+
+Example call:
+
+```json
+{
+  "name": "legal.review.trust_cockpit",
+  "arguments": {
+    "title": "SaaS MSA deviation review",
+    "requester": "Revenue Operations",
+    "business_unit": "Enterprise Sales",
+    "matter_type": "contract",
+    "jurisdiction": "EU and United States",
+    "summary": "Synthetic MSA deviation with higher liability cap and audit rights.",
+    "urgency": "high",
+    "source_refs": ["synthetic:saas-msa-deviation-example"]
+  }
+}
+```
+
 ## `legal.sources.verify`
 
 Purpose: classify source references without fetching external content.

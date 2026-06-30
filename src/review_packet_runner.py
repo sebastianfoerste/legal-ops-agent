@@ -179,10 +179,17 @@ def write_source_verified_review_packet_run(
     assessment: LegalOpsAssessment,
     output_path: Path,
 ) -> Path:
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    payload = build_source_verified_review_packet_run(assessment).model_dump(
-        mode="json",
-        by_alias=True,
+    return write_source_verified_review_packet_run_payload(
+        build_source_verified_review_packet_run(assessment),
+        output_path,
     )
+
+
+def write_source_verified_review_packet_run_payload(
+    run: SourceVerifiedReviewPacketRun,
+    output_path: Path,
+) -> Path:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = run.model_dump(mode="json", by_alias=True)
     output_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     return output_path

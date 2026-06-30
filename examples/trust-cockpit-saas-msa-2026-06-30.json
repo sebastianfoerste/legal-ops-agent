@@ -1,0 +1,131 @@
+{
+  "schema": "legal-ops-agent.trust-cockpit.v1",
+  "assessment_id": "loa_0b5d728ed132582a",
+  "generated_at_utc": "2026-06-30T18:55:59Z",
+  "matter_title": "SaaS MSA deviation review",
+  "metadata": {
+    "generated_for": "public_reviewer_proof",
+    "fixture": "examples/matters/saas_msa_deviation.json",
+    "command": "python -m src.cli --input examples/matters/saas_msa_deviation.json --json-output demo_output/assessment.json --packet-output demo_output/review-packet.md --commitments-output demo_output/customer-commitments.json --sources-output demo_output/source-verification.json --review-runner-output demo_output/source-verified-review-runner.json --manifest-output demo_output/artifact-manifest.json --trust-cockpit-output examples/trust-cockpit-saas-msa-2026-06-30.md --trust-cockpit-json-output examples/trust-cockpit-saas-msa-2026-06-30.json",
+    "python_version": "3.13.14",
+    "application_version": "0.1.0",
+    "source_verified_runner_schema": "legal-ops-agent.source-verified-review-packet-run.v1"
+  },
+  "decision_summary": {
+    "status": "review_required",
+    "review_state": "needs_review",
+    "export_allowed": false,
+    "human_review_required": true,
+    "highest_severity": "high",
+    "finding_count": 2,
+    "blocker_count": 0,
+    "owner_role": "Privacy Counsel",
+    "reviewers": [
+      "Legal Ops",
+      "Privacy Counsel",
+      "Commercial Counsel",
+      "General Counsel"
+    ],
+    "sla_hours": 24
+  },
+  "source_summary": {
+    "source_boundary": "verified_demo_or_public_regulatory_sources",
+    "pass_count": 1,
+    "warning_count": 0,
+    "blocker_count": 0,
+    "entries": [
+      {
+        "source_ref": "synthetic:saas-msa-deviation-example",
+        "category": "synthetic",
+        "status": "pass",
+        "reason": "Synthetic source reference is permitted for local demo evaluation.",
+        "public_authority": null,
+        "requires_human_review": false,
+        "redacted": false
+      }
+    ]
+  },
+  "review_gate": {
+    "delivery_mode": "local_review_only",
+    "external_actions_allowed": false,
+    "blocked_actions": [
+      "external_delivery",
+      "publication",
+      "filing",
+      "outreach"
+    ],
+    "legal_advice_status": "draft_for_human_review"
+  },
+  "commitment_summary": {
+    "count": 3,
+    "review_required_count": 3,
+    "owner_roles": [
+      "Commercial Counsel"
+    ],
+    "commitments": [
+      {
+        "commitment": "higher liability cap for security incidents",
+        "owner_role": "Commercial Counsel",
+        "source": "synthetic:saas-msa-deviation-example",
+        "review_required": true
+      },
+      {
+        "commitment": "controlled annual audit right",
+        "owner_role": "Commercial Counsel",
+        "source": "synthetic:saas-msa-deviation-example",
+        "review_required": true
+      },
+      {
+        "commitment": "non-binding roadmap review",
+        "owner_role": "Commercial Counsel",
+        "source": "synthetic:saas-msa-deviation-example",
+        "review_required": true
+      }
+    ]
+  },
+  "artifact_summary": {
+    "manifest_schema": "legal-ops-agent.artifact-manifest.v1",
+    "artifact_count": 5,
+    "local_integrity_algorithm": "sha256",
+    "local_integrity_value": "14ce8a2d7460a5dc542e5d8c3655cc5c0ff2359665d72b1c3e1eeffd6c4166bd",
+    "artifacts": [
+      {
+        "name": "assessment_json",
+        "sha256": "c96f732b4262380b568c874a4a7bdbadd5975e18f2956e5e90db5f75cb4b3bb6",
+        "bytes": 4247,
+        "path": "demo_output/assessment.json"
+      },
+      {
+        "name": "customer_commitment_register_json",
+        "sha256": "20075426d24f82bef01118bbf7a143827cec5740093d17092e7bceb5752c06de",
+        "bytes": 770,
+        "path": "demo_output/customer-commitments.json"
+      },
+      {
+        "name": "review_packet_markdown",
+        "sha256": "cb5e6e7b25592e2d585e9ecf7123c8f2c4e2965965725bdcf719e32a79ae5c6a",
+        "bytes": 2869,
+        "path": "demo_output/review-packet.md"
+      },
+      {
+        "name": "source_verification_json",
+        "sha256": "4e776746d98a80e06474dd3433f3e87154a069cf8ad9f124ecfdff8452df2971",
+        "bytes": 408,
+        "path": "demo_output/source-verification.json"
+      },
+      {
+        "name": "source_verified_review_packet_runner_json",
+        "sha256": "ef9baee288714ee46dd9471b8c4dc08c88a21fe7fad4d78518517959ce5a92d7",
+        "bytes": 5416,
+        "path": "demo_output/source-verified-review-runner.json"
+      }
+    ]
+  },
+  "next_actions": [
+    "Record a documented human review decision before export.",
+    "Record customer commitments in the obligations register before signature.",
+    "Confirm DPA roles, transfer basis, subprocessors and deletion mechanics.",
+    "Record each commitment in the customer obligations register before approval."
+  ],
+  "markdown": "# LegalOps Trust Cockpit: SaaS MSA deviation review\n\n## Evidence Metadata\n- Schema: legal-ops-agent.trust-cockpit.v1\n- Assessment: loa_0b5d728ed132582a\n- Generated: 2026-06-30T18:55:59Z\n- Fixture: examples/matters/saas_msa_deviation.json\n- Command: `python -m src.cli --input examples/matters/saas_msa_deviation.json --json-output demo_output/assessment.json --packet-output demo_output/review-packet.md --commitments-output demo_output/customer-commitments.json --sources-output demo_output/source-verification.json --review-runner-output demo_output/source-verified-review-runner.json --manifest-output demo_output/artifact-manifest.json --trust-cockpit-output examples/trust-cockpit-saas-msa-2026-06-30.md --trust-cockpit-json-output examples/trust-cockpit-saas-msa-2026-06-30.json`\n- Python: 3.13.14\n- Application version: 0.1.0\n- Source runner schema: legal-ops-agent.source-verified-review-packet-run.v1\n\n## Decision State\n- Status: review_required\n- Review state: needs_review\n- Export allowed: false\n- Human review required: true\n- Highest severity: high\n- Findings: 2\n- Blockers: 0\n- Owner role: Privacy Counsel\n- Reviewers: Legal Ops, Privacy Counsel, Commercial Counsel, General Counsel\n- SLA hours: 24\n\n## Source Boundary\n- Boundary: verified_demo_or_public_regulatory_sources\n- Pass: 1\n- Warning: 0\n- Blocker: 0\n- pass: synthetic:saas-msa-deviation-example (synthetic, review=False)\n\n## Review Gate\n- Delivery mode: local_review_only\n- External actions allowed: false\n- Blocked actions: external_delivery, publication, filing, outreach\n- Legal advice status: draft_for_human_review\n\n## Commitments\n- Count: 3\n- Review required: 3\n- Owner roles: Commercial Counsel\n- higher liability cap for security incidents | owner=Commercial Counsel | source=synthetic:saas-msa-deviation-example\n- controlled annual audit right | owner=Commercial Counsel | source=synthetic:saas-msa-deviation-example\n- non-binding roadmap review | owner=Commercial Counsel | source=synthetic:saas-msa-deviation-example\n\n## Artifact Integrity\n- Manifest schema: legal-ops-agent.artifact-manifest.v1\n- Artifact count: 5\n- Local integrity: sha256 14ce8a2d7460a5dc542e5d8c3655cc5c0ff2359665d72b1c3e1eeffd6c4166bd\n- assessment_json: c96f732b4262380b568c874a4a7bdbadd5975e18f2956e5e90db5f75cb4b3bb6 (4247 bytes)\n- customer_commitment_register_json: 20075426d24f82bef01118bbf7a143827cec5740093d17092e7bceb5752c06de (770 bytes)\n- review_packet_markdown: cb5e6e7b25592e2d585e9ecf7123c8f2c4e2965965725bdcf719e32a79ae5c6a (2869 bytes)\n- source_verification_json: 4e776746d98a80e06474dd3433f3e87154a069cf8ad9f124ecfdff8452df2971 (408 bytes)\n- source_verified_review_packet_runner_json: ef9baee288714ee46dd9471b8c4dc08c88a21fe7fad4d78518517959ce5a92d7 (5416 bytes)\n\n## Next Actions\n- Record a documented human review decision before export.\n- Record customer commitments in the obligations register before signature.\n- Confirm DPA roles, transfer basis, subprocessors and deletion mechanics.\n- Record each commitment in the customer obligations register before approval.\n"
+}

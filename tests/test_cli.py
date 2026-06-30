@@ -10,6 +10,8 @@ def test_cli_writes_json_and_review_packet(tmp_path):
     sources_output = tmp_path / "sources.json"
     review_runner_output = tmp_path / "review-runner.json"
     manifest_output = tmp_path / "manifest.json"
+    trust_cockpit_output = tmp_path / "trust-cockpit.md"
+    trust_cockpit_json_output = tmp_path / "trust-cockpit.json"
     parser = build_parser()
     args = parser.parse_args(
         [
@@ -27,6 +29,10 @@ def test_cli_writes_json_and_review_packet(tmp_path):
             str(review_runner_output),
             "--manifest-output",
             str(manifest_output),
+            "--trust-cockpit-output",
+            str(trust_cockpit_output),
+            "--trust-cockpit-json-output",
+            str(trust_cockpit_json_output),
         ]
     )
 
@@ -58,3 +64,10 @@ def test_cli_writes_json_and_review_packet(tmp_path):
         "source_verification_json",
         "source_verified_review_packet_runner_json",
     }
+    trust_cockpit = json.loads(trust_cockpit_json_output.read_text(encoding="utf-8"))
+    assert trust_cockpit["schema"] == "legal-ops-agent.trust-cockpit.v1"
+    assert trust_cockpit["assessment_id"] == payload["assessment_id"]
+    assert trust_cockpit["decision_summary"]["export_allowed"] is False
+    assert trust_cockpit["review_gate"]["external_actions_allowed"] is False
+    assert trust_cockpit["artifact_summary"]["artifact_count"] == 5
+    assert "LegalOps Trust Cockpit" in trust_cockpit_output.read_text(encoding="utf-8")

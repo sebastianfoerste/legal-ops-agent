@@ -22,13 +22,24 @@ Implementation:
 
 ## MCP-Style Tool Surface
 
-Exposes controlled local tools for assessment, review decisions, review packets, source listing and source verification.
+Exposes controlled local tools for assessment, review decisions, review packets, trust cockpit evidence, source listing and source verification.
 
 Implementation:
 
 1. `src/mcp_tools.py`
 2. `mcp.json`
 3. `tests/test_mcp_tools.py`
+
+## LegalOps Trust Cockpit
+
+Turns the source-verified runner into a reviewer-facing evidence board covering decision state, source boundary, review gate, disabled external actions, customer commitments, local artifact digests and next actions.
+
+Implementation:
+
+1. `models.py`
+2. `src/trust_cockpit.py`
+3. `src/cli.py`
+4. `tests/test_trust_cockpit.py`
 
 ## Review Packets And Artifact Manifests
 

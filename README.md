@@ -2,11 +2,11 @@
 
 [![Python CI](https://github.com/sebastianfoerste/legal-ops-agent/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sebastianfoerste/legal-ops-agent/actions/workflows/ci.yml)
 
-CI: passing. Deterministic test suite: 35 checks.
+CI: passing. Deterministic test suite: 39 checks.
 
 See [CASE_STUDY.md](CASE_STUDY.md) for the problem, controls, and limitations.
 
-Supervised legal-operations workflow: typed intake, deterministic risk triage, reviewer routing, human-approved export, audit trail. Not legal advice; data is synthetic.
+Supervised legal-operations workflow: typed intake, deterministic risk triage, reviewer routing, human-approved export, audit trail. Legal advice is outside this prototype; data is synthetic.
 
 **Public-safety posture:** synthetic matters only, explicit source provenance checks, an audit trail, a human review gate before export, and no legal advice.
 
@@ -35,15 +35,16 @@ synthetic SaaS MSA deviation fixture.
 1. `models.py` defines typed matter, finding, routing, review and assessment contracts.
 2. `src/legal_ops.py` performs deterministic intake, risk triage and reviewer routing.
 3. `src/source_verification.py` validates synthetic and public-regulatory source references.
-4. `src/mcp_tools.py` exposes six local MCP-style tools behind a controlled dispatcher.
-5. `src/review_packet.py` renders the lawyer-facing Markdown packet.
-6. `src/cli.py` runs fixture-to-packet flows for evaluator review.
-7. `runtime_agent/app.py` provides a small HTTP canary for local workflow checks.
-8. Export stays blocked until a documented human approval clears the review gate.
+4. `src/mcp_tools.py` exposes seven local MCP-style tools behind a controlled dispatcher.
+5. `src/trust_cockpit.py` renders the reviewer-facing trust cockpit.
+6. `src/review_packet.py` renders the lawyer-facing Markdown packet.
+7. `src/cli.py` runs fixture-to-packet flows for evaluator review.
+8. `runtime_agent/app.py` provides a small HTTP canary for local workflow checks.
+9. Export stays blocked until a documented human approval clears the review gate.
 
 ## What the demo produces
 
-The workflow runs triage over a matter intake, generates deterministic findings, and routes to reviewers. Export remains blocked until a human reviewer records an approval decision. You can read the committed sample output: [`examples/matter-run.md`](examples/matter-run.md). The current source-verified proof snapshot is [`examples/source-verified-saas-msa-run-2026-06-30.md`](examples/source-verified-saas-msa-run-2026-06-30.md).
+The workflow runs triage over a matter intake, generates deterministic findings, and routes to reviewers. Export remains blocked until a human reviewer records an approval decision. You can read the committed sample output: [`examples/matter-run.md`](examples/matter-run.md). The current source-verified proof snapshot is [`examples/source-verified-saas-msa-run-2026-06-30.md`](examples/source-verified-saas-msa-run-2026-06-30.md). The reviewer-facing trust cockpit snapshot is [`examples/trust-cockpit-saas-msa-2026-06-30.md`](examples/trust-cockpit-saas-msa-2026-06-30.md).
 
 ```markdown
 # LegalOps Review Packet: Enterprise customer DPA review
@@ -70,8 +71,7 @@ In the sample run, export stays blocked until a reviewer approves; the audit tra
 | Typed Matter Intake | Input validation | Ensures all details are provided according to strict Pydantic models |
 | Risk Triage | Deterministic risk scoring | Catches known issues (e.g. data retention demands, specific vendor terms) |
 | Source Verification | Provenance tracking | Verifies that references use allowed source prefixes and formats |
-
----
+| Trust Cockpit | Reviewer evidence | Shows review state, source boundary, export gate, commitments and artifact integrity |
 
 > **What workflow does this improve?** Recurring legal operations triage and gating.
 > **Who is the user?** A General Counsel or Legal Operations lead running the workflow.
@@ -126,6 +126,20 @@ The snapshot records `review_state: "needs_review"`, `export_allowed: false`,
 `local_review_only` policy envelope. Generated review artifacts are locally
 manifestable with SHA-256 digests.
 
+## Committed trust cockpit proof
+
+The Trust Cockpit is the reviewer-grade proof surface added after competitive
+research across GitHub, mobile app stores and relevant app marketplaces. The
+research note is here: [`docs/competitive-research-2026-06-30.md`](docs/competitive-research-2026-06-30.md).
+
+- [`examples/trust-cockpit-saas-msa-2026-06-30.md`](examples/trust-cockpit-saas-msa-2026-06-30.md)
+- [`examples/trust-cockpit-saas-msa-2026-06-30.json`](examples/trust-cockpit-saas-msa-2026-06-30.json)
+
+The cockpit snapshot records the same synthetic SaaS MSA fixture, the canonical
+CLI command, schema version, Python version, review state, disabled external
+actions, source boundary, commitments, owners, SLA, local artifact digests and
+next actions.
+
 ## Core workflow
 
 ```mermaid
@@ -157,6 +171,7 @@ flowchart TD
 - [`src/source_verification.py`](src/source_verification.py): Source-boundary verification for synthetic and public regulatory references.
 - [`src/exports.py`](src/exports.py): Customer-commitment register export.
 - [`src/mcp_tools.py`](src/mcp_tools.py): Local tool manifest and tool dispatcher for MCP-style integrations.
+- [`src/trust_cockpit.py`](src/trust_cockpit.py): Reviewer-facing trust cockpit builder and renderers.
 - [`src/review_packet.py`](src/review_packet.py): Markdown review-packet renderer for legal sign-off.
 - [`src/cli.py`](src/cli.py): Fixture-driven command line entry point.
 - [`examples/matters/`](examples/matters): Synthetic SaaS, DPA, AI-vendor, product and regulatory-monitoring fixtures.
@@ -177,7 +192,9 @@ python -m src.cli \
   --commitments-output demo_output/customer-commitments.json \
   --sources-output demo_output/source-verification.json \
   --review-runner-output demo_output/source-verified-review-runner.json \
-  --manifest-output demo_output/artifact-manifest.json
+  --manifest-output demo_output/artifact-manifest.json \
+  --trust-cockpit-output demo_output/trust-cockpit.md \
+  --trust-cockpit-json-output demo_output/trust-cockpit.json
 ```
 
 The manifest records SHA-256 digests for each generated review artifact and a
@@ -194,12 +211,13 @@ This runs Ruff, Black, MyPy and Pytest.
 
 ## MCP surface
 
-`mcp.json` exposes a local `legal-ops-agent` server with six controlled tools:
+`mcp.json` exposes a local `legal-ops-agent` server with seven controlled tools:
 
 - `legal.matter.assess`: create a structured assessment from a typed legal matter.
 - `legal.review.decide`: apply a documented human review decision.
 - `legal.review.packet`: render a markdown review packet from an assessment.
 - `legal.review.packet.run`: assess a matter and return the source-verified packet, source manifest and policy envelope in one payload.
+- `legal.review.trust_cockpit`: assess a matter and return reviewer evidence for review gates, source boundary, commitments and artifact integrity.
 - `legal.sources.list`: show the public or synthetic source boundary for the demo.
 - `legal.sources.verify`: verify source-reference boundaries without fetching external content.
 

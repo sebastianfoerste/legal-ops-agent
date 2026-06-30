@@ -12,6 +12,7 @@ def test_mcp_manifest_exposes_controlled_tools():
         "legal.review.decide",
         "legal.review.packet",
         "legal.review.packet.run",
+        "legal.review.trust_cockpit",
         "legal.sources.list",
         "legal.sources.verify",
     }
@@ -44,6 +45,20 @@ def test_mcp_review_packet_runner_returns_policy_payload():
     assert result["status"] == "review_required"
     assert result["policy_envelope"]["external_actions_allowed"] is False
     assert "LegalOps Review Packet" in result["markdown_packet"]
+
+
+def test_mcp_trust_cockpit_returns_reviewer_evidence_payload():
+    result = run_tool(
+        "legal.review.trust_cockpit",
+        build_sample_matter().model_dump(mode="json"),
+    )
+
+    assert result["schema"] == "legal-ops-agent.trust-cockpit.v1"
+    assert result["decision_summary"]["status"] == "review_required"
+    assert result["decision_summary"]["export_allowed"] is False
+    assert result["review_gate"]["external_actions_allowed"] is False
+    assert result["source_summary"]["pass_count"] == 1
+    assert "LegalOps Trust Cockpit" in result["markdown"]
 
 
 def test_mcp_source_verify_tool_returns_structured_report():
