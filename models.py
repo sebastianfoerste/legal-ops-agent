@@ -398,5 +398,6 @@ class LegalOpsTrustCockpit(BaseModel):
     review_gate: TrustCockpitReviewGateSummary
     commitment_summary: TrustCockpitCommitmentSummary
     artifact_summary: TrustCockpitArtifactSummary
+    audit_chain: AuditChainVerification
     next_actions: list[str]
     markdown: str

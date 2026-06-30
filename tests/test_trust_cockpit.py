@@ -28,6 +28,9 @@ def test_trust_cockpit_summarizes_source_verified_saas_msa_fixture():
     assert cockpit.commitment_summary.owner_roles == ["Commercial Counsel"]
     assert "LegalOps Trust Cockpit" in cockpit.markdown
     assert "Record a documented human review decision before export." in cockpit.next_actions
+    assert cockpit.audit_chain.verified is True
+    assert cockpit.audit_chain.event_count == 1
+    assert "Audit Chain Integrity" in cockpit.markdown
 
 
 def test_trust_cockpit_redacts_blocked_source_identifiers():
@@ -73,3 +76,5 @@ def test_trust_cockpit_ready_after_human_approval_without_blockers():
     assert cockpit.decision_summary.export_allowed is True
     assert cockpit.decision_summary.human_review_required is False
     assert cockpit.review_gate.delivery_mode == "local_review_only"
+    assert cockpit.audit_chain.verified is True
+    assert cockpit.audit_chain.event_count == 2

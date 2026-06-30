@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 from models import (
+    AuditChainVerification,
     CustomerCommitmentRecord,
     LegalOpsAssessment,
     LegalOpsTrustCockpit,
@@ -18,6 +19,7 @@ from models import (
     TrustCockpitMetadata,
     TrustCockpitReviewGateSummary,
     TrustCockpitSourceSummary,
+    verify_audit_chain,
 )
 from src.legal_ops import utc_now_iso
 from src.review_packet_runner import build_source_verified_review_packet_run
@@ -119,6 +121,15 @@ def _render_artifacts(summary: TrustCockpitArtifactSummary) -> list[str]:
     return lines
 
 
+def _render_audit_chain(chain: AuditChainVerification) -> list[str]:
+    return [
+        f"- Verified: {_format_bool(chain.verified)}",
+        f"- Events: {chain.event_count}",
+        f"- Chain root hash: {chain.chain_root_hash or 'none'}",
+        f"- Reason: {chain.reason}",
+    ]
+
+
 def render_trust_cockpit_markdown(cockpit: LegalOpsTrustCockpit) -> str:
     """Render a concise reviewer-facing trust cockpit."""
 
@@ -186,6 +197,8 @@ def render_trust_cockpit_markdown(cockpit: LegalOpsTrustCockpit) -> str:
 
     lines.extend(["", "## Artifact Integrity"])
     lines.extend(_render_artifacts(cockpit.artifact_summary))
+    lines.extend(["", "## Audit Chain Integrity"])
+    lines.extend(_render_audit_chain(cockpit.audit_chain))
     lines.extend(["", "## Next Actions"])
     lines.extend(f"- {action}" for action in cockpit.next_actions)
     return "\n".join(lines) + "\n"
@@ -204,6 +217,7 @@ def build_trust_cockpit(
     run = source_verified_run or build_source_verified_review_packet_run(assessment)
     commitments = _safe_commitments(assessment)
     artifact_summary = _artifact_summary(artifact_manifest)
+    audit_chain = verify_audit_chain(assessment.audit_events)
     cockpit = LegalOpsTrustCockpit(
         schema=TRUST_COCKPIT_SCHEMA,
         assessment_id=assessment.assessment_id,
@@ -248,6 +262,7 @@ def build_trust_cockpit(
             commitments=commitments,
         ),
         artifact_summary=artifact_summary,
+        audit_chain=audit_chain,
         next_actions=_next_actions(assessment, run),
         markdown="pending",
     )
