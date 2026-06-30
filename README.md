@@ -21,11 +21,14 @@ Supervised legal-operations workflow: typed intake, deterministic risk triage, r
 ```bash
 git clone https://github.com/sebastianfoerste/legal-ops-agent
 cd legal-ops-agent
+python3.13 -m venv .venv
+source .venv/bin/activate
 make install
-PYTHONPATH=. .venv/bin/python master_orchestrator.py
+python -m src.cli --input examples/matters/saas_msa_deviation.json
 ```
 
-Runs end to end, offline and deterministically.
+Runs the canonical evaluator path end to end, offline and deterministically, over a
+synthetic SaaS MSA deviation fixture.
 
 ## Architecture flow
 
@@ -40,7 +43,7 @@ Runs end to end, offline and deterministically.
 
 ## What the demo produces
 
-The workflow runs triage over a matter intake, generates deterministic findings, and routes to reviewers. Export remains blocked until a human reviewer records an approval decision. You can read the committed sample output: [`examples/matter-run.md`](examples/matter-run.md).
+The workflow runs triage over a matter intake, generates deterministic findings, and routes to reviewers. Export remains blocked until a human reviewer records an approval decision. You can read the committed sample output: [`examples/matter-run.md`](examples/matter-run.md). The current source-verified proof snapshot is [`examples/source-verified-saas-msa-run-2026-06-30.md`](examples/source-verified-saas-msa-run-2026-06-30.md).
 
 ```markdown
 # LegalOps Review Packet: Enterprise customer DPA review
@@ -110,6 +113,19 @@ Run the public proof gate:
 make check
 ```
 
+## Committed source-verified proof
+
+A dated proof run for the same synthetic SaaS MSA deviation fixture is committed
+here:
+
+- [`examples/source-verified-saas-msa-run-2026-06-30.md`](examples/source-verified-saas-msa-run-2026-06-30.md)
+- [`examples/source-verified-saas-msa-run-2026-06-30.json`](examples/source-verified-saas-msa-run-2026-06-30.json)
+
+The snapshot records `review_state: "needs_review"`, `export_allowed: false`,
+`external_actions_allowed: false`, a synthetic source-reference pass and a
+`local_review_only` policy envelope. Generated review artifacts are locally
+manifestable with SHA-256 digests.
+
 ## Core workflow
 
 ```mermaid
@@ -149,24 +165,13 @@ flowchart TD
 - [`mcp.json`](mcp.json): Explicit local MCP server configuration.
 - [`tests/`](tests): Unit tests for validation, risk logic, review gates, MCP manifest and runtime behavior.
 
-## Quick start
+## Generate review artifacts
 
-Prerequisites: Python 3.13+.
-
-```bash
-git clone https://github.com/sebastianfoerste/legal-ops-agent
-cd legal-ops-agent
-python -m pip install -r requirements.lock
-python master_orchestrator.py
-```
-
-The demo uses synthetic data and does not call an external model by default.
-
-To assess a fixture and write a reviewer-ready packet:
+To assess a synthetic fixture and write the reviewer-ready artifacts:
 
 ```bash
 python -m src.cli \
-  --input examples/matters/enterprise_dpa.json \
+  --input examples/matters/saas_msa_deviation.json \
   --json-output demo_output/assessment.json \
   --packet-output demo_output/review-packet.md \
   --commitments-output demo_output/customer-commitments.json \
