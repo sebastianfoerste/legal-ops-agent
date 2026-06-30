@@ -1,11 +1,11 @@
-from models import AuditEvent, compute_audit_event_hash, verify_audit_chain
+from models import AuditEvent, AuditEventType, compute_audit_event_hash, verify_audit_chain
 from src.audit_chain import append_audit_event
 
 
 def _build_event(
     seq: int,
     prev_hash: str | None,
-    event_type: str,
+    event_type: AuditEventType,
     actor: str,
     note: str,
     timestamp_utc: str,
