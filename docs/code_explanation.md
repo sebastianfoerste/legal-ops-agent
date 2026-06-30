@@ -15,10 +15,11 @@ Defines the Pydantic contracts:
 - `CustomerCommitmentRecord`
 - `SourceVerificationRecord`
 - `AuditEvent`
+- `AuditChainVerification`
 - `ReviewDecision`
 - `LegalOpsAssessment`
 
-The export gate is enforced at model level. A record cannot set `export_allowed=true` unless the review state is `approved`, a written review note is present and no blocker finding remains.
+The export gate is enforced at model level. A record cannot set `export_allowed=true` unless the review state is `approved`, a written review note is present, no blocker finding remains and the audit event hash chain verifies.
 
 ### `src/legal_ops.py`
 
@@ -30,6 +31,10 @@ Contains deterministic workflow logic:
 - Adds deterministic source-verification records to each assessment.
 - Routes review to privacy, AI-governance, commercial or GC reviewers.
 - Applies a human review decision with an audit note.
+
+### `src/audit_chain.py`
+
+Builds chain-linked audit events. `append_audit_event` computes each event's `seq`, `prev_hash` and `event_hash` so the trail is tamper-evident; `models.verify_audit_chain` recomputes and checks the chain.
 
 ### `src/source_verification.py`
 

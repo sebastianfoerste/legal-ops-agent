@@ -16,7 +16,7 @@ A legal ops lead or in-house lawyer who wants AI to accelerate routine matters (
 5. **Audit trail** — every step, change, and approval is logged with who and when.
 
 ## Controls
-The agent cannot release output on its own. The approval gate is the spine: a requested change leaves the matter blocked until a human resolves it, and the override is recorded with a justification. Provenance and the audit trail are first-class, not afterthoughts.
+The agent cannot release output on its own. The approval gate is the spine: a requested change leaves the matter blocked until a human resolves it, and the override is recorded with a justification. Provenance and the audit trail are first-class, not afterthoughts. The audit trail is a SHA-256 hash chain — each event commits to the one before it, so tampering after the fact is detectable, and export is blocked if the chain does not verify.
 
 ## Evaluation
 The bundled run (`examples/matter-run.md`) shows a HIGH-risk SaaS vendor matter routed to Privacy, **export blocked** pending an Art. 46 transfer mechanism, then approved by a reviewer with a logged justification — the full blocked-then-approved path.

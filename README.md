@@ -2,7 +2,7 @@
 
 [![Python CI](https://github.com/sebastianfoerste/legal-ops-agent/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sebastianfoerste/legal-ops-agent/actions/workflows/ci.yml)
 
-CI: passing. Deterministic test suite: 39 checks.
+CI: passing. Deterministic test suite: 46 checks.
 
 See [CASE_STUDY.md](CASE_STUDY.md) for the problem, controls, and limitations.
 
@@ -72,6 +72,7 @@ In the sample run, export stays blocked until a reviewer approves; the audit tra
 | Risk Triage | Deterministic risk scoring | Catches known issues (e.g. data retention demands, specific vendor terms) |
 | Source Verification | Provenance tracking | Verifies that references use allowed source prefixes and formats |
 | Trust Cockpit | Reviewer evidence | Shows review state, source boundary, export gate, commitments and artifact integrity |
+| Audit Integrity Chain | Tamper evidence | Hash-chains every audit event; export is blocked if the chain does not verify |
 
 > **What workflow does this improve?** Recurring legal operations triage and gating.
 > **Who is the user?** A General Counsel or Legal Operations lead running the workflow.
@@ -140,6 +141,18 @@ CLI command, schema version, Python version, review state, disabled external
 actions, source boundary, commitments, owners, SLA, local artifact digests and
 next actions.
 
+## Committed audit chain proof
+
+The audit trail is a SHA-256 hash chain: each event commits to the hash of the one
+before it, so altering, reordering or dropping a past event is detectable, and export
+is blocked if the chain does not verify.
+
+- [`examples/audit-chain-saas-msa-2026-06-30.json`](examples/audit-chain-saas-msa-2026-06-30.json)
+
+The snapshot is generated from the same synthetic SaaS MSA fixture after a documented
+human approval, and shows a two-event chain (`assessment_created`,
+`review_decision_applied`) that verifies.
+
 ## Core workflow
 
 ```mermaid
@@ -172,6 +185,7 @@ flowchart TD
 - [`src/exports.py`](src/exports.py): Customer-commitment register export.
 - [`src/mcp_tools.py`](src/mcp_tools.py): Local tool manifest and tool dispatcher for MCP-style integrations.
 - [`src/trust_cockpit.py`](src/trust_cockpit.py): Reviewer-facing trust cockpit builder and renderers.
+- [`src/audit_chain.py`](src/audit_chain.py): Tamper-evident hash chain builder for the audit trail.
 - [`src/review_packet.py`](src/review_packet.py): Markdown review-packet renderer for legal sign-off.
 - [`src/cli.py`](src/cli.py): Fixture-driven command line entry point.
 - [`examples/matters/`](examples/matters): Synthetic SaaS, DPA, AI-vendor, product and regulatory-monitoring fixtures.
@@ -193,6 +207,7 @@ python -m src.cli \
   --sources-output demo_output/source-verification.json \
   --review-runner-output demo_output/source-verified-review-runner.json \
   --manifest-output demo_output/artifact-manifest.json \
+  --audit-chain-output demo_output/audit-chain.json \
   --trust-cockpit-output demo_output/trust-cockpit.md \
   --trust-cockpit-json-output demo_output/trust-cockpit.json
 ```
@@ -211,13 +226,14 @@ This runs Ruff, Black, MyPy and Pytest.
 
 ## MCP surface
 
-`mcp.json` exposes a local `legal-ops-agent` server with seven controlled tools:
+`mcp.json` exposes a local `legal-ops-agent` server with eight controlled tools:
 
 - `legal.matter.assess`: create a structured assessment from a typed legal matter.
 - `legal.review.decide`: apply a documented human review decision.
 - `legal.review.packet`: render a markdown review packet from an assessment.
 - `legal.review.packet.run`: assess a matter and return the source-verified packet, source manifest and policy envelope in one payload.
 - `legal.review.trust_cockpit`: assess a matter and return reviewer evidence for review gates, source boundary, commitments and artifact integrity.
+- `legal.audit.verify`: verify the tamper-evident hash chain on an assessment's audit trail.
 - `legal.sources.list`: show the public or synthetic source boundary for the demo.
 - `legal.sources.verify`: verify source-reference boundaries without fetching external content.
 
@@ -261,7 +277,8 @@ or risk reviewer asks about before a tool ships.
 A public-safe prototype, not a production system.
 1. Synthetic matters only; no real DMS, identity provider, or e-signature.
 2. Triage thresholds are illustrative defaults, to be tuned per team.
-3. The audit trail is in-process, not an append-only external store.
+3. The audit trail is tamper-evident (hash-chained, verifiable with `legal.audit.verify`)
+   but still in-process, not persisted to an append-only external store.
 4. Roles/permissions are modelled, not enforced against a real IdP.
 Next production step: real auth for approval tiers, ticketing integration, live SLA
-tracking, and a persisted append-only audit log.
+tracking, and persisting the hash-chained audit log to an append-only external store.

@@ -41,6 +41,20 @@ Implementation:
 3. `src/cli.py`
 4. `tests/test_trust_cockpit.py`
 
+## Audit Integrity Chain
+
+Hash-chains every audit event: each event commits to the hash of the one before it,
+so altering, reordering or dropping a past event is detectable. Export is blocked if
+the chain does not verify, in addition to the existing review-state, blocker-finding
+and review-note conditions. Surfaced in the Trust Cockpit, a standalone CLI output and
+a dedicated MCP tool.
+
+Implementation:
+
+1. `models.py`
+2. `src/audit_chain.py`
+3. `tests/test_audit_chain.py`
+
 ## Review Packets And Artifact Manifests
 
 Renders Markdown review packets and local integrity manifests for generated artifacts. The manifest records SHA-256 digests for traceability and is not an eIDAS signature.

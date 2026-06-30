@@ -143,6 +143,29 @@ Example call:
 }
 ```
 
+## `legal.audit.verify`
+
+Purpose: verify the tamper-evident hash chain on an assessment's audit trail.
+
+Input schema: `LegalOpsAssessment.model_json_schema()`.
+
+Output schema: `AuditChainVerification.model_json_schema()`.
+
+Safety limits:
+
+1. The tool only recomputes hashes over the supplied assessment; it has no external effects.
+2. A broken or empty chain reports `verified: false` with a `reason` and `broken_at_seq`.
+3. The same check runs inside the export gate: an assessment cannot carry `export_allowed: true` over an unverified chain.
+
+Example call:
+
+```json
+{
+  "name": "legal.audit.verify",
+  "arguments": "<LegalOpsAssessment JSON>"
+}
+```
+
 ## `legal.sources.verify`
 
 Purpose: classify source references without fetching external content.
