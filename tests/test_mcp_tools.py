@@ -13,6 +13,7 @@ def test_mcp_manifest_exposes_controlled_tools():
         "legal.review.packet",
         "legal.review.packet.run",
         "legal.review.trust_cockpit",
+        "legal.audit.verify",
         "legal.sources.list",
         "legal.sources.verify",
     }
@@ -71,3 +72,12 @@ def test_mcp_source_verify_tool_returns_structured_report():
     assert records[0]["status"] == "pass"
     assert records[0]["public_authority"] == "eba.europa.eu"
     assert records[1]["status"] == "blocker"
+
+
+def test_mcp_audit_verify_tool_returns_chain_report():
+    assessment = run_tool("legal.matter.assess", build_sample_matter().model_dump(mode="json"))
+    result = run_tool("legal.audit.verify", assessment)
+
+    assert result["verified"] is True
+    assert result["event_count"] == 1
+    assert result["chain_root_hash"] == assessment["audit_events"][0]["event_hash"]
