@@ -234,6 +234,12 @@ class LegalOpsAssessment(BaseModel):
             raise ValueError("export is blocked while blocker findings remain")
         if self.export_allowed and not self.review_note:
             raise ValueError("export requires a documented review note")
+        if self.export_allowed:
+            chain_check = verify_audit_chain(self.audit_events)
+            if not chain_check.verified:
+                raise ValueError(
+                    f"export is blocked while the audit chain is not verified: {chain_check.reason}"
+                )
         return self
 
 
