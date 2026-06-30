@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -86,13 +88,112 @@ class SourceVerificationRecord(BaseModel):
     requires_human_review: bool = True
 
 
+def compute_audit_event_hash(
+    seq: int,
+    prev_hash: str | None,
+    event_type: str,
+    actor: str,
+    note: str,
+    timestamp_utc: str,
+) -> str:
+    """Canonical SHA-256 digest for one position in the audit hash chain."""
+
+    payload = json.dumps(
+        {
+            "seq": seq,
+            "prev_hash": prev_hash,
+            "event_type": event_type,
+            "actor": actor,
+            "note": note,
+            "timestamp_utc": timestamp_utc,
+        },
+        sort_keys=True,
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 class AuditEvent(BaseModel):
-    """Audit event for the supervised legal-ops workflow."""
+    """Audit event for the supervised legal-ops workflow.
+
+    Events form a hash chain: each event_hash commits to prev_hash plus the
+    event's own content, so altering, reordering or dropping a past event is
+    detectable by verify_audit_chain.
+    """
 
     event_type: AuditEventType
     actor: str = Field(..., min_length=2)
     note: str = Field(..., min_length=12)
     timestamp_utc: str = Field(..., min_length=10)
+    seq: int = Field(..., ge=0)
+    prev_hash: str | None = None
+    event_hash: str = Field(..., min_length=64, max_length=64)
+
+
+class AuditChainVerification(BaseModel):
+    """Result of walking an audit event hash chain."""
+
+    verified: bool
+    event_count: int = Field(..., ge=0)
+    chain_root_hash: str | None = None
+    broken_at_seq: int | None = None
+    reason: str
+
+
+def verify_audit_chain(events: list[AuditEvent]) -> AuditChainVerification:
+    """Recompute and check every link in an audit event hash chain."""
+
+    if not events:
+        return AuditChainVerification(
+            verified=False,
+            event_count=0,
+            chain_root_hash=None,
+            broken_at_seq=None,
+            reason="no audit events recorded",
+        )
+
+    expected_prev: str | None = None
+    for index, event in enumerate(events):
+        if event.seq != index:
+            return AuditChainVerification(
+                verified=False,
+                event_count=len(events),
+                chain_root_hash=None,
+                broken_at_seq=event.seq,
+                reason=f"sequence gap at seq {event.seq}",
+            )
+        if event.prev_hash != expected_prev:
+            return AuditChainVerification(
+                verified=False,
+                event_count=len(events),
+                chain_root_hash=None,
+                broken_at_seq=event.seq,
+                reason=f"prev_hash mismatch at seq {event.seq}",
+            )
+        recomputed = compute_audit_event_hash(
+            event.seq,
+            event.prev_hash,
+            event.event_type,
+            event.actor,
+            event.note,
+            event.timestamp_utc,
+        )
+        if recomputed != event.event_hash:
+            return AuditChainVerification(
+                verified=False,
+                event_count=len(events),
+                chain_root_hash=None,
+                broken_at_seq=event.seq,
+                reason=f"event_hash mismatch at seq {event.seq}",
+            )
+        expected_prev = event.event_hash
+
+    return AuditChainVerification(
+        verified=True,
+        event_count=len(events),
+        chain_root_hash=expected_prev,
+        broken_at_seq=None,
+        reason="chain intact",
+    )
 
 
 class ReviewDecision(BaseModel):
