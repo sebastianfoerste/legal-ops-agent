@@ -13,6 +13,16 @@ Supervised legal-operations workflow: typed intake, deterministic risk triage, r
 Verification manifest: [`docs/verification-manifest.json`](docs/verification-manifest.json).
 Verification guide: [`docs/verification-guide.md`](docs/verification-guide.md).
 
+Claim-level evidence lineage: every surfaced finding, control, source decision,
+routing decision, and export-gate result can be traced to a hashed input and the
+deterministic local rule that produced it. Blocked source identifiers are
+redacted before the lineage graph is rendered.
+
+Committed proof:
+[`examples/evidence-lineage-saas-msa.md`](examples/evidence-lineage-saas-msa.md)
+and
+[`examples/evidence-lineage-saas-msa.json`](examples/evidence-lineage-saas-msa.json).
+
 > **If you don't code:** scroll to [What the demo produces](#what-the-demo-produces). This repo ships a sample output you can read in the browser. The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
 
 ![demo](docs/demo.png)
@@ -49,6 +59,7 @@ blocker finding remains. Run the proof gate with `make check`.
 7. `src/cli.py` runs fixture-to-packet flows for local verification.
 8. `runtime_agent/app.py` provides a small HTTP canary for local workflow checks.
 9. Export stays blocked until a documented human approval clears the review gate.
+10. `src/evidence_lineage.py` produces a coverage-checked claim provenance graph.
 
 ## What the demo produces
 
@@ -120,6 +131,15 @@ Run the verification gate:
 
 ```bash
 make check
+```
+
+Write the claim lineage proof:
+
+```bash
+python -m src.cli \
+  --input examples/matters/saas_msa_deviation.json \
+  --lineage-output demo_output/evidence-lineage.json \
+  --lineage-markdown-output demo_output/evidence-lineage.md
 ```
 
 ## Committed source-verified run

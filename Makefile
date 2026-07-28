@@ -8,6 +8,7 @@ lock:
 install:
 	$(PYTHON) -m pip install --upgrade pip
 	$(PYTHON) -m pip install -r requirements.lock
+	$(PYTHON) -m pip install -e ".[dev]"
 
 lint:
 	$(PYTHON) -m ruff check .
