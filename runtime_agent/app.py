@@ -6,6 +6,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 from urllib.parse import urlparse
 
+from src.agent_governance import get_default_controller, render_governance_cockpit
 from src.mcp_tools import legal_ops_mcp_manifest, run_tool
 
 SERVICE_NAME = "legal_ops_agent_runtime"
@@ -30,6 +31,14 @@ class RuntimeHandler(BaseHTTPRequestHandler):
         except json.JSONDecodeError:
             return None
 
+    def _write_html(self, status_code: int, document: str) -> None:
+        body = document.encode("utf-8")
+        self.send_response(status_code)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         if parsed.path == "/health":
@@ -46,6 +55,27 @@ class RuntimeHandler(BaseHTTPRequestHandler):
         if parsed.path == "/mcp/manifest":
             self._write_json(200, legal_ops_mcp_manifest())
             return
+        controller = get_default_controller()
+        if parsed.path == "/governance/status":
+            self._write_json(200, controller.status())
+            return
+        if parsed.path == "/governance/events":
+            self._write_json(
+                200,
+                {
+                    "events": [
+                        event.model_dump(mode="json", by_alias=True) for event in controller.events
+                    ],
+                    "raw_arguments_included": False,
+                },
+            )
+            return
+        if parsed.path == "/governance/cockpit":
+            self._write_html(
+                200,
+                render_governance_cockpit(controller.status(), controller.events),
+            )
+            return
 
         self._write_json(404, {"error": "not_found"})
 
@@ -59,13 +89,21 @@ class RuntimeHandler(BaseHTTPRequestHandler):
         if parsed.path == "/tools/call":
             tool_name = payload.get("name")
             arguments = payload.get("arguments", {})
+            governance = payload.get("governance")
             if not isinstance(tool_name, str) or not isinstance(arguments, dict):
                 self._write_json(400, {"error": "invalid_tool_call"})
                 return
+            if governance is not None and not isinstance(governance, dict):
+                self._write_json(400, {"error": "invalid_governance_envelope"})
+                return
             try:
-                self._write_json(200, run_tool(tool_name, arguments))
+                self._write_json(
+                    200,
+                    run_tool(tool_name, arguments, governance=governance),
+                )
             except (KeyError, ValueError) as exc:
-                self._write_json(400, {"error": str(exc)})
+                status_code = 403 if str(exc).startswith("governance_") else 400
+                self._write_json(status_code, {"error": str(exc)})
             return
 
         self._write_json(404, {"error": "not_found"})

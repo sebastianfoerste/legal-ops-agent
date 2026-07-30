@@ -10,6 +10,12 @@ from models import (
     ReviewDecision,
     verify_audit_chain,
 )
+from src.agent_governance import (
+    AgentActionPlan,
+    ApprovalToken,
+    GovernanceController,
+    get_default_controller,
+)
 from src.legal_ops import apply_review_decision, assess_matter
 from src.matter_workspace import build_matter_workspace
 from src.review_packet import build_review_packet
@@ -98,11 +104,39 @@ def legal_ops_mcp_manifest() -> dict[str, Any]:
                 ),
                 "input_schema": MatterIntake.model_json_schema(),
             },
+            {
+                "name": "legal.agent.preflight",
+                "description": (
+                    "Evaluate a versioned tool plan against the local agent policy "
+                    "without executing it."
+                ),
+                "input_schema": {
+                    "type": "object",
+                    "properties": {
+                        "plan": AgentActionPlan.model_json_schema(),
+                        "arguments": {"type": "object"},
+                        "approval_token": ApprovalToken.model_json_schema(),
+                    },
+                    "required": ["plan", "arguments"],
+                },
+            },
+            {
+                "name": "legal.agent.status",
+                "description": "Return current local governance status and chain verification.",
+                "input_schema": {"type": "object", "properties": {}},
+            },
+            {
+                "name": "legal.agent.incident.build",
+                "description": (
+                    "Build a redacted local incident and replay bundle from action digests."
+                ),
+                "input_schema": {"type": "object", "properties": {}},
+            },
         ],
     }
 
 
-def run_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, Any]:
+def _execute_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, Any]:
     payload = arguments or {}
     if name == "legal.matter.assess":
         matter = MatterIntake.model_validate(payload)
@@ -164,3 +198,67 @@ def run_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, An
         return build_matter_workspace(assessment).model_dump(mode="json", by_alias=True)
 
     raise ValueError(f"unsupported tool: {name}")
+
+
+def run_tool(
+    name: str,
+    arguments: dict[str, Any] | None = None,
+    *,
+    governance: dict[str, Any] | None = None,
+    controller: GovernanceController | None = None,
+) -> dict[str, Any]:
+    payload = arguments or {}
+    active_controller = controller or get_default_controller()
+
+    if name == "legal.agent.status":
+        return active_controller.status()
+    if name == "legal.agent.incident.build":
+        return active_controller.incident_bundle().model_dump(mode="json", by_alias=True)
+    if name == "legal.agent.preflight":
+        plan = AgentActionPlan.model_validate(payload["plan"])
+        planned_arguments = payload.get("arguments", {})
+        if not isinstance(planned_arguments, dict):
+            raise ValueError("preflight arguments must be an object")
+        token_payload = payload.get("approval_token")
+        token = ApprovalToken.model_validate(token_payload) if token_payload else None
+        return active_controller.preflight(
+            plan,
+            planned_arguments,
+            token,
+            consume_token=False,
+            record=False,
+        ).model_dump(mode="json", by_alias=True)
+
+    if governance:
+        plan = AgentActionPlan.model_validate(governance["plan"])
+        token_payload = governance.get("approval_token")
+        token = ApprovalToken.model_validate(token_payload) if token_payload else None
+    else:
+        plan = active_controller.make_plan(name, payload)
+        token = None
+
+    if plan.tool_call.tool_name != name:
+        raise ValueError("governance plan tool does not match requested tool")
+    decision = active_controller.preflight(
+        plan,
+        payload,
+        token,
+        consume_token=True,
+    )
+    if decision.status != "allowed":
+        raise ValueError(f"governance_{decision.status}: {', '.join(decision.reasons)}")
+    try:
+        result = _execute_tool(name, payload)
+    except Exception:
+        active_controller.record_execution(
+            decision,
+            success=False,
+            reason="tool_execution_failed",
+        )
+        raise
+    active_controller.record_execution(
+        decision,
+        success=True,
+        reason="tool_execution_completed",
+    )
+    return result

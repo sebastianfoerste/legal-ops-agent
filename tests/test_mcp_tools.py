@@ -17,6 +17,9 @@ def test_mcp_manifest_exposes_controlled_tools():
         "legal.sources.list",
         "legal.sources.verify",
         "legal.workspace.build",
+        "legal.agent.preflight",
+        "legal.agent.status",
+        "legal.agent.incident.build",
     }
 
 

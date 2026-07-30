@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Legal Agent Governance Control Plane</title>
+<style>
+body{margin:0;background:#edf1f2;color:#172126;font:15px/1.5 system-ui,sans-serif}
+main{max-width:1100px;margin:auto;padding:42px 24px}h1{font:700 34px/1.2 Georgia,serif;margin:0}
+.eyebrow{color:#14544d;font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}
+.card,section{background:white;border:1px solid #dce3e5;border-radius:10px;padding:18px}
+.card strong{display:block;font-size:27px}section{margin-top:18px;overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:10px;border-bottom:1px solid #e3e8ea;text-align:left}
+th{font-size:12px;color:#5e6a70;text-transform:uppercase}code{font-size:12px}
+.blocked{color:#8c2f23}@media(max-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><main>
+<p class="eyebrow">Local runtime oversight · synthetic demonstration</p>
+<h1>Legal Agent Governance Control Plane</h1>
+<p>Policy <code>2026-07-30</code>. External actions remain disabled.</p>
+<div class="grid">
+<div class="card"><strong>5</strong><span>action events</span></div>
+<div class="card"><strong>1</strong><span>executed</span></div>
+<div class="card"><strong class="blocked">2</strong><span>blocked</span></div>
+<div class="card"><strong>true</strong><span>chain verified</span></div>
+</div>
+<section><h2>Runtime action ledger</h2><table><thead><tr><th>Seq</th><th>Tool</th><th>Status</th><th>Argument digest</th><th>Reason</th></tr></thead><tbody><tr><td>4</td><td>legal.external.send</td><td>blocked</td><td><code>44136fa355b367</code></td><td>external_or_prohibited_action, unknown_tool_fail_closed</td></tr><tr><td>3</td><td>legal.matter.assess</td><td>blocked</td><td><code>73632a12feeb37</code></td><td>blocked_source_prefix</td></tr><tr><td>2</td><td>legal.review.decide</td><td>approval_required</td><td><code>7cc909e20f4247</code></td><td>documented_human_approval_required</td></tr><tr><td>1</td><td>legal.sources.verify</td><td>executed</td><td><code>bf74be26e10706</code></td><td>synthetic_verification_completed</td></tr><tr><td>0</td><td>legal.sources.verify</td><td>allowed</td><td><code>bf74be26e10706</code></td><td>local_policy_allows_tool</td></tr></tbody></table></section>
+<section><h2>Control boundary</h2><p>Consequential decisions require a short-lived, role-bound, one-time approval token. The ledger stores digests and redacted metadata only.</p></section>
+</main></body></html>

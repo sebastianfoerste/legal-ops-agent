@@ -1,6 +1,6 @@
 PYTHON := $(shell if [ -x .venv/bin/python ]; then echo .venv/bin/python; else echo python; fi)
 
-.PHONY: lock install check test lint format compile
+.PHONY: lock install check test lint format compile governance-demo governance-check
 
 lock:
 	uv pip compile requirements.in -o requirements.lock
@@ -21,7 +21,13 @@ test:
 compile:
 	$(PYTHON) -m compileall master_orchestrator.py models.py src runtime_agent tests
 
-check: lint test compile
+governance-demo:
+	PYTHONPATH=. $(PYTHON) scripts/generate_governance_demo.py
+
+governance-check:
+	PYTHONPATH=. $(PYTHON) scripts/check_governance_demo.py
+
+check: lint test compile governance-check
 
 format:
 	$(PYTHON) -m ruff check --fix .

@@ -1,0 +1,105 @@
+{
+  "schema": "legal-ops-agent.agent-policy.v1",
+  "policy_version": "2026-07-30",
+  "default_decision": "block",
+  "blocked_source_prefixes": [
+    "client:",
+    "candidate:",
+    "privileged:",
+    "confidential:"
+  ],
+  "blocked_data_classes": [
+    "client",
+    "candidate",
+    "privileged",
+    "confidential"
+  ],
+  "prohibited_action_terms": [
+    "external",
+    "deliver",
+    "publish",
+    "publication",
+    "filing",
+    "outreach",
+    "send"
+  ],
+  "kill_switch_exempt_tools": [
+    "legal.agent.status",
+    "legal.agent.incident.build",
+    "legal.audit.verify"
+  ],
+  "tools": [
+    {
+      "tool_name": "legal.sources.list",
+      "effect": "inspect_local",
+      "consequence": "low",
+      "required_reviewer_role": null
+    },
+    {
+      "tool_name": "legal.sources.verify",
+      "effect": "inspect_local",
+      "consequence": "low",
+      "required_reviewer_role": null
+    },
+    {
+      "tool_name": "legal.audit.verify",
+      "effect": "inspect_local",
+      "consequence": "low",
+      "required_reviewer_role": null
+    },
+    {
+      "tool_name": "legal.agent.preflight",
+      "effect": "inspect_local",
+      "consequence": "low",
+      "required_reviewer_role": null
+    },
+    {
+      "tool_name": "legal.agent.status",
+      "effect": "inspect_local",
+      "consequence": "low",
+      "required_reviewer_role": null
+    },
+    {
+      "tool_name": "legal.agent.incident.build",
+      "effect": "inspect_local",
+      "consequence": "low",
+      "required_reviewer_role": null
+    },
+    {
+      "tool_name": "legal.matter.assess",
+      "effect": "draft_local",
+      "consequence": "medium",
+      "required_reviewer_role": null
+    },
+    {
+      "tool_name": "legal.review.packet",
+      "effect": "draft_local",
+      "consequence": "medium",
+      "required_reviewer_role": null
+    },
+    {
+      "tool_name": "legal.review.packet.run",
+      "effect": "draft_local",
+      "consequence": "medium",
+      "required_reviewer_role": null
+    },
+    {
+      "tool_name": "legal.review.trust_cockpit",
+      "effect": "draft_local",
+      "consequence": "medium",
+      "required_reviewer_role": null
+    },
+    {
+      "tool_name": "legal.workspace.build",
+      "effect": "draft_local",
+      "consequence": "medium",
+      "required_reviewer_role": null
+    },
+    {
+      "tool_name": "legal.review.decide",
+      "effect": "consequential_local",
+      "consequence": "high",
+      "required_reviewer_role": "General Counsel"
+    }
+  ]
+}
