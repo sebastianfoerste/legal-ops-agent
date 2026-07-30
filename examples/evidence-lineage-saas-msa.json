@@ -2,6 +2,7 @@
   "schema": "legal-ops-agent.evidence-lineage.v1",
   "assessment_id": "loa_0b5d728ed132582a",
   "status": "complete",
+  "assurance_status": "clear",
   "coverage": {
     "claims_total": 9,
     "claims_with_complete_lineage": 9,
@@ -78,7 +79,7 @@
       "node_id": "input:assessment.audit_events",
       "kind": "input",
       "label": "assessment.audit_events",
-      "value_digest": "0a9750c9ec9e1d44245597bdede84d1ef1af3621e88ed5690867909e9cf761cf",
+      "value_digest": "f397559ee433b63f7fb5ec76a64c7a24c322a3bc01edb1d25ccc9888a44094b1",
       "detail": "value committed by SHA-256; list entries: 1"
     },
     {
@@ -349,7 +350,8 @@
       "relationship": "evaluated_by"
     }
   ],
-  "integrity_sha256": "e361ebb7238871f859c39077d0c7ccae6b3cdefc724dc9e48b70a7d3803aecfb",
-  "review_gate": "Lineage proves which local inputs and deterministic rules support each claim. It does not approve the matter or replace legal review.",
+  "review_queue": [],
+  "integrity_sha256": "7e865f772b0b981d9c0ed3df5ef22d72f2221905008484aa4b477ce1a22568e5",
+  "review_gate": "Lineage records which local inputs and deterministic rules support each claim. Evidence exceptions remain in the review queue until a human confirms source authority, currency, relevance, and permitted use.",
   "external_actions_allowed": false
 }

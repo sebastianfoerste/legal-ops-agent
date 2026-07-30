@@ -26,13 +26,24 @@ class LineageEdge(BaseModel):
     relationship: Literal["evaluated_by", "supports"]
 
 
+class EvidenceReviewItem(BaseModel):
+    source_node_id: str
+    source_ref: str
+    source_status: Literal["pass", "warning", "blocker"]
+    reason: str
+    affected_claim_ids: list[str]
+    reviewer_action: str
+
+
 class EvidenceLineageGraph(BaseModel):
     schema_version: Literal["legal-ops-agent.evidence-lineage.v1"] = Field(alias="schema")
     assessment_id: str
     status: Literal["complete", "blocked"]
+    assurance_status: Literal["clear", "review_required", "blocked"]
     coverage: dict[str, int | float]
     nodes: list[LineageNode]
     edges: list[LineageEdge]
+    review_queue: list[EvidenceReviewItem]
     integrity_sha256: str
     review_gate: str
     external_actions_allowed: bool = False
@@ -251,16 +262,65 @@ def build_evidence_lineage(assessment: LegalOpsAssessment) -> EvidenceLineageGra
         edges,
         key=lambda edge: (edge.source, edge.target, edge.relationship),
     )
+    source_dependent_rules = {
+        edge.target
+        for edge in ordered_edges
+        if edge.source == "input:matter.source_refs" and edge.relationship == "evaluated_by"
+    }
+    source_dependent_claims = sorted(
+        {
+            edge.target
+            for edge in ordered_edges
+            if edge.source in source_dependent_rules and edge.relationship == "supports"
+        }
+    )
+    review_queue = []
+    for index, verification in enumerate(assessment.source_verifications):
+        if verification.status == "pass" and not verification.requires_human_review:
+            continue
+        if verification.status == "blocker":
+            reviewer_action = (
+                "Replace the blocked source reference with an approved synthetic "
+                "or public regulatory source before reliance."
+            )
+        elif verification.status == "warning":
+            reviewer_action = (
+                "Validate source provenance, authority, and permitted use before reliance."
+            )
+        else:
+            reviewer_action = (
+                "Confirm the current source text, relevance, and pinpoint support before reliance."
+            )
+        review_queue.append(
+            EvidenceReviewItem(
+                source_node_id=f"source:{index}",
+                source_ref=_redact_source_ref(verification.source_ref),
+                source_status=verification.status,
+                reason=verification.reason,
+                affected_claim_ids=source_dependent_claims,
+                reviewer_action=reviewer_action,
+            )
+        )
+    assurance_status: Literal["clear", "review_required", "blocked"]
+    if any(item.source_status == "blocker" for item in review_queue):
+        assurance_status = "blocked"
+    elif review_queue:
+        assurance_status = "review_required"
+    else:
+        assurance_status = "clear"
     canonical_payload = {
         "assessment_id": assessment.assessment_id,
         "status": status,
+        "assurance_status": assurance_status,
         "nodes": [node.model_dump(mode="json") for node in ordered_nodes],
         "edges": [edge.model_dump(mode="json") for edge in ordered_edges],
+        "review_queue": [item.model_dump(mode="json") for item in review_queue],
     }
     return EvidenceLineageGraph(
         schema="legal-ops-agent.evidence-lineage.v1",
         assessment_id=assessment.assessment_id,
         status=status,
+        assurance_status=assurance_status,
         coverage={
             "claims_total": len(claim_ids),
             "claims_with_complete_lineage": complete_claims,
@@ -271,10 +331,12 @@ def build_evidence_lineage(assessment: LegalOpsAssessment) -> EvidenceLineageGra
         },
         nodes=ordered_nodes,
         edges=ordered_edges,
+        review_queue=review_queue,
         integrity_sha256=_digest(canonical_payload),
         review_gate=(
-            "Lineage proves which local inputs and deterministic rules support each claim. "
-            "It does not approve the matter or replace legal review."
+            "Lineage records which local inputs and deterministic rules support each claim. "
+            "Evidence exceptions remain in the review queue until a human confirms source "
+            "authority, currency, relevance, and permitted use."
         ),
         external_actions_allowed=False,
     )
@@ -287,7 +349,8 @@ def render_evidence_lineage(graph: EvidenceLineageGraph) -> str:
         "# LegalOps Claim Evidence Lineage",
         "",
         f"- Assessment: `{graph.assessment_id}`",
-        f"- Status: `{graph.status}`",
+        f"- Lineage status: `{graph.status}`",
+        f"- Evidence assurance: `{graph.assurance_status}`",
         f"- Claim coverage: {coverage['claims_with_complete_lineage']}/"
         f"{coverage['claims_total']} ({float(coverage['coverage_rate']) * 100:.1f}%)",
         f"- Integrity SHA-256: `{graph.integrity_sha256}`",
@@ -300,6 +363,22 @@ def render_evidence_lineage(graph: EvidenceLineageGraph) -> str:
     ]
     for node in claim_nodes:
         lines.append(f"| {node.label} | `{node.value_digest}` |")
+    lines.extend(
+        [
+            "",
+            "## Evidence review queue",
+            "",
+            "| Source | Status | Affected claims | Reviewer action |",
+            "| --- | --- | ---: | --- |",
+        ]
+    )
+    for item in graph.review_queue:
+        lines.append(
+            f"| {item.source_ref} | {item.source_status} "
+            f"| {len(item.affected_claim_ids)} | {item.reviewer_action} |"
+        )
+    if not graph.review_queue:
+        lines.append("| none | clear | 0 | none |")
     lines.extend(
         [
             "",

@@ -16,7 +16,10 @@ Verification guide: [`docs/verification-guide.md`](docs/verification-guide.md).
 Claim-level evidence lineage: every surfaced finding, control, source decision,
 routing decision, and export-gate result can be traced to a hashed input and the
 deterministic local rule that produced it. Blocked source identifiers are
-redacted before the lineage graph is rendered.
+redacted before the lineage graph is rendered. Lineage coverage and evidence
+assurance are reported separately, so a fully traced claim still enters an
+explicit review queue when its source is blocked, unapproved, or requires a
+lawyer to confirm currency and relevance.
 
 Committed proof:
 [`examples/evidence-lineage-saas-msa.md`](examples/evidence-lineage-saas-msa.md)

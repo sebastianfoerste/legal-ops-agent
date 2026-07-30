@@ -88,5 +88,7 @@ def test_cli_writes_json_and_review_packet(tmp_path):
     lineage = json.loads(lineage_output.read_text(encoding="utf-8"))
     assert lineage["schema"] == "legal-ops-agent.evidence-lineage.v1"
     assert lineage["coverage"]["coverage_rate"] == 1.0
+    assert lineage["assurance_status"] == "clear"
+    assert lineage["review_queue"] == []
     assert lineage["external_actions_allowed"] is False
     assert "Claim Evidence Lineage" in lineage_markdown_output.read_text(encoding="utf-8")

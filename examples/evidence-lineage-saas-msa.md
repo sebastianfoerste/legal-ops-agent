@@ -1,9 +1,10 @@
 # LegalOps Claim Evidence Lineage
 
 - Assessment: `loa_0b5d728ed132582a`
-- Status: `complete`
+- Lineage status: `complete`
+- Evidence assurance: `clear`
 - Claim coverage: 9/9 (100.0%)
-- Integrity SHA-256: `e361ebb7238871f859c39077d0c7ccae6b3cdefc724dc9e48b70a7d3803aecfb`
+- Integrity SHA-256: `7e865f772b0b981d9c0ed3df5ef22d72f2221905008484aa4b477ce1a22568e5`
 - External actions: disabled
 
 ## Claims
@@ -20,6 +21,12 @@
 | routing decision | `52e9af8adf4e6dadf42f3c7e0be68b24a606f6d386987849b2c45b3649bb1889` |
 | source-verification:synthetic | `09d7fd8d111eeabb37c8d92637a431b6bc32c557850628d3ab1685e6f270b6c5` |
 
+## Evidence review queue
+
+| Source | Status | Affected claims | Reviewer action |
+| --- | --- | ---: | --- |
+| none | clear | 0 | none |
+
 ## Review gate
 
-Lineage proves which local inputs and deterministic rules support each claim. It does not approve the matter or replace legal review.
+Lineage records which local inputs and deterministic rules support each claim. Evidence exceptions remain in the review queue until a human confirms source authority, currency, relevance, and permitted use.
