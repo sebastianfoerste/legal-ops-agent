@@ -1,5 +1,17 @@
 # legal-ops-agent
 
+> **This repository is archived and read-only. Development continues in
+> [`legal-function-operating-system`](https://github.com/sebastianfoerste/legal-function-operating-system),
+> where this agent is maintained as the `supervised-agent/` component.**
+>
+> The agent kept its own Python runtime, models, CLI and test suite. What the move
+> added is an explicit interoperability boundary with the legal function operating
+> model: [`contracts/legal-workflow-controls.v1.schema.json`](https://github.com/sebastianfoerste/legal-function-operating-system/blob/main/contracts/legal-workflow-controls.v1.schema.json)
+> normalizes review state, approval gates, source boundaries and audit events
+> across both components, and CI enforces it on every change.
+>
+> The code here remains readable as a dated snapshot. It no longer receives fixes.
+
 [![Python CI](https://github.com/sebastianfoerste/legal-ops-agent/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sebastianfoerste/legal-ops-agent/actions/workflows/ci.yml)
 
 CI workflow and deterministic test suite are included.
