@@ -25,6 +25,41 @@ Supervised legal-operations workflow: typed intake, deterministic risk triage, r
 Verification manifest: [`docs/verification-manifest.json`](docs/verification-manifest.json).
 Verification guide: [`docs/verification-guide.md`](docs/verification-guide.md).
 
+Claim-level evidence lineage: every surfaced finding, control, source decision,
+routing decision, and export-gate result can be traced to a hashed input and the
+deterministic local rule that produced it. Blocked source identifiers are
+redacted before the lineage graph is rendered. Lineage coverage and evidence
+assurance are reported separately, so a fully traced claim still enters an
+explicit review queue when its source is blocked, unapproved, or requires a
+lawyer to confirm currency and relevance.
+
+Committed proof:
+[`examples/evidence-lineage-saas-msa.md`](examples/evidence-lineage-saas-msa.md)
+and
+[`examples/evidence-lineage-saas-msa.json`](examples/evidence-lineage-saas-msa.json).
+
+Agent governance control plane: every MCP-style tool call now crosses a versioned,
+fail-closed policy boundary. Local inspection and drafting remain available within
+their review constraints. Consequential review decisions require a short-lived
+HMAC approval token bound to the exact plan, tool, argument digest, policy version,
+reviewer role, expiry, and one-time nonce. External actions, unknown tools,
+confidential source prefixes, and blocked data classes are rejected.
+
+The current governance proof is committed as
+[`examples/agent-governance-control-plane.md`](examples/agent-governance-control-plane.md),
+[`examples/agent-governance-control-plane.json`](examples/agent-governance-control-plane.json),
+and a
+[`local HTML cockpit`](examples/agent-governance-control-plane.html).
+It demonstrates one permitted source verification, one approval-required legal
+decision, one blocked confidential source, and one blocked external action.
+
+The control plane addresses the oversight gap identified in
+[Icertis's 2026 legal AI survey](https://www.icertis.com/company/news/half-of-legal-teams-lack-visibility-into-autonomous-ai-according-to-icertis-survey/),
+which reports limited real-time visibility into autonomous actions and low
+confidence in high-stakes accuracy. Runtime events form a tamper-evident chain and
+contain canonical digests and redacted metadata. Raw tool arguments and source
+content are excluded.
+
 > **If you don't code:** scroll to [What the demo produces](#what-the-demo-produces). This repo ships a sample output you can read in the browser. The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
 
 ![demo](docs/demo.png)
@@ -55,12 +90,15 @@ blocker finding remains. Run the proof gate with `make check`.
 1. `models.py` defines typed matter, finding, routing, review and assessment contracts.
 2. `src/legal_ops.py` performs deterministic intake, risk triage and reviewer routing.
 3. `src/source_verification.py` validates synthetic and public-regulatory source references.
-4. `src/mcp_tools.py` exposes seven local MCP-style tools behind a controlled dispatcher.
+4. `src/mcp_tools.py` exposes local MCP-style tools behind a governed dispatcher.
 5. `src/trust_cockpit.py` renders the reviewer-facing trust cockpit.
 6. `src/review_packet.py` renders the lawyer-facing Markdown packet.
 7. `src/cli.py` runs fixture-to-packet flows for local verification.
 8. `runtime_agent/app.py` provides a small HTTP canary for local workflow checks.
 9. Export stays blocked until a documented human approval clears the review gate.
+10. `src/evidence_lineage.py` produces a coverage-checked claim provenance graph.
+11. `src/agent_governance.py` enforces policy, approval tokens, the kill switch,
+    action-chain integrity, and redacted incident bundles.
 
 ## What the demo produces
 
@@ -134,6 +172,39 @@ Run the verification gate:
 make check
 ```
 
+Inspect the deterministic governance demonstration:
+
+```bash
+make governance-demo
+open examples/agent-governance-control-plane.html
+```
+
+The local runtime exposes `/governance/status`, `/governance/events`, and
+`/governance/cockpit`. Set `LEGAL_OPS_AGENT_KILL_SWITCH=1` to block executable
+tools while retaining health, status, audit inspection, and incident export.
+
+Human reviewers issue consequential approval tokens through a separate local CLI:
+
+```bash
+export LEGAL_OPS_APPROVAL_SECRET="set-this-in-a-local-secret-store"
+python -m src.governance_cli issue-approval \
+  --plan approved-action-plan.json \
+  --reviewer "General Counsel" \
+  --out approval-token.json
+```
+
+The MCP manifest exposes preflight, status, and incident inspection. It does not
+expose token issuance, so an agent cannot approve its own consequential action.
+
+Write the claim lineage proof:
+
+```bash
+python -m src.cli \
+  --input examples/matters/saas_msa_deviation.json \
+  --lineage-output demo_output/evidence-lineage.json \
+  --lineage-markdown-output demo_output/evidence-lineage.md
+```
+
 ## Committed source-verified run
 
 A dated verification run for the same synthetic SaaS MSA deviation fixture is committed
@@ -204,6 +275,9 @@ flowchart TD
 - Blocked source prefixes for client, candidate, privileged and confidential material.
 - Public regulatory source verification without external fetching.
 - Local MCP configuration for controlled tool access.
+- Versioned agent policy with fail-closed tool and data boundaries.
+- Human-issued, short-lived, one-time approval for consequential tool calls.
+- Hash-chained action evidence containing digests and redacted metadata only.
 - Synthetic sample data only.
 
 ## Repository structure

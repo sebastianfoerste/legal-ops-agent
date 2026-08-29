@@ -1,0 +1,288 @@
+{
+  "schema": "legal-ops-agent.governance-demonstration.v1",
+  "generated_at_utc": "2026-07-30T12:00:00+00:00",
+  "fixture": "synthetic four-action governance demonstration",
+  "decisions": [
+    {
+      "schema": "legal-ops-agent.policy-decision.v1",
+      "status": "allowed",
+      "plan_id": "plan-bf74be26e1070663",
+      "plan_digest": "55c5fea633dce25c3beca1f5761396ae568ae9d3222e3cc167831824ad29074f",
+      "tool_name": "legal.sources.verify",
+      "arguments_digest": "bf74be26e1070663cd840d7662cfa3af8372482ca79df45d99d0673f4fd9bf63",
+      "policy_version": "2026-07-30",
+      "effect": "inspect_local",
+      "consequence": "low",
+      "reasons": [
+        "local_policy_allows_tool"
+      ],
+      "approval_token_id": null,
+      "external_actions_allowed": false
+    },
+    {
+      "schema": "legal-ops-agent.policy-decision.v1",
+      "status": "approval_required",
+      "plan_id": "plan-7cc909e20f424712",
+      "plan_digest": "0d4758e6e00dd78b2744a8fe8507b967d973fcba824950a8d70c83c1de876d9d",
+      "tool_name": "legal.review.decide",
+      "arguments_digest": "7cc909e20f424712c57b0bd68d65548d6f7803bcb9e7f54688313c6fe7a096f2",
+      "policy_version": "2026-07-30",
+      "effect": "consequential_local",
+      "consequence": "high",
+      "reasons": [
+        "documented_human_approval_required"
+      ],
+      "approval_token_id": null,
+      "external_actions_allowed": false
+    },
+    {
+      "schema": "legal-ops-agent.policy-decision.v1",
+      "status": "blocked",
+      "plan_id": "plan-73632a12feeb3753",
+      "plan_digest": "6558adbd69393dffdb3410cd3443338b1c6be20bd23c6cc99d4ce6ee0baa1c9b",
+      "tool_name": "legal.matter.assess",
+      "arguments_digest": "73632a12feeb375302cbb11f30c0f0cbcb041634969cf1f6aa6920e374468b33",
+      "policy_version": "2026-07-30",
+      "effect": "draft_local",
+      "consequence": "medium",
+      "reasons": [
+        "blocked_source_prefix"
+      ],
+      "approval_token_id": null,
+      "external_actions_allowed": false
+    },
+    {
+      "schema": "legal-ops-agent.policy-decision.v1",
+      "status": "blocked",
+      "plan_id": "plan-44136fa355b3678a",
+      "plan_digest": "e879ea6a2e29cd3a0fb0d6bd637a2f15fcc1c3bd1334dc6c201bc448050360bc",
+      "tool_name": "legal.external.send",
+      "arguments_digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "policy_version": "2026-07-30",
+      "effect": null,
+      "consequence": null,
+      "reasons": [
+        "external_or_prohibited_action",
+        "unknown_tool_fail_closed"
+      ],
+      "approval_token_id": null,
+      "external_actions_allowed": false
+    }
+  ],
+  "runtime_status": {
+    "schema": "legal-ops-agent.agent-runtime-status.v1",
+    "policy_version": "2026-07-30",
+    "kill_switch_active": false,
+    "event_count": 5,
+    "status_counts": {
+      "allowed": 1,
+      "approval_required": 1,
+      "blocked": 2,
+      "executed": 1
+    },
+    "consumed_approval_tokens": 0,
+    "chain_verification": {
+      "verified": true,
+      "event_count": 5,
+      "broken_at_seq": null,
+      "reason": "chain_intact",
+      "chain_root_hash": "81594d9d9cd6c319df0025d7f3180a071e4e2055782ab56b749262fcfa4812a9"
+    },
+    "external_actions_allowed": false
+  },
+  "events": [
+    {
+      "schema": "legal-ops-agent.agent-action-event.v1",
+      "seq": 0,
+      "event_id": "action-0000-55c5fea633",
+      "timestamp_utc": "2026-07-30T12:00:00+00:00",
+      "status": "allowed",
+      "tool_name": "legal.sources.verify",
+      "plan_id": "plan-bf74be26e1070663",
+      "plan_digest": "55c5fea633dce25c3beca1f5761396ae568ae9d3222e3cc167831824ad29074f",
+      "arguments_digest": "bf74be26e1070663cd840d7662cfa3af8372482ca79df45d99d0673f4fd9bf63",
+      "policy_version": "2026-07-30",
+      "reasons": [
+        "local_policy_allows_tool"
+      ],
+      "approval_token_id": null,
+      "prev_hash": null,
+      "event_hash": "71de456d6a75517f8990c36ad6828f339e85194c3d1853c2c32f62730fa13f14"
+    },
+    {
+      "schema": "legal-ops-agent.agent-action-event.v1",
+      "seq": 1,
+      "event_id": "action-0001-55c5fea633",
+      "timestamp_utc": "2026-07-30T12:00:00+00:00",
+      "status": "executed",
+      "tool_name": "legal.sources.verify",
+      "plan_id": "plan-bf74be26e1070663",
+      "plan_digest": "55c5fea633dce25c3beca1f5761396ae568ae9d3222e3cc167831824ad29074f",
+      "arguments_digest": "bf74be26e1070663cd840d7662cfa3af8372482ca79df45d99d0673f4fd9bf63",
+      "policy_version": "2026-07-30",
+      "reasons": [
+        "synthetic_verification_completed"
+      ],
+      "approval_token_id": null,
+      "prev_hash": "71de456d6a75517f8990c36ad6828f339e85194c3d1853c2c32f62730fa13f14",
+      "event_hash": "c0e167c5031c72eb63f201a76466385f9fbbb350307ed3e1d9cda51893f782e7"
+    },
+    {
+      "schema": "legal-ops-agent.agent-action-event.v1",
+      "seq": 2,
+      "event_id": "action-0002-0d4758e6e0",
+      "timestamp_utc": "2026-07-30T12:00:00+00:00",
+      "status": "approval_required",
+      "tool_name": "legal.review.decide",
+      "plan_id": "plan-7cc909e20f424712",
+      "plan_digest": "0d4758e6e00dd78b2744a8fe8507b967d973fcba824950a8d70c83c1de876d9d",
+      "arguments_digest": "7cc909e20f424712c57b0bd68d65548d6f7803bcb9e7f54688313c6fe7a096f2",
+      "policy_version": "2026-07-30",
+      "reasons": [
+        "documented_human_approval_required"
+      ],
+      "approval_token_id": null,
+      "prev_hash": "c0e167c5031c72eb63f201a76466385f9fbbb350307ed3e1d9cda51893f782e7",
+      "event_hash": "0e59f8584f339b06592ea815cdcb18185259f3e836bb8ecb0be5b5071e7dcc4c"
+    },
+    {
+      "schema": "legal-ops-agent.agent-action-event.v1",
+      "seq": 3,
+      "event_id": "action-0003-6558adbd69",
+      "timestamp_utc": "2026-07-30T12:00:00+00:00",
+      "status": "blocked",
+      "tool_name": "legal.matter.assess",
+      "plan_id": "plan-73632a12feeb3753",
+      "plan_digest": "6558adbd69393dffdb3410cd3443338b1c6be20bd23c6cc99d4ce6ee0baa1c9b",
+      "arguments_digest": "73632a12feeb375302cbb11f30c0f0cbcb041634969cf1f6aa6920e374468b33",
+      "policy_version": "2026-07-30",
+      "reasons": [
+        "blocked_source_prefix"
+      ],
+      "approval_token_id": null,
+      "prev_hash": "0e59f8584f339b06592ea815cdcb18185259f3e836bb8ecb0be5b5071e7dcc4c",
+      "event_hash": "4052412f7e90dd77beab58ddead12cc8407dc48cf33c00c725d988e7b3c07bbd"
+    },
+    {
+      "schema": "legal-ops-agent.agent-action-event.v1",
+      "seq": 4,
+      "event_id": "action-0004-e879ea6a2e",
+      "timestamp_utc": "2026-07-30T12:00:00+00:00",
+      "status": "blocked",
+      "tool_name": "legal.external.send",
+      "plan_id": "plan-44136fa355b3678a",
+      "plan_digest": "e879ea6a2e29cd3a0fb0d6bd637a2f15fcc1c3bd1334dc6c201bc448050360bc",
+      "arguments_digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "policy_version": "2026-07-30",
+      "reasons": [
+        "external_or_prohibited_action",
+        "unknown_tool_fail_closed"
+      ],
+      "approval_token_id": null,
+      "prev_hash": "4052412f7e90dd77beab58ddead12cc8407dc48cf33c00c725d988e7b3c07bbd",
+      "event_hash": "81594d9d9cd6c319df0025d7f3180a071e4e2055782ab56b749262fcfa4812a9"
+    }
+  ],
+  "incident_bundle": {
+    "schema": "legal-ops-agent.incident-bundle.v1",
+    "generated_at_utc": "2026-07-30T12:00:00+00:00",
+    "policy_version": "2026-07-30",
+    "kill_switch_active": false,
+    "summary": {
+      "allowed": 1,
+      "approval_required": 1,
+      "blocked": 2,
+      "executed": 1
+    },
+    "chain_verification": {
+      "verified": true,
+      "event_count": 5,
+      "broken_at_seq": null,
+      "reason": "chain_intact",
+      "chain_root_hash": "81594d9d9cd6c319df0025d7f3180a071e4e2055782ab56b749262fcfa4812a9"
+    },
+    "violations": [
+      {
+        "event_id": "action-0002-0d4758e6e0",
+        "status": "approval_required",
+        "tool_name": "legal.review.decide",
+        "reasons": [
+          "documented_human_approval_required"
+        ],
+        "plan_digest": "0d4758e6e00dd78b2744a8fe8507b967d973fcba824950a8d70c83c1de876d9d"
+      },
+      {
+        "event_id": "action-0003-6558adbd69",
+        "status": "blocked",
+        "tool_name": "legal.matter.assess",
+        "reasons": [
+          "blocked_source_prefix"
+        ],
+        "plan_digest": "6558adbd69393dffdb3410cd3443338b1c6be20bd23c6cc99d4ce6ee0baa1c9b"
+      },
+      {
+        "event_id": "action-0004-e879ea6a2e",
+        "status": "blocked",
+        "tool_name": "legal.external.send",
+        "reasons": [
+          "external_or_prohibited_action",
+          "unknown_tool_fail_closed"
+        ],
+        "plan_digest": "e879ea6a2e29cd3a0fb0d6bd637a2f15fcc1c3bd1334dc6c201bc448050360bc"
+      }
+    ],
+    "replay_records": [
+      {
+        "event_id": "action-0000-55c5fea633",
+        "tool_name": "legal.sources.verify",
+        "plan_id": "plan-bf74be26e1070663",
+        "plan_digest": "55c5fea633dce25c3beca1f5761396ae568ae9d3222e3cc167831824ad29074f",
+        "arguments_digest": "bf74be26e1070663cd840d7662cfa3af8372482ca79df45d99d0673f4fd9bf63",
+        "policy_version": "2026-07-30",
+        "raw_arguments_included": false
+      },
+      {
+        "event_id": "action-0001-55c5fea633",
+        "tool_name": "legal.sources.verify",
+        "plan_id": "plan-bf74be26e1070663",
+        "plan_digest": "55c5fea633dce25c3beca1f5761396ae568ae9d3222e3cc167831824ad29074f",
+        "arguments_digest": "bf74be26e1070663cd840d7662cfa3af8372482ca79df45d99d0673f4fd9bf63",
+        "policy_version": "2026-07-30",
+        "raw_arguments_included": false
+      },
+      {
+        "event_id": "action-0002-0d4758e6e0",
+        "tool_name": "legal.review.decide",
+        "plan_id": "plan-7cc909e20f424712",
+        "plan_digest": "0d4758e6e00dd78b2744a8fe8507b967d973fcba824950a8d70c83c1de876d9d",
+        "arguments_digest": "7cc909e20f424712c57b0bd68d65548d6f7803bcb9e7f54688313c6fe7a096f2",
+        "policy_version": "2026-07-30",
+        "raw_arguments_included": false
+      },
+      {
+        "event_id": "action-0003-6558adbd69",
+        "tool_name": "legal.matter.assess",
+        "plan_id": "plan-73632a12feeb3753",
+        "plan_digest": "6558adbd69393dffdb3410cd3443338b1c6be20bd23c6cc99d4ce6ee0baa1c9b",
+        "arguments_digest": "73632a12feeb375302cbb11f30c0f0cbcb041634969cf1f6aa6920e374468b33",
+        "policy_version": "2026-07-30",
+        "raw_arguments_included": false
+      },
+      {
+        "event_id": "action-0004-e879ea6a2e",
+        "tool_name": "legal.external.send",
+        "plan_id": "plan-44136fa355b3678a",
+        "plan_digest": "e879ea6a2e29cd3a0fb0d6bd637a2f15fcc1c3bd1334dc6c201bc448050360bc",
+        "arguments_digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "policy_version": "2026-07-30",
+        "raw_arguments_included": false
+      }
+    ],
+    "source_boundary": "Only policy decisions, canonical digests, redacted metadata, and synthetic demonstration identifiers are included.",
+    "external_actions_allowed": false,
+    "integrity_sha256": "4774cced767cff61c3924c023521de76e2bae83727b413eed30936da3b7a6044"
+  },
+  "raw_arguments_included": false,
+  "external_actions_allowed": false,
+  "review_gate": "Only the human-facing local CLI can issue a consequential approval token. This demonstration issues no token and executes no consequential action."
+}

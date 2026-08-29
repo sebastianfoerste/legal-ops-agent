@@ -14,6 +14,7 @@ from src.collaboration_workspace import (
     build_timeline,
     render_review_room,
 )
+from src.evidence_lineage import build_evidence_lineage, render_evidence_lineage
 from src.exports import write_customer_commitment_register, write_source_verification_report
 from src.legal_ops import apply_review_decision, assess_matter, build_sample_matter
 from src.review_packet import write_review_packet
@@ -77,6 +78,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write the tamper-evident audit chain verification JSON to this path.",
     )
     parser.add_argument(
+        "--lineage-output",
+        type=Path,
+        help="Write the claim-level evidence lineage graph JSON to this path.",
+    )
+    parser.add_argument(
+        "--lineage-markdown-output",
+        type=Path,
+        help="Write the claim-level evidence lineage summary to this path.",
+    )
+    parser.add_argument(
         "--collaboration-output-dir",
         type=Path,
         help="Write local playbook changes, matter Lists, timeline and HTML review room.",
@@ -104,6 +115,8 @@ def _trust_cockpit_command(args: argparse.Namespace) -> str:
         ("--review-runner-output", args.review_runner_output),
         ("--manifest-output", args.manifest_output),
         ("--audit-chain-output", args.audit_chain_output),
+        ("--lineage-output", args.lineage_output),
+        ("--lineage-markdown-output", args.lineage_markdown_output),
         ("--trust-cockpit-output", args.trust_cockpit_output),
         ("--trust-cockpit-json-output", args.trust_cockpit_json_output),
         ("--collaboration-output-dir", args.collaboration_output_dir),
@@ -158,6 +171,22 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             args.review_runner_output,
         )
         artifacts["source_verified_review_packet_runner_json"] = args.review_runner_output
+    if args.lineage_output or args.lineage_markdown_output:
+        lineage = build_evidence_lineage(assessment)
+        if args.lineage_output:
+            args.lineage_output.parent.mkdir(parents=True, exist_ok=True)
+            args.lineage_output.write_text(
+                lineage.model_dump_json(by_alias=True, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            artifacts["claim_evidence_lineage_json"] = args.lineage_output
+        if args.lineage_markdown_output:
+            args.lineage_markdown_output.parent.mkdir(parents=True, exist_ok=True)
+            args.lineage_markdown_output.write_text(
+                render_evidence_lineage(lineage),
+                encoding="utf-8",
+            )
+            artifacts["claim_evidence_lineage_markdown"] = args.lineage_markdown_output
     if args.manifest_output:
         manifest_payload = build_artifact_manifest(assessment, artifacts)
         args.manifest_output.parent.mkdir(parents=True, exist_ok=True)

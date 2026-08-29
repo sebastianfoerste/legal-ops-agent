@@ -1,0 +1,357 @@
+{
+  "schema": "legal-ops-agent.evidence-lineage.v1",
+  "assessment_id": "loa_0b5d728ed132582a",
+  "status": "complete",
+  "assurance_status": "clear",
+  "coverage": {
+    "claims_total": 9,
+    "claims_with_complete_lineage": 9,
+    "coverage_rate": 1.0,
+    "inputs": 11,
+    "sources": 1,
+    "rules": 9
+  },
+  "nodes": [
+    {
+      "node_id": "claim:control:0",
+      "kind": "claim",
+      "label": "control:source-boundary",
+      "value_digest": "43312cefd07e2d5062bb692728b47a235c10d8d6d6042a5d1bdd1570f14f62cb",
+      "detail": "surfaced assessment claim"
+    },
+    {
+      "node_id": "claim:control:1",
+      "kind": "claim",
+      "label": "control:human-review-gate",
+      "value_digest": "9c854191ef2bcf37847b189d32d3e3abd1b7b0ee35718c091ab554eaeaf604ef",
+      "detail": "surfaced assessment claim"
+    },
+    {
+      "node_id": "claim:control:2",
+      "kind": "claim",
+      "label": "control:commitment-register",
+      "value_digest": "e91cfccd56eca895cb2b0a0c95222013c1e19483271729f91bcd9dd979d6868b",
+      "detail": "surfaced assessment claim"
+    },
+    {
+      "node_id": "claim:control:3",
+      "kind": "claim",
+      "label": "control:data-map",
+      "value_digest": "2a87e7327236804f70158911afb4f9a39bc965d5e0c6e399b9faa7dc37ab82c0",
+      "detail": "surfaced assessment claim"
+    },
+    {
+      "node_id": "claim:export-gate",
+      "kind": "claim",
+      "label": "export gate decision",
+      "value_digest": "eae660cbb4035f9e308ef83ce367b77c59951c496bf34e54dfc321c1794338bf",
+      "detail": "surfaced assessment claim"
+    },
+    {
+      "node_id": "claim:finding:0",
+      "kind": "claim",
+      "label": "finding:privacy",
+      "value_digest": "dc40ecc96a9cbdb2e18e474b012d7a90ce6c1c6e9215986e0617b2361bb0797c",
+      "detail": "surfaced assessment claim"
+    },
+    {
+      "node_id": "claim:finding:1",
+      "kind": "claim",
+      "label": "finding:customer_commitments",
+      "value_digest": "5440141da55aa786c4af7e7efc69db152db5fb5670d152087f7cf3a6cc734eae",
+      "detail": "surfaced assessment claim"
+    },
+    {
+      "node_id": "claim:routing",
+      "kind": "claim",
+      "label": "routing decision",
+      "value_digest": "52e9af8adf4e6dadf42f3c7e0be68b24a606f6d386987849b2c45b3649bb1889",
+      "detail": "surfaced assessment claim"
+    },
+    {
+      "node_id": "claim:source-verification:0",
+      "kind": "claim",
+      "label": "source-verification:synthetic",
+      "value_digest": "09d7fd8d111eeabb37c8d92637a431b6bc32c557850628d3ab1685e6f270b6c5",
+      "detail": "surfaced assessment claim"
+    },
+    {
+      "node_id": "input:assessment.audit_events",
+      "kind": "input",
+      "label": "assessment.audit_events",
+      "value_digest": "f397559ee433b63f7fb5ec76a64c7a24c322a3bc01edb1d25ccc9888a44094b1",
+      "detail": "value committed by SHA-256; list entries: 1"
+    },
+    {
+      "node_id": "input:assessment.findings",
+      "kind": "input",
+      "label": "assessment.findings",
+      "value_digest": "5a23776e675b06cb646db5aa4fdea550c73921ea3f3a6cdc763452f385075801",
+      "detail": "value committed by SHA-256; list entries: 2"
+    },
+    {
+      "node_id": "input:assessment.review_note",
+      "kind": "input",
+      "label": "assessment.review_note",
+      "value_digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "detail": "value committed by SHA-256; value absent"
+    },
+    {
+      "node_id": "input:assessment.review_state",
+      "kind": "input",
+      "label": "assessment.review_state",
+      "value_digest": "ab7a92c04994549ac1f9060b44f27262eaf3e5952186e824ed711c9a099ff951",
+      "detail": "value committed by SHA-256; type: str"
+    },
+    {
+      "node_id": "input:matter.customer_commitments",
+      "kind": "input",
+      "label": "matter.customer_commitments",
+      "value_digest": "ae80c27b4708fe4cb22aafa4d72cf9e925317f5c35c401ae26058c3a73eb4414",
+      "detail": "value committed by SHA-256; list entries: 3"
+    },
+    {
+      "node_id": "input:matter.data_categories",
+      "kind": "input",
+      "label": "matter.data_categories",
+      "value_digest": "f0268a5eb46583b99516b65a490cd0a8eb95b98ef66f19976b01701dc8372cd7",
+      "detail": "value committed by SHA-256; list entries: 2"
+    },
+    {
+      "node_id": "input:matter.matter_type",
+      "kind": "input",
+      "label": "matter.matter_type",
+      "value_digest": "304aeb6aeb9281204cf0b2723b2d0d855d70719de14de5aa270752aa275e307b",
+      "detail": "value committed by SHA-256; type: str"
+    },
+    {
+      "node_id": "input:matter.source_refs",
+      "kind": "input",
+      "label": "matter.source_refs",
+      "value_digest": "60aca9c01126fd5f0843c02ace5d300e744422f135d2e4d2466da146348a5177",
+      "detail": "value committed by SHA-256; list entries: 1"
+    },
+    {
+      "node_id": "input:matter.summary",
+      "kind": "input",
+      "label": "matter.summary",
+      "value_digest": "60504a3b2e74e24de7cdd658d20ca80047a1dc96ef81a2113d4e0c911be07309",
+      "detail": "value committed by SHA-256; type: str"
+    },
+    {
+      "node_id": "input:matter.title",
+      "kind": "input",
+      "label": "matter.title",
+      "value_digest": "0d81d7e7aba846cd6d55e62f6ddc59c52cccc4a2cb3dbd762462aa4053adf298",
+      "detail": "value committed by SHA-256; type: str"
+    },
+    {
+      "node_id": "input:matter.urgency",
+      "kind": "input",
+      "label": "matter.urgency",
+      "value_digest": "b57c4299afe3cda154124bdb96ceaf618a9d8d9cd8d2c8f6580ff26faa5fe5ca",
+      "detail": "value committed by SHA-256; type: str"
+    },
+    {
+      "node_id": "rule:LegalOpsAssessment.validate_export_gate",
+      "kind": "rule",
+      "label": "LegalOpsAssessment export validation",
+      "value_digest": null,
+      "detail": "deterministic local rule"
+    },
+    {
+      "node_id": "rule:generate_controls:commitment-register",
+      "kind": "rule",
+      "label": "generate_controls control commitment-register",
+      "value_digest": null,
+      "detail": "deterministic local rule"
+    },
+    {
+      "node_id": "rule:generate_controls:data-map",
+      "kind": "rule",
+      "label": "generate_controls control data-map",
+      "value_digest": null,
+      "detail": "deterministic local rule"
+    },
+    {
+      "node_id": "rule:generate_controls:human-review-gate",
+      "kind": "rule",
+      "label": "generate_controls control human-review-gate",
+      "value_digest": null,
+      "detail": "deterministic local rule"
+    },
+    {
+      "node_id": "rule:generate_controls:source-boundary",
+      "kind": "rule",
+      "label": "generate_controls control source-boundary",
+      "value_digest": null,
+      "detail": "deterministic local rule"
+    },
+    {
+      "node_id": "rule:generate_findings:customer_commitments",
+      "kind": "rule",
+      "label": "generate_findings category customer_commitments",
+      "value_digest": null,
+      "detail": "deterministic local rule"
+    },
+    {
+      "node_id": "rule:generate_findings:privacy",
+      "kind": "rule",
+      "label": "generate_findings category privacy",
+      "value_digest": null,
+      "detail": "deterministic local rule"
+    },
+    {
+      "node_id": "rule:route_matter",
+      "kind": "rule",
+      "label": "route_matter reviewer and SLA routing",
+      "value_digest": null,
+      "detail": "deterministic local rule"
+    },
+    {
+      "node_id": "rule:verify_source_ref",
+      "kind": "rule",
+      "label": "verify_source_ref source-boundary classification",
+      "value_digest": null,
+      "detail": "deterministic local rule"
+    },
+    {
+      "node_id": "source:0",
+      "kind": "source",
+      "label": "synthetic:saas-msa-deviation-example",
+      "value_digest": "64b23ab8096316adf0eab3f561085a3f8c0d8d300d2dee61c4099b5d2c1976ce",
+      "detail": "category=synthetic; status=pass; human_review=False"
+    }
+  ],
+  "edges": [
+    {
+      "source": "input:assessment.audit_events",
+      "target": "rule:LegalOpsAssessment.validate_export_gate",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:assessment.findings",
+      "target": "rule:LegalOpsAssessment.validate_export_gate",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:assessment.findings",
+      "target": "rule:route_matter",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:assessment.review_note",
+      "target": "rule:LegalOpsAssessment.validate_export_gate",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:assessment.review_state",
+      "target": "rule:LegalOpsAssessment.validate_export_gate",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:assessment.review_state",
+      "target": "rule:generate_controls:human-review-gate",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:matter.customer_commitments",
+      "target": "rule:generate_controls:commitment-register",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:matter.customer_commitments",
+      "target": "rule:generate_findings:customer_commitments",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:matter.data_categories",
+      "target": "rule:generate_controls:data-map",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:matter.data_categories",
+      "target": "rule:generate_findings:privacy",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:matter.matter_type",
+      "target": "rule:route_matter",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:matter.source_refs",
+      "target": "rule:generate_controls:source-boundary",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:matter.source_refs",
+      "target": "rule:verify_source_ref",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:matter.urgency",
+      "target": "rule:generate_findings:customer_commitments",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "input:matter.urgency",
+      "target": "rule:route_matter",
+      "relationship": "evaluated_by"
+    },
+    {
+      "source": "rule:LegalOpsAssessment.validate_export_gate",
+      "target": "claim:export-gate",
+      "relationship": "supports"
+    },
+    {
+      "source": "rule:generate_controls:commitment-register",
+      "target": "claim:control:2",
+      "relationship": "supports"
+    },
+    {
+      "source": "rule:generate_controls:data-map",
+      "target": "claim:control:3",
+      "relationship": "supports"
+    },
+    {
+      "source": "rule:generate_controls:human-review-gate",
+      "target": "claim:control:1",
+      "relationship": "supports"
+    },
+    {
+      "source": "rule:generate_controls:source-boundary",
+      "target": "claim:control:0",
+      "relationship": "supports"
+    },
+    {
+      "source": "rule:generate_findings:customer_commitments",
+      "target": "claim:finding:1",
+      "relationship": "supports"
+    },
+    {
+      "source": "rule:generate_findings:privacy",
+      "target": "claim:finding:0",
+      "relationship": "supports"
+    },
+    {
+      "source": "rule:route_matter",
+      "target": "claim:routing",
+      "relationship": "supports"
+    },
+    {
+      "source": "rule:verify_source_ref",
+      "target": "claim:source-verification:0",
+      "relationship": "supports"
+    },
+    {
+      "source": "source:0",
+      "target": "rule:verify_source_ref",
+      "relationship": "evaluated_by"
+    }
+  ],
+  "review_queue": [],
+  "integrity_sha256": "7e865f772b0b981d9c0ed3df5ef22d72f2221905008484aa4b477ce1a22568e5",
+  "review_gate": "Lineage records which local inputs and deterministic rules support each claim. Evidence exceptions remain in the review queue until a human confirms source authority, currency, relevance, and permitted use.",
+  "external_actions_allowed": false
+}

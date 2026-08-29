@@ -13,6 +13,8 @@ def test_cli_writes_json_and_review_packet(tmp_path):
     trust_cockpit_output = tmp_path / "trust-cockpit.md"
     trust_cockpit_json_output = tmp_path / "trust-cockpit.json"
     audit_chain_output = tmp_path / "audit-chain.json"
+    lineage_output = tmp_path / "evidence-lineage.json"
+    lineage_markdown_output = tmp_path / "evidence-lineage.md"
     parser = build_parser()
     args = parser.parse_args(
         [
@@ -36,6 +38,10 @@ def test_cli_writes_json_and_review_packet(tmp_path):
             str(trust_cockpit_json_output),
             "--audit-chain-output",
             str(audit_chain_output),
+            "--lineage-output",
+            str(lineage_output),
+            "--lineage-markdown-output",
+            str(lineage_markdown_output),
         ]
     )
 
@@ -66,14 +72,23 @@ def test_cli_writes_json_and_review_packet(tmp_path):
         "customer_commitment_register_json",
         "source_verification_json",
         "source_verified_review_packet_runner_json",
+        "claim_evidence_lineage_json",
+        "claim_evidence_lineage_markdown",
     }
     trust_cockpit = json.loads(trust_cockpit_json_output.read_text(encoding="utf-8"))
     assert trust_cockpit["schema"] == "legal-ops-agent.trust-cockpit.v1"
     assert trust_cockpit["assessment_id"] == payload["assessment_id"]
     assert trust_cockpit["decision_summary"]["export_allowed"] is False
     assert trust_cockpit["review_gate"]["external_actions_allowed"] is False
-    assert trust_cockpit["artifact_summary"]["artifact_count"] == 5
+    assert trust_cockpit["artifact_summary"]["artifact_count"] == 7
     assert "LegalOps Trust Cockpit" in trust_cockpit_output.read_text(encoding="utf-8")
     audit_chain = json.loads(audit_chain_output.read_text(encoding="utf-8"))
     assert audit_chain["verified"] is True
     assert audit_chain["event_count"] == 1
+    lineage = json.loads(lineage_output.read_text(encoding="utf-8"))
+    assert lineage["schema"] == "legal-ops-agent.evidence-lineage.v1"
+    assert lineage["coverage"]["coverage_rate"] == 1.0
+    assert lineage["assurance_status"] == "clear"
+    assert lineage["review_queue"] == []
+    assert lineage["external_actions_allowed"] is False
+    assert "Claim Evidence Lineage" in lineage_markdown_output.read_text(encoding="utf-8")
